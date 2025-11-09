@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- Compose-specific lint rules -->
+
+    <!-- Composable naming: functions should start with uppercase -->
+    <issue id="ComposableNaming" severity="error" />
+
+    <!-- CompositionLocal naming: should start with "Local" prefix -->
+    <issue id="CompositionLocalNaming" severity="error" />
+
+    <!-- Modifier parameter: should be first parameter or last parameter -->
+    <issue id="ModifierParameter" severity="error" />
+
+    <!-- Modifier reused: don't reuse the same modifier in multiple children -->
+    <issue id="ModifierReused" severity="error" />
+
+    <!-- Mutable parameters: composable functions shouldn't have mutable parameters -->
+    <issue id="MutableParameters" severity="error" />
+
+    <!-- Remember missing: state should be wrapped in remember {} -->
+    <issue id="RememberMissing" severity="error" />
+
+    <!-- Unstable collections: use persistent collections or mark as @Stable -->
+    <issue id="UnstableCollections" severity="warning" />
+
+    <!-- ViewModel injection: ViewModels should be created at the top level -->
+    <issue id="ViewModelInjection" severity="warning" />
+
+    <!-- Missing content emitter: Preview should emit content -->
+    <issue id="PreviewMustEmitContent" severity="error" />
+
+    <!-- Multiple content emitters: avoid multiple content emit points -->
+    <issue id="MultipleContentEmitters" severity="warning" />
+
+    <!-- Content emitter returning values -->
+    <issue id="ContentEmitterReturningValues" severity="error" />
+
+    <!-- StateFlow value in composition: use collectAsState() instead of .value -->
+    <issue id="StateFlowValueCalledInComposition" severity="error" />
+
+    <!-- Material 2 usage: prefer Material 3 -->
+    <issue id="Material2" severity="warning" />
+
+    <!-- Modifier missing: composables should have a modifier parameter -->
+    <issue id="ModifierMissing" severity="warning" />
+
+    <!-- Modifier not used at root: modifier should be used on the root element -->
+    <issue id="ModifierNotUsedAtRoot" severity="warning" />
+
+    <!-- Modifier without default: modifier parameters should have a default value -->
+    <issue id="ModifierWithoutDefault" severity="warning" />
+
+    <!-- Composable param order: modifier should be first, content lambda should be last -->
+    <issue id="ComposableParamOrder" severity="error" />
+
+    <!-- Preview annotation naming -->
+    <issue id="PreviewAnnotationNaming" severity="error" />
+
+    <!-- Preview public: preview functions should be private -->
+    <issue id="PreviewPublic" severity="warning" />
+
+    <!-- Common Android lint rules to enforce -->
+    <issue id="NewApi" severity="error" />
+    <issue id="InlinedApi" severity="warning" />
+    <issue id="VisibleForTests" severity="error" />
+    <issue id="UnusedResources" severity="warning" />
+    <issue id="IconMissingDensityFolder" severity="warning" />
+
+</lint>

@@ -1,0 +1,71 @@
+# Gradle
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+.gradletasknamecache
+
+# Kotlin
+.kotlin
+*.class
+*.jar
+*.war
+*.ear
+*.kotlin_module
+
+# Android
+*.iml
+*.apk
+*.ap_
+*.aab
+local.properties
+captures/
+.externalNativeBuild
+.cxx
+output.json
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.ipr
+out/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# iOS
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+Pods/
+
+# Web/Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Compose Multiplatform
+compose-desktop.jar
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
