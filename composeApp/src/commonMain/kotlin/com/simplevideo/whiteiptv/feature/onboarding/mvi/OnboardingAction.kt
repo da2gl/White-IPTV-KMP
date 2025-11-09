@@ -1,4 +1,4 @@
-package com.simplevideo.whiteiptv.feature.onboarding
+package com.simplevideo.whiteiptv.feature.onboarding.mvi
 
 /**
  * One-time UI events (side effects) for Onboarding

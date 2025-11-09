@@ -16,12 +16,12 @@ detektComposeRules = "0.4.27"
 junit = "4.13.2"
 koin = "4.1.1"
 kotlin = "2.2.21"
-ktlint = "1.7.1"
+ktlint = "1.7.1" # version.set(libs.versions.ktlint.get())
 ktlintGradle = "13.1.0"
 composeLintChecks = "1.4.2"
-ktor = "2.3.11"
-room = "2.7.0"
-sqlite = "2.4.0"
+ktor = "3.3.2"
+room = "2.8.3"
+sqlite = "2.6.1"
 ksp = "2.2.21-2.0.4"
 
 [libraries]
@@ -46,6 +46,7 @@ compose-lint-checks = { module = "com.slack.lint.compose:compose-lint-checks", v
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }

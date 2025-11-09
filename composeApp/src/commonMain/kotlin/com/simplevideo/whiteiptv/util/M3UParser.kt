@@ -1,7 +1,5 @@
 package com.simplevideo.whiteiptv.util
 
-import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-
 data class M3uChannel(
     val tvgId: String?,
     val tvgName: String?,

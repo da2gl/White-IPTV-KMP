@@ -11,7 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.simplevideo.whiteiptv.designsystem.AppTheme
 import com.simplevideo.whiteiptv.designsystem.AppTypography
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -21,8 +25,8 @@ import white_iptv_kmp.composeapp.generated.resources.*
 @Composable
 fun OnboardingScreen(
     onNavigateToMain: () -> Unit,
-    viewModel: OnboardingViewModel = koinViewModel(),
 ) {
+    val viewModel = koinViewModel<OnboardingViewModel>()
     val state by viewModel.viewStates().collectAsStateWithLifecycle()
     val action by viewModel.viewActions().collectAsStateWithLifecycle(initialValue = null)
 
@@ -66,30 +70,30 @@ private fun OnboardingContent(
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = MaterialTheme.colorScheme.background,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.weight(1f))
 
             // Header: Logo and App Name
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Image(
                     painter = painterResource(Res.drawable.ic_play_circle),
                     contentDescription = stringResource(Res.string.app_name),
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier.size(64.dp),
                 )
                 Text(
                     text = stringResource(Res.string.app_name),
-                    style = AppTypography.headlineSmall
+                    style = AppTypography.headlineSmall,
                 )
             }
 
@@ -98,18 +102,18 @@ private fun OnboardingContent(
             // Text Block
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 Text(
                     text = stringResource(Res.string.onboarding_title),
                     style = AppTypography.headlineLarge,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
                 Text(
                     text = stringResource(Res.string.onboarding_subtitle),
                     style = AppTypography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             }
 
@@ -119,7 +123,7 @@ private fun OnboardingContent(
             Column(
                 modifier = Modifier.widthIn(max = 400.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 OutlinedTextField(
                     value = state.playlistUrl,
@@ -128,13 +132,13 @@ private fun OnboardingContent(
                     placeholder = { Text(stringResource(Res.string.playlist_url_placeholder)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    enabled = !state.isLoading
+                    enabled = !state.isLoading,
                 )
 
                 // OR Separator
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     HorizontalDivider(modifier = Modifier.weight(1f))
                     Text(
@@ -152,8 +156,8 @@ private fun OnboardingContent(
                     enabled = !state.isLoading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ),
                 ) {
                     Text(text = stringResource(Res.string.choose_file_button))
                 }
@@ -165,19 +169,19 @@ private fun OnboardingContent(
             Column(
                 modifier = Modifier.widthIn(max = 400.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Button(
                     onClick = { onEvent(OnboardingEvent.ImportPlaylist) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    enabled = !state.isLoading && (state.isValidUrl || state.playlistFileName != null)
+                    enabled = !state.isLoading && (state.isValidUrl || state.playlistFileName != null),
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     } else {
                         Text(text = stringResource(Res.string.import_playlist_button))
@@ -188,12 +192,12 @@ private fun OnboardingContent(
                 if (state.isLoading) {
                     Text(
                         text = stringResource(Res.string.importing_message),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else if (state.error != null) {
                     Text(
                         text = state.error,
-                        color = MaterialTheme.colorScheme.error
+                        color = MaterialTheme.colorScheme.error,
                     )
                 }
             }
@@ -212,26 +216,65 @@ private fun OnboardingContent(
 @Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenPreview() {
-    OnboardingContent(
-        state = OnboardingState(),
-        onEvent = {}
-    )
+    AppTheme {
+        OnboardingContent(
+            state = OnboardingState(),
+            onEvent = {},
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenLoadingPreview() {
-    OnboardingContent(
-        state = OnboardingState(isLoading = true),
-        onEvent = {}
-    )
+    AppTheme {
+        OnboardingContent(
+            state = OnboardingState(isLoading = true),
+            onEvent = {},
+        )
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenErrorPreview() {
-    OnboardingContent(
-        state = OnboardingState(error = "Invalid playlist format"),
-        onEvent = {}
-    )
+    AppTheme {
+        OnboardingContent(
+            state = OnboardingState(error = "Invalid playlist format"),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenDarkPreview() {
+    AppTheme(darkTheme = true) {
+        OnboardingContent(
+            state = OnboardingState(),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenLoadingDarkPreview() {
+    AppTheme(darkTheme = true) {
+        OnboardingContent(
+            state = OnboardingState(isLoading = true),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenErrorDarkPreview() {
+    AppTheme(darkTheme = true) {
+        OnboardingContent(
+            state = OnboardingState(error = "Invalid playlist format"),
+            onEvent = {},
+        )
+    }
 }

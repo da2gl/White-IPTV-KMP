@@ -6,11 +6,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
+import com.simplevideo.whiteiptv.feature.splash.SplashScreen
 
 /**
  * Main navigation graph for WhiteIPTV app
  *
- * Sets up the navigation structure with onboarding as the initial destination
+ * Sets up the navigation structure with splash as the initial destination
  *
  * TODO: Add main app navigation when features are implemented
  * TODO: Implement navigation animations/transitions
@@ -19,12 +20,23 @@ import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
 @Composable
 fun AppNavGraph(
     navController: NavHostController = rememberNavController(),
-    startDestination: Route = Route.Onboarding,
+    startDestination: Route = Route.Splash,
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
     ) {
+        // Splash screen
+        composable<Route.Splash> {
+            SplashScreen(
+                onNavigate = { route ->
+                    navController.navigate(route) {
+                        popUpTo(Route.Splash) { inclusive = true }
+                    }
+                },
+            )
+        }
+
         // Onboarding screen
         composable<Route.Onboarding> {
             OnboardingScreen(

@@ -1,4 +1,4 @@
-package com.simplevideo.whiteiptv.feature.onboarding
+package com.simplevideo.whiteiptv.feature.onboarding.mvi
 
 /**
  * User events/intents for Onboarding

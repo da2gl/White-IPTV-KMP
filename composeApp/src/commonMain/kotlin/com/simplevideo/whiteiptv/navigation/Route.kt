@@ -17,6 +17,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Route {
     /**
+     * Splash screen - initial loading and route determination
+     */
+    @Serializable
+    data object Splash : Route()
+
+    /**
      * Onboarding screen - playlist import
      */
     @Serializable

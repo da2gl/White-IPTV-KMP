@@ -3,6 +3,9 @@ package com.simplevideo.whiteiptv.feature.onboarding
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
