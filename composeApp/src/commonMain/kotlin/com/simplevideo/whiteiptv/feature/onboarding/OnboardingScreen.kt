@@ -1,31 +1,35 @@
 package com.simplevideo.whiteiptv.feature.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.simplevideo.whiteiptv.designsystem.AppTypography
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+import whiteiptvkmp.composeapp.generated.resources.Res
+import whiteiptvkmp.composeapp.generated.resources.app_name
+import whiteiptvkmp.composeapp.generated.resources.choose_file_button
+import whiteiptvkmp.composeapp.generated.resources.demo_playlist_link
+import whiteiptvkmp.composeapp.generated.resources.ic_play_circle
+import whiteiptvkmp.composeapp.generated.resources.import_playlist_button
+import whiteiptvkmp.composeapp.generated.resources.importing_message
+import whiteiptvkmp.composeapp.generated.resources.invalid_playlist_error
+import whiteiptvkmp.composeapp.generated.resources.onboarding_subtitle
+import whiteiptvkmp.composeapp.generated.resources.onboarding_title
+import whiteiptvkmp.composeapp.generated.resources.or_separator
+import whiteiptvkmp.composeapp.generated.resources.playlist_url_label
+import whiteiptvkmp.composeapp.generated.resources.playlist_url_placeholder
 import org.koin.compose.viewmodel.koinViewModel
 
-/**
- * Onboarding screen for WhiteIPTV
- *
- * Simple screen for importing IPTV playlist
- *
- * TODO: Add app logo/icon
- * TODO: Implement file picker platform-specific logic
- * TODO: Add loading animation during import
- * TODO: Add success animation after import
- */
 @Composable
 fun OnboardingScreen(
     onNavigateToMain: () -> Unit,
@@ -34,7 +38,6 @@ fun OnboardingScreen(
     val state by viewModel.viewStates().collectAsStateWithLifecycle()
     val action by viewModel.viewActions().collectAsStateWithLifecycle(initialValue = null)
 
-    // Handle actions (side effects)
     LaunchedEffect(action) {
         when (action) {
             is OnboardingAction.NavigateToMain -> {
@@ -73,121 +76,174 @@ private fun OnboardingContent(
     state: OnboardingState,
     onEvent: (OnboardingEvent) -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center,
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .widthIn(max = 400.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo placeholder
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = "App logo",
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.primary,
-            )
+            Spacer(modifier = Modifier.weight(1f))
 
-            // App name
-            Text(
-                text = "Streamify",
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Title
-            Text(
-                text = "Upload your IPTV playlist",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
-
-            // Subtitle
-            Text(
-                text = "Enter a link or choose a file to start watching",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Playlist URL input
-            OutlinedTextField(
-                value = state.playlistUrl,
-                onValueChange = { onEvent(OnboardingEvent.EnterPlaylistUrl(it)) },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text("Playlist URL") },
-                placeholder = { Text("https://...") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                singleLine = true,
-                enabled = !state.isLoading,
-            )
-
-            // OR divider
-            Text(
-                text = "OR",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-
-            // Choose file button
-            OutlinedButton(
-                onClick = { onEvent(OnboardingEvent.ChooseFile) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isLoading,
+            // Header: Logo and App Name
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_play_circle),
+                    contentDescription = stringResource(Res.string.app_name),
+                    modifier = Modifier.size(64.dp)
+                )
                 Text(
-                    text = state.playlistFileName ?: "Choose file",
-                    modifier = Modifier.padding(8.dp),
+                    text = stringResource(Res.string.app_name),
+                    style = AppTypography.headlineSmall
                 )
             }
 
-            // Import button
-            Button(
-                onClick = { onEvent(OnboardingEvent.ImportPlaylist) },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = !state.isLoading && (state.isValidUrl || state.playlistFileName != null),
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // Text Block
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                    )
-                } else {
+                Text(
+                    text = stringResource(Res.string.onboarding_title),
+                    style = AppTypography.headlineLarge,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(Res.string.onboarding_subtitle),
+                    style = AppTypography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Input Section
+            Column(
+                modifier = Modifier.widthIn(max = 400.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = state.playlistUrl,
+                    onValueChange = { onEvent(OnboardingEvent.EnterPlaylistUrl(it)) },
+                    label = { Text(stringResource(Res.string.playlist_url_label)) },
+                    placeholder = { Text(stringResource(Res.string.playlist_url_placeholder)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = !state.isLoading
+                )
+
+                // OR Separator
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Divider(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Import playlist",
-                        modifier = Modifier.padding(8.dp),
+                        text = stringResource(Res.string.or_separator),
+                        style = AppTypography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Divider(modifier = Modifier.weight(1f))
+                }
+
+                // File Upload Button
+                Button(
+                    onClick = { onEvent(OnboardingEvent.ChooseFile) },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                ) {
+                    Text(text = stringResource(Res.string.choose_file_button))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Primary CTA and Feedback
+            Column(
+                modifier = Modifier.widthIn(max = 400.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { onEvent(OnboardingEvent.ImportPlaylist) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    enabled = !state.isLoading && (state.isValidUrl || state.playlistFileName != null)
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(text = stringResource(Res.string.import_playlist_button))
+                    }
+                }
+
+                // Feedback Area
+                if (state.isLoading) {
+                    Text(
+                        text = stringResource(Res.string.importing_message),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else if (state.error != null) {
+                    Text(
+                        text = state.error,
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }
 
-            // Error message
-            if (state.error != null) {
-                Text(
-                    text = "⚠ ${state.error}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
-                )
+            Spacer(modifier = Modifier.weight(1f))
+
+            TextButton(onClick = { onEvent(OnboardingEvent.UseDemoPlaylist) }) {
+                Text(text = stringResource(Res.string.demo_playlist_link))
             }
 
-            // Use demo playlist link
-            TextButton(
-                onClick = { onEvent(OnboardingEvent.UseDemoPlaylist) },
-                enabled = !state.isLoading,
-            ) {
-                Text("Use demo playlist")
-            }
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun OnboardingScreenPreview() {
+    OnboardingContent(
+        state = OnboardingState(),
+        onEvent = {}
+    )
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun OnboardingScreenLoadingPreview() {
+    OnboardingContent(
+        state = OnboardingState(isLoading = true),
+        onEvent = {}
+    )
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun OnboardingScreenErrorPreview() {
+    OnboardingContent(
+        state = OnboardingState(error = "Invalid playlist format"),
+        onEvent = {}
+    )
 }

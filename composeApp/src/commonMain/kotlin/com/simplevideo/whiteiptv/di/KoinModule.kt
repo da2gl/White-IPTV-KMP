@@ -1,66 +1,38 @@
 package com.simplevideo.whiteiptv.di
 
+import com.simplevideo.whiteiptv.data.local.AppDatabase
+import com.simplevideo.whiteiptv.data.local.getDatabaseBuilder
+import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
+import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
+import io.ktor.client.HttpClient
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
-/**
- * Koin DI modules for WhiteIPTV app
- *
- * TODO: Add repository modules when data layer is implemented
- * TODO: Add use case modules when domain layer is implemented
- * TODO: Add network/database modules when needed
- */
-
-/**
- * ViewModels module
- *
- * TODO: Add other feature ViewModels as they are implemented
- */
 val viewModelModule = module {
     viewModelOf(::OnboardingViewModel)
 }
 
-/**
- * Repository module
- *
- * TODO: Implement when data layer is ready
- */
 val repositoryModule = module {
-    // Example: single<PlaylistRepository> { PlaylistRepositoryImpl(get()) }
+    singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
 }
 
-/**
- * Use case module
- *
- * TODO: Implement when domain layer is ready
- */
 val useCaseModule = module {
     // Example: factory { GetPlaylistsUseCase(get()) }
 }
 
-/**
- * Network module
- *
- * TODO: Implement when network layer is ready
- */
 val networkModule = module {
-    // Example: single { HttpClient() }
+    single { HttpClient() }
 }
 
-/**
- * Database module
- *
- * TODO: Implement when database layer is ready
- */
 val databaseModule = module {
-    // Example: single { DatabaseDriverFactory().createDriver() }
+    single { getDatabaseBuilder().build() }
+    single { get<AppDatabase>().playlistDao() }
 }
 
-/**
- * All app modules combined
- */
 val appModules: List<Module> = listOf(
     viewModelModule,
     repositoryModule,

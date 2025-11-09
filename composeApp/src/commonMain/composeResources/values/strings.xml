@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Streamify</string>
+    <string name="onboarding_title">Upload your IPTV playlist</string>
+    <string name="onboarding_subtitle">Enter a link or choose a file to start watching</string>
+    <string name="playlist_url_label">Playlist URL</string>
+    <string name="playlist_url_placeholder">https://...</string>
+    <string name="or_separator">Or</string>
+    <string name="choose_file_button">Choose file</string>
+    <string name="import_playlist_button">Import playlist</string>
+    <string name="importing_message">Importing...</string>
+    <string name="invalid_playlist_error">Invalid playlist format</string>
+    <string name="demo_playlist_link">Use demo playlist</string>
+</resources>
