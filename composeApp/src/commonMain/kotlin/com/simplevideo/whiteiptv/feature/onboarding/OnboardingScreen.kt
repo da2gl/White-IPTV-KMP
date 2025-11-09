@@ -15,20 +15,8 @@ import com.simplevideo.whiteiptv.designsystem.AppTypography
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import whiteiptvkmp.composeapp.generated.resources.Res
-import whiteiptvkmp.composeapp.generated.resources.app_name
-import whiteiptvkmp.composeapp.generated.resources.choose_file_button
-import whiteiptvkmp.composeapp.generated.resources.demo_playlist_link
-import whiteiptvkmp.composeapp.generated.resources.ic_play_circle
-import whiteiptvkmp.composeapp.generated.resources.import_playlist_button
-import whiteiptvkmp.composeapp.generated.resources.importing_message
-import whiteiptvkmp.composeapp.generated.resources.invalid_playlist_error
-import whiteiptvkmp.composeapp.generated.resources.onboarding_subtitle
-import whiteiptvkmp.composeapp.generated.resources.onboarding_title
-import whiteiptvkmp.composeapp.generated.resources.or_separator
-import whiteiptvkmp.composeapp.generated.resources.playlist_url_label
-import whiteiptvkmp.composeapp.generated.resources.playlist_url_placeholder
 import org.koin.compose.viewmodel.koinViewModel
+import white_iptv_kmp.composeapp.generated.resources.*
 
 @Composable
 fun OnboardingScreen(
@@ -148,13 +136,13 @@ private fun OnboardingContent(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Divider(modifier = Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.weight(1f))
                     Text(
                         text = stringResource(Res.string.or_separator),
                         style = AppTypography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    Divider(modifier = Modifier.weight(1f))
+                    HorizontalDivider(modifier = Modifier.weight(1f))
                 }
 
                 // File Upload Button
@@ -221,7 +209,7 @@ private fun OnboardingContent(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenPreview() {
     OnboardingContent(
@@ -230,7 +218,7 @@ private fun OnboardingScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenLoadingPreview() {
     OnboardingContent(
@@ -239,7 +227,7 @@ private fun OnboardingScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenErrorPreview() {
     OnboardingContent(

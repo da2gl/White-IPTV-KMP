@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.di
 
+import org.koin.core.KoinApplication
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import org.koin.core.logger.Logger
@@ -8,12 +9,10 @@ import org.koin.core.logger.MESSAGE
 /**
  * Koin initialization for WhiteIPTV app
  *
- * Call this function in App.kt to initialize dependency injection
- *
- * TODO: Configure Koin logger based on build type (debug/release)
- * TODO: Add platform-specific modules if needed
+ * Call this function to initialize dependency injection
+ * Pass platform-specific configuration via the config lambda
  */
-fun initKoin() {
+fun initializeKoin(config: (KoinApplication.() -> Unit)? = null) {
     startKoin {
         // Enable Koin logger for debug
         logger(
@@ -29,6 +28,9 @@ fun initKoin() {
                 }
             },
         )
+
+        // Platform-specific configuration (e.g., androidContext on Android)
+        config?.invoke(this)
 
         // Load all modules
         modules(appModules)
