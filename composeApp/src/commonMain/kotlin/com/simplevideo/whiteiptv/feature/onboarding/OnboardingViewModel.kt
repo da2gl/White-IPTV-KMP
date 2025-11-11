@@ -3,7 +3,7 @@ package com.simplevideo.whiteiptv.feature.onboarding
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.exception.PlaylistException
-import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistFromFileUseCase
+import com.simplevideo.whiteiptv.domain.model.PlaylistSource
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
     private val importPlaylist: ImportPlaylistUseCase,
-    private val importPlaylistFromFile: ImportPlaylistFromFileUseCase,
 ) : BaseViewModel<OnboardingState, OnboardingAction, OnboardingEvent>(
     initialState = OnboardingState(),
 ) {
@@ -46,40 +45,22 @@ class OnboardingViewModel(
             playlistUrl = "",
             error = null,
         )
-        importPlaylistFromFile(fileUri, fileName)
-    }
-
-    private fun importPlaylistFromFile(fileUri: String, fileName: String) {
-        viewModelScope.launch {
-            viewState = viewState.copy(isLoading = true, error = null)
-            runCatching {
-                importPlaylistFromFile.invoke(fileUri, fileName)
-            }.onSuccess {
-                viewState = viewState.copy(isLoading = false)
-                viewAction = OnboardingAction.NavigateToMain
-            }.onFailure { e ->
-                val errorMessage = when (e) {
-                    is PlaylistException -> e.message ?: "Unknown error occurred"
-                    else -> "Unexpected error: ${e.message ?: "Unknown error"}"
-                }
-                viewState = viewState.copy(isLoading = false, error = errorMessage)
-            }
-        }
+        importPlaylistFromSource(PlaylistSource.LocalFile(uri = fileUri, fileName = fileName))
     }
 
     private fun handleImportPlaylist() {
         if (viewState.playlistUrl.isNotBlank()) {
-            importPlaylistFromUrl(viewState.playlistUrl)
+            importPlaylistFromSource(PlaylistSource.Url(url = viewState.playlistUrl))
         } else {
             viewState = viewState.copy(error = "Please enter a playlist URL or choose a file")
         }
     }
 
-    private fun importPlaylistFromUrl(url: String) {
+    private fun importPlaylistFromSource(source: PlaylistSource) {
         viewModelScope.launch {
             viewState = viewState.copy(isLoading = true, error = null)
             runCatching {
-                importPlaylist(url)
+                importPlaylist(source)
             }.onSuccess {
                 viewState = viewState.copy(isLoading = false)
                 viewAction = OnboardingAction.NavigateToMain

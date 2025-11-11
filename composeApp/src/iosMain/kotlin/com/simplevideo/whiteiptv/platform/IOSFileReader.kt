@@ -1,16 +1,14 @@
 package com.simplevideo.whiteiptv.platform
 
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSData
-import platform.Foundation.NSString
 import platform.Foundation.NSURL
-import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.dataWithContentsOfURL
-import kotlin.IllegalArgumentException
-import kotlin.IllegalStateException
-import kotlin.String
-import kotlin.toString
+import platform.posix.memcpy
 
 /**
  * iOS implementation of FileReader
@@ -18,6 +16,7 @@ import kotlin.toString
  */
 class IOSFileReader : FileReader {
 
+    @OptIn(ExperimentalForeignApi::class)
     override suspend fun readFile(uri: String): String = withContext(Dispatchers.Default) {
         val url = NSURL.URLWithString(uri)
             ?: throw IllegalArgumentException("Invalid file URI: $uri")
@@ -25,7 +24,11 @@ class IOSFileReader : FileReader {
         val data: NSData = NSData.dataWithContentsOfURL(url)
             ?: throw IllegalStateException("Failed to read file: $uri")
 
-        NSString.create(data = data, encoding = NSUTF8StringEncoding)?.toString()
-            ?: throw IllegalStateException("Failed to decode file content: $uri")
+        val byteArray = ByteArray(data.length.toInt())
+        byteArray.usePinned { pinnedArray ->
+            memcpy(pinnedArray.addressOf(0), data.bytes, data.length)
+        }
+
+        byteArray.decodeToString()
     }
 }

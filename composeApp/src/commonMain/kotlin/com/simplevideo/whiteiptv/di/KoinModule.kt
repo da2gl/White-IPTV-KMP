@@ -6,7 +6,6 @@ import com.simplevideo.whiteiptv.data.mapper.PlaylistMapper
 import com.simplevideo.whiteiptv.data.network.HttpClientFactory
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
-import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistFromFileUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
@@ -33,7 +32,6 @@ val mapperModule = module {
 
 val useCaseModule = module {
     factoryOf(::ImportPlaylistUseCase)
-    factoryOf(::ImportPlaylistFromFileUseCase)
 }
 
 val networkModule = module {

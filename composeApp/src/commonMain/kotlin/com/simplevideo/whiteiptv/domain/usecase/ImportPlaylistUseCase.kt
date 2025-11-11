@@ -7,7 +7,9 @@ import com.simplevideo.whiteiptv.data.parser.playlist.M3uParser
 import com.simplevideo.whiteiptv.data.parser.playlist.model.Channel
 import com.simplevideo.whiteiptv.data.parser.playlist.model.PlaylistHeader
 import com.simplevideo.whiteiptv.domain.exception.PlaylistException
+import com.simplevideo.whiteiptv.domain.model.PlaylistSource
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.platform.FileReader
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.request.get
@@ -17,11 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * Use case for importing IPTV playlist from URL
+ * Use case for importing IPTV playlist from URL or local file
  *
  * Handles:
- * - URL validation
- * - Download and parsing
+ * - URL validation and download OR file reading
+ * - M3U parsing
  * - New playlist creation or existing playlist update
  * - Preserving user preferences (favorites) on update
  * - Batch insertion for large playlists
@@ -29,12 +31,14 @@ import kotlinx.coroutines.withContext
  * Usage:
  * ```kotlin
  * val useCase = ImportPlaylistUseCase(...)
- * useCase(url = "https://example.com/playlist.m3u")
+ * useCase(PlaylistSource.Url("https://example.com/playlist.m3u"))
+ * useCase(PlaylistSource.LocalFile(uri = "content://...", fileName = "playlist.m3u"))
  * ```
  */
 class ImportPlaylistUseCase(
     private val repository: PlaylistRepository,
     private val httpClient: HttpClient,
+    private val fileReader: FileReader,
     private val channelMapper: ChannelMapper,
     private val playlistMapper: PlaylistMapper,
 ) {
@@ -47,21 +51,12 @@ class ImportPlaylistUseCase(
         private const val BATCH_SIZE = 1000
     }
 
-    suspend operator fun invoke(url: String) {
-        if (!isValidUrl(url)) {
-            throw PlaylistException.InvalidUrl(url)
-        }
-
+    suspend operator fun invoke(source: PlaylistSource) {
         try {
-            val response = httpClient.get(url)
-
-            if (!response.status.isSuccess()) {
-                throw PlaylistException.NetworkError(
-                    "Failed to download playlist: HTTP ${response.status.value}",
-                )
+            val m3uString = when (source) {
+                is PlaylistSource.Url -> downloadFromUrl(source.url)
+                is PlaylistSource.LocalFile -> fileReader.readFile(source.uri)
             }
-
-            val m3uString = response.bodyAsText()
 
             if (m3uString.isBlank() || !m3uString.contains("#EXTM3U")) {
                 throw PlaylistException.ParseError("Invalid M3U format: missing #EXTM3U header")
@@ -80,8 +75,13 @@ class ImportPlaylistUseCase(
                 throw PlaylistException.EmptyPlaylist()
             }
 
+            val playlistUrl = when (source) {
+                is PlaylistSource.Url -> source.url
+                is PlaylistSource.LocalFile -> "file://${source.fileName}"
+            }
+
             val existingPlaylist = try {
-                repository.getPlaylistByUrl(url)
+                repository.getPlaylistByUrl(playlistUrl)
             } catch (e: Exception) {
                 throw PlaylistException.DatabaseError("Failed to check existing playlist", e)
             }
@@ -90,7 +90,7 @@ class ImportPlaylistUseCase(
                 if (existingPlaylist != null) {
                     updateExistingPlaylist(existingPlaylist.id, header, channels)
                 } else {
-                    insertNewPlaylist(url, header, channels)
+                    insertNewPlaylist(playlistUrl, header, channels)
                 }
             } catch (e: PlaylistException) {
                 throw e
@@ -104,6 +104,22 @@ class ImportPlaylistUseCase(
         } catch (e: Exception) {
             throw PlaylistException.Unknown("Unexpected error during playlist import", e)
         }
+    }
+
+    private suspend fun downloadFromUrl(url: String): String {
+        if (!isValidUrl(url)) {
+            throw PlaylistException.InvalidUrl(url)
+        }
+
+        val response = httpClient.get(url)
+
+        if (!response.status.isSuccess()) {
+            throw PlaylistException.NetworkError(
+                "Failed to download playlist: HTTP ${response.status.value}",
+            )
+        }
+
+        return response.bodyAsText()
     }
 
     private suspend fun insertNewPlaylist(
