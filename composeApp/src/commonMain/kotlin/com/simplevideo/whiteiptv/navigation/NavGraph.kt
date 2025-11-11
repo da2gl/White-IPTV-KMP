@@ -50,8 +50,7 @@ fun AppNavGraph(
 
         // Main app screen
         composable<Route.Main> {
-            // TODO: Implement main app screen with bottom navigation
-            // This will contain Home, AllChannels, Favorites, Settings tabs
+            MainScreen()
         }
     }
 }

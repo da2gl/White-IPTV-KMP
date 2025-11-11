@@ -30,41 +30,31 @@ sealed class Route {
 
     /**
      * Main app screen with bottom navigation
-     *
-     * TODO: Implement main app navigation
      */
     @Serializable
-    data object Main : Route()
+    sealed class Main : Route() {
+        /**
+         * Home screen
+         */
+        @Serializable
+        data object Home : Main()
 
-    /**
-     * Home screen
-     *
-     * TODO: Implement when creating home feature
-     */
-    @Serializable
-    data object Home : Route()
+        /**
+         * Favorites screen
+         */
+        @Serializable
+        data object Favorites : Main()
 
-    /**
-     * All channels screen
-     *
-     * TODO: Implement when creating channels feature
-     */
-    @Serializable
-    data object AllChannels : Route()
+        /**
+         * Categories screen
+         */
+        @Serializable
+        data object Categories : Main()
 
-    /**
-     * Favorites screen
-     *
-     * TODO: Implement when creating favorites feature
-     */
-    @Serializable
-    data object Favorites : Route()
-
-    /**
-     * Settings screen
-     *
-     * TODO: Implement when creating settings feature
-     */
-    @Serializable
-    data object Settings : Route()
+        /**
+         * Settings screen
+         */
+        @Serializable
+        data object Settings : Main()
+    }
 }
