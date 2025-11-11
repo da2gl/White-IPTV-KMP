@@ -3,6 +3,8 @@ package com.simplevideo.whiteiptv.di
 import androidx.room.Room
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
+import com.simplevideo.whiteiptv.platform.FileReader
+import com.simplevideo.whiteiptv.platform.IOSFileReader
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -20,6 +22,12 @@ actual fun platformModule(): Module = module {
             ),
         )
     }
+
+    single<FileReader> {
+        IOSFileReader()
+    }
+
+    // Note: FilePicker is provided via rememberFilePicker() Composable
 }
 
 @OptIn(ExperimentalForeignApi::class)

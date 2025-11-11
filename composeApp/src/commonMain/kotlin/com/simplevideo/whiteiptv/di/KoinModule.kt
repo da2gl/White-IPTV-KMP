@@ -6,6 +6,7 @@ import com.simplevideo.whiteiptv.data.mapper.PlaylistMapper
 import com.simplevideo.whiteiptv.data.network.HttpClientFactory
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistFromFileUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
@@ -32,6 +33,7 @@ val mapperModule = module {
 
 val useCaseModule = module {
     factoryOf(::ImportPlaylistUseCase)
+    factoryOf(::ImportPlaylistFromFileUseCase)
 }
 
 val networkModule = module {
@@ -43,9 +45,10 @@ val databaseModule = module {
 }
 
 /**
- * Platform-specific module that provides platform dependencies
- * Android: provides AppDatabase with Context
- * iOS: provides AppDatabase with file path
+ * Platform-specific module that provides platform dependencies:
+ * - AppDatabase (Android: with Context, iOS: with file path)
+ * - FilePicker (Android: ActivityResultLauncher, iOS: UIDocumentPickerViewController)
+ * - FileReader (Android: ContentResolver, iOS: FileManager)
  */
 expect fun platformModule(): Module
 

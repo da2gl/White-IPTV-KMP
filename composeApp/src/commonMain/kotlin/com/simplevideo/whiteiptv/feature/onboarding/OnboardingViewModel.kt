@@ -3,6 +3,7 @@ package com.simplevideo.whiteiptv.feature.onboarding
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.exception.PlaylistException
+import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistFromFileUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
@@ -10,7 +11,8 @@ import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
-    private val importPlaylistUseCase: ImportPlaylistUseCase,
+    private val importPlaylist: ImportPlaylistUseCase,
+    private val importPlaylistFromFile: ImportPlaylistFromFileUseCase,
 ) : BaseViewModel<OnboardingState, OnboardingAction, OnboardingEvent>(
     initialState = OnboardingState(),
 ) {
@@ -44,6 +46,25 @@ class OnboardingViewModel(
             playlistUrl = "",
             error = null,
         )
+        importPlaylistFromFile(fileUri, fileName)
+    }
+
+    private fun importPlaylistFromFile(fileUri: String, fileName: String) {
+        viewModelScope.launch {
+            viewState = viewState.copy(isLoading = true, error = null)
+            runCatching {
+                importPlaylistFromFile.invoke(fileUri, fileName)
+            }.onSuccess {
+                viewState = viewState.copy(isLoading = false)
+                viewAction = OnboardingAction.NavigateToMain
+            }.onFailure { e ->
+                val errorMessage = when (e) {
+                    is PlaylistException -> e.message ?: "Unknown error occurred"
+                    else -> "Unexpected error: ${e.message ?: "Unknown error"}"
+                }
+                viewState = viewState.copy(isLoading = false, error = errorMessage)
+            }
+        }
     }
 
     private fun handleImportPlaylist() {
@@ -51,25 +72,23 @@ class OnboardingViewModel(
             importPlaylistFromUrl(viewState.playlistUrl)
         } else {
             viewState = viewState.copy(error = "Please enter a playlist URL or choose a file")
-            viewAction = OnboardingAction.ShowError("Please enter a playlist URL or choose a file")
         }
     }
 
     private fun importPlaylistFromUrl(url: String) {
         viewModelScope.launch {
             viewState = viewState.copy(isLoading = true, error = null)
-            try {
-                importPlaylistUseCase(url)
+            runCatching {
+                importPlaylist(url)
+            }.onSuccess {
                 viewState = viewState.copy(isLoading = false)
                 viewAction = OnboardingAction.NavigateToMain
-            } catch (e: PlaylistException) {
-                val errorMessage = e.message ?: "Unknown error occurred"
+            }.onFailure { e ->
+                val errorMessage = when (e) {
+                    is PlaylistException -> e.message ?: "Unknown error occurred"
+                    else -> "Unexpected error: ${e.message ?: "Unknown error"}"
+                }
                 viewState = viewState.copy(isLoading = false, error = errorMessage)
-                viewAction = OnboardingAction.ShowError(errorMessage)
-            } catch (e: Exception) {
-                val errorMessage = "Unexpected error: ${e.message ?: "Unknown error"}"
-                viewState = viewState.copy(isLoading = false, error = errorMessage)
-                viewAction = OnboardingAction.ShowError(errorMessage)
             }
         }
     }
@@ -80,7 +99,6 @@ class OnboardingViewModel(
     }
 
     private fun validatePlaylistUrl(url: String): Boolean {
-        if (url.isBlank()) return false
-        return url.startsWith("http://") || url.startsWith("https://")
+        return url.isNotBlank() && (url.startsWith("http://") || url.startsWith("https://"))
     }
 }

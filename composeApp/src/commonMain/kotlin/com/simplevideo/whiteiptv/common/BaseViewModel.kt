@@ -24,7 +24,7 @@ abstract class BaseViewModel<State : Any, Action, Event>(initialState: State) : 
             _viewActions.tryEmit(value)
         }
 
-    abstract fun obtainEvent(viewEvent: Event)
+    open fun obtainEvent(viewEvent: Event) {}
 
     fun clearAction() {
         viewAction = null

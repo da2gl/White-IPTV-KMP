@@ -16,6 +16,7 @@ import com.simplevideo.whiteiptv.designsystem.AppTypography
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
+import com.simplevideo.whiteiptv.platform.rememberFilePicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -27,6 +28,7 @@ fun OnboardingScreen(
     onNavigateToMain: () -> Unit,
 ) {
     val viewModel = koinViewModel<OnboardingViewModel>()
+    val filePicker = rememberFilePicker()
     val state by viewModel.viewStates().collectAsStateWithLifecycle()
     val action by viewModel.viewActions().collectAsStateWithLifecycle(initialValue = null)
 
@@ -38,20 +40,13 @@ fun OnboardingScreen(
             }
 
             is OnboardingAction.ShowFilePicker -> {
-                // TODO: Show platform-specific file picker
+                filePicker.pickFile { uri, fileName ->
+                    viewModel.obtainEvent(OnboardingEvent.FileSelected(fileName, uri))
+                }
                 viewModel.clearAction()
             }
 
-            is OnboardingAction.ShowError -> {
-                viewModel.clearAction()
-            }
-
-            is OnboardingAction.ShowSuccess -> {
-                viewModel.clearAction()
-            }
-
-            null -> { /* No action */
-            }
+            else -> Unit
         }
     }
 
