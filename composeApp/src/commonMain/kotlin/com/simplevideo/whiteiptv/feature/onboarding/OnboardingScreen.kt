@@ -43,12 +43,10 @@ fun OnboardingScreen(
             }
 
             is OnboardingAction.ShowError -> {
-                // Error is shown in UI via state.error
                 viewModel.clearAction()
             }
 
             is OnboardingAction.ShowSuccess -> {
-                // TODO: Show success snackbar or animation
                 viewModel.clearAction()
             }
 

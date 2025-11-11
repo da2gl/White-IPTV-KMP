@@ -2,14 +2,15 @@ package com.simplevideo.whiteiptv.feature.onboarding
 
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.domain.exception.PlaylistException
+import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
 import kotlinx.coroutines.launch
 
 class OnboardingViewModel(
-    private val playlistRepository: PlaylistRepository
+    private val importPlaylistUseCase: ImportPlaylistUseCase,
 ) : BaseViewModel<OnboardingState, OnboardingAction, OnboardingEvent>(
     initialState = OnboardingState(),
 ) {
@@ -21,7 +22,6 @@ class OnboardingViewModel(
             is OnboardingEvent.FileSelected -> handleFileSelected(viewEvent.fileName, viewEvent.fileUri)
             is OnboardingEvent.ImportPlaylist -> handleImportPlaylist()
             is OnboardingEvent.UseDemoPlaylist -> handleUseDemoPlaylist()
-            is OnboardingEvent.DismissError -> handleDismissError()
         }
     }
 
@@ -39,11 +39,9 @@ class OnboardingViewModel(
     }
 
     private fun handleFileSelected(fileName: String, fileUri: String) {
-        // TODO: Validate file format
-        // TODO: Store file URI for import
         viewState = viewState.copy(
             playlistFileName = fileName,
-            playlistUrl = "", // Clear URL when file is selected
+            playlistUrl = "",
             error = null,
         )
     }
@@ -61,27 +59,24 @@ class OnboardingViewModel(
         viewModelScope.launch {
             viewState = viewState.copy(isLoading = true, error = null)
             try {
-                playlistRepository.importPlaylistFromUrl(url)
+                importPlaylistUseCase(url)
+                viewState = viewState.copy(isLoading = false)
                 viewAction = OnboardingAction.NavigateToMain
+            } catch (e: PlaylistException) {
+                val errorMessage = e.message ?: "Unknown error occurred"
+                viewState = viewState.copy(isLoading = false, error = errorMessage)
+                viewAction = OnboardingAction.ShowError(errorMessage)
             } catch (e: Exception) {
-                viewState = viewState.copy(isLoading = false, error = "Failed to import playlist")
+                val errorMessage = "Unexpected error: ${e.message ?: "Unknown error"}"
+                viewState = viewState.copy(isLoading = false, error = errorMessage)
+                viewAction = OnboardingAction.ShowError(errorMessage)
             }
         }
     }
 
     private fun handleUseDemoPlaylist() {
-        // TODO: Load demo playlist
-        // TODO: Save demo playlist to database
-        // TODO: Navigate to main screen
-
         viewState = viewState.copy(isLoading = true, error = null)
-
-        // TODO: Actual demo playlist loading
-        // viewAction = OnboardingAction.NavigateToMain
-    }
-
-    private fun handleDismissError() {
-        viewState = viewState.copy(error = null)
+        // TODO: Implement demo playlist loading
     }
 
     private fun validatePlaylistUrl(url: String): Boolean {
