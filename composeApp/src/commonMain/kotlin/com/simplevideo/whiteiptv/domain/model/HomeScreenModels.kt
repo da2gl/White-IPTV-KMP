@@ -6,9 +6,3 @@ data class ContinueWatchingItem(
     val progress: Float,
     val timeLeft: String
 )
-
-data class Channel(
-    val name: String,
-    val imageUrl: String,
-    val isLive: Boolean = false
-)

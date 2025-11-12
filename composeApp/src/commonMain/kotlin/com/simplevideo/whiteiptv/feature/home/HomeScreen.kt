@@ -14,8 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.simplevideo.whiteiptv.domain.model.Channel
 import com.simplevideo.whiteiptv.domain.model.ContinueWatchingItem
+import com.simplevideo.whiteiptv.domain.repository.FIXMEChannel
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -86,7 +86,7 @@ private fun HomeContent(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(state.favoriteChannels) { channel ->
+                items(state.favoriteFIXMEChannels) { channel ->
                     ChannelItem(channel)
                 }
             }
@@ -98,7 +98,7 @@ private fun HomeContent(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(state.sportsChannels) { channel ->
+                items(state.sportsFIXMEChannels) { channel ->
                     ChannelItem(channel)
                 }
             }
@@ -137,17 +137,17 @@ private fun ContinueWatchingItem(item: ContinueWatchingItem) {
 }
 
 @Composable
-private fun ChannelItem(channel: Channel) {
+private fun ChannelItem(FIXMEChannel: FIXMEChannel) {
     Card(modifier = Modifier.width(150.dp)) {
-        Column {
-            // TODO: Replace with an async image loading library
-            Box(modifier = Modifier.height(100.dp).fillMaxWidth().background(Color.Gray))
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(channel.name, style = MaterialTheme.typography.bodyMedium)
-                if (channel.isLive) {
-                    Text("LIVE", style = MaterialTheme.typography.bodySmall, color = Color.Red)
-                }
-            }
-        }
+//        Column {
+//            // TODO: Replace with an async image loading library
+//            Box(modifier = Modifier.height(100.dp).fillMaxWidth().background(Color.Gray))
+//            Column(modifier = Modifier.padding(8.dp)) {
+//                Text(channel.name, style = MaterialTheme.typography.bodyMedium)
+//                if (channel.isLive) {
+//                    Text("LIVE", style = MaterialTheme.typography.bodySmall, color = Color.Red)
+//                }
+//            }
+//        }
     }
 }
