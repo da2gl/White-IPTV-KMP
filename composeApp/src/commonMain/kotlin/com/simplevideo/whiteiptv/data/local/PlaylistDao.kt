@@ -37,6 +37,18 @@ interface PlaylistDao {
     @Query("SELECT COUNT(*) FROM playlists")
     suspend fun getPlaylistCount(): Int
 
+    @Query("SELECT * FROM channels WHERE isFavorite = 1")
+    fun getFavoriteChannels(): Flow<List<ChannelEntity>>
+
+    @Query(
+        """
+        UPDATE channels
+        SET isFavorite = NOT isFavorite
+        WHERE id = :channelId
+        """
+    )
+    suspend fun toggleFavoriteStatus(channelId: Long)
+
     @Query("DELETE FROM channels WHERE playlistId = :playlistId")
     suspend fun deleteChannelsByPlaylistId(playlistId: Long)
 

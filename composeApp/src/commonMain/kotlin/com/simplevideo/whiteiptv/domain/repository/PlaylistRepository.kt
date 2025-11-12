@@ -21,4 +21,7 @@ interface PlaylistRepository {
     suspend fun getChannelsList(playlistId: Long): List<ChannelEntity>
     suspend fun insertChannels(channels: List<ChannelEntity>)
     suspend fun deleteChannelsByPlaylistId(playlistId: Long)
+
+    fun getFavoriteChannels(): Flow<List<ChannelEntity>>
+    suspend fun toggleFavoriteStatus(channelId: Long)
 }

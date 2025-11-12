@@ -26,6 +26,8 @@ val viewModelModule = module {
     viewModelOf(::SplashViewModel)
     viewModelOf(::OnboardingViewModel)
     viewModelOf(::ChannelsViewModel)
+    viewModelOf(::HomeViewModel)
+    viewModelOf(::FavoritesViewModel)
 }
 
 val repositoryModule = module {
@@ -43,6 +45,12 @@ val useCaseModule = module {
     factoryOf(::GetChannelsUseCase)
     factoryOf(::GetChannelCategoriesUseCase)
     factoryOf(::ToggleFavoriteStatusUseCase)
+    factoryOf(::GetContinueWatchingUseCase)
+    factoryOf(::GetFavoritesUseCase)
+    factoryOf(::GetSportsUseCase)
+    factoryOf(::GetFavoriteChannelsUseCase)
+    factoryOf(::GetFavoriteChannelCategoriesUseCase)
+    factoryOf(::ToggleFavoriteUseCase)
 }
 
 val networkModule = module {

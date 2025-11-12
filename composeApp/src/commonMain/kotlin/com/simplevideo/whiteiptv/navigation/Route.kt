@@ -6,9 +6,6 @@ import kotlinx.serialization.Serializable
  * Navigation routes for WhiteIPTV app
  *
  * Using Kotlin Serialization for type-safe navigation
- *
- * TODO: Add routes for other features as they are implemented
- * TODO: Add route parameters (e.g., channelId, playlistId) when needed
  */
 
 /**
@@ -30,41 +27,37 @@ sealed class Route {
 
     /**
      * Main app screen with bottom navigation
-     *
-     * TODO: Implement main app navigation
      */
     @Serializable
     data object Main : Route()
 
     /**
-     * Home screen
-     *
-     * TODO: Implement when creating home feature
+     * Main screen tabs
      */
     @Serializable
-    data object Home : Route()
+    sealed class MainTab {
+        /**
+         * Home screen
+         */
+        @Serializable
+        data object Home : MainTab()
 
-    /**
-     * All channels screen
-     *
-     * TODO: Implement when creating channels feature
-     */
-    @Serializable
-    data object AllChannels : Route()
+        /**
+         * Favorites screen
+         */
+        @Serializable
+        data object Favorites : MainTab()
 
-    /**
-     * Favorites screen
-     *
-     * TODO: Implement when creating favorites feature
-     */
-    @Serializable
-    data object Favorites : Route()
+        /**
+         * Channels screen
+         */
+        @Serializable
+        data object Channels : MainTab()
 
-    /**
-     * Settings screen
-     *
-     * TODO: Implement when creating settings feature
-     */
-    @Serializable
-    data object Settings : Route()
+        /**
+         * Settings screen
+         */
+        @Serializable
+        data object Settings : MainTab()
+    }
 }

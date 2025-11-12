@@ -42,7 +42,6 @@ val DarkOnError = Color(0xFF601410)
 val DarkErrorContainer = Color(0xFF8C1D18)
 val DarkOnErrorContainer = Color(0xFFF9DEDC)
 
-
 val AppLightColorScheme = lightColorScheme(
     primary = Primary,
     onPrimary = OnPrimary,
