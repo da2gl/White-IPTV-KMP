@@ -1,16 +1,25 @@
 package com.simplevideo.whiteiptv.feature.main
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.*
-import com.simplevideo.whiteiptv.feature.categories.CategoriesScreen
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
 import com.simplevideo.whiteiptv.feature.home.HomeScreen
 import com.simplevideo.whiteiptv.feature.settings.SettingsScreen
-import com.simplevideo.whiteiptv.navigation.Route
+import com.simplevideo.whiteiptv.navigation.Route.MainTab
 
 @Composable
 fun MainScreen() {
@@ -28,19 +37,19 @@ fun MainScreen() {
                         popUpTo(navController.graph.startDestinationId)
                         launchSingleTop = true
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Route.Main.Home,
-            modifier = Modifier.padding(paddingValues)
+            startDestination = MainTab.Home,
+            modifier = Modifier.padding(paddingValues),
         ) {
-            composable<Route.Main.Home> { HomeScreen() }
-            composable<Route.Main.Favorites> { FavoritesScreen() }
-            composable<Route.Main.Categories> { CategoriesScreen() }
-            composable<Route.Main.Settings> { SettingsScreen() }
+            composable<MainTab.Home> { HomeScreen() }
+            composable<MainTab.Favorites> { FavoritesScreen() }
+            composable<MainTab.Channels> { ChannelsScreen() }
+            composable<MainTab.Settings> { SettingsScreen() }
         }
     }
 }
@@ -49,7 +58,7 @@ fun MainScreen() {
 private fun BottomNavigationBar(
     items: List<BottomNavItem>,
     currentRoute: String?,
-    onItemClick: (Route.Main) -> Unit
+    onItemClick: (MainTab) -> Unit,
 ) {
     NavigationBar {
         items.forEach { item ->
@@ -57,7 +66,7 @@ private fun BottomNavigationBar(
                 selected = currentRoute == item.route::class.qualifiedName,
                 onClick = { onItemClick(item.route) },
                 icon = { Icon(item.icon, contentDescription = item.title) },
-                label = { Text(item.title) }
+                label = { Text(item.title) },
             )
         }
     }
@@ -67,27 +76,27 @@ private val bottomNavItems = listOf(
     BottomNavItem(
         title = "Home",
         icon = Icons.Default.Home,
-        route = Route.Main.Home
+        route = MainTab.Home,
     ),
     BottomNavItem(
         title = "Favorites",
         icon = Icons.Default.Favorite,
-        route = Route.Main.Favorites
+        route = MainTab.Favorites,
     ),
     BottomNavItem(
-        title = "Categories",
-        icon = Icons.Default.Category,
-        route = Route.Main.Categories
+        title = "Channels",
+        icon = Icons.Default.Tv,
+        route = MainTab.Channels,
     ),
     BottomNavItem(
         title = "Settings",
         icon = Icons.Default.Settings,
-        route = Route.Main.Settings
-    )
+        route = MainTab.Settings,
+    ),
 )
 
 private data class BottomNavItem(
     val title: String,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector,
-    val route: Route.Main
+    val icon: ImageVector,
+    val route: MainTab,
 )

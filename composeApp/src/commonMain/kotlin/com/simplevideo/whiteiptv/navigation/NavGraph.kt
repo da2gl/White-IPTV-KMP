@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.simplevideo.whiteiptv.feature.main.MainScreen
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
 import com.simplevideo.whiteiptv.feature.splash.SplashScreen
 
@@ -12,10 +13,6 @@ import com.simplevideo.whiteiptv.feature.splash.SplashScreen
  * Main navigation graph for WhiteIPTV app
  *
  * Sets up the navigation structure with splash as the initial destination
- *
- * TODO: Add main app navigation when features are implemented
- * TODO: Implement navigation animations/transitions
- * TODO: Handle deep links if needed
  */
 @Composable
 fun AppNavGraph(

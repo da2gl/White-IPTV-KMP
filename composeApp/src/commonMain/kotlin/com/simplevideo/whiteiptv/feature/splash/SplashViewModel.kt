@@ -19,7 +19,7 @@ class SplashViewModel(
 ) {
     init {
         viewModelScope.launch {
-            val targetRoute = if (playlistRepository.hasPlaylist()) Route.Main else Route.Onboarding
+            val targetRoute: Route = if (playlistRepository.hasPlaylist()) Route.Main else Route.Onboarding
             viewState = viewState.copy(isLoading = false)
             viewAction = SplashAction.Navigate(targetRoute)
         }
