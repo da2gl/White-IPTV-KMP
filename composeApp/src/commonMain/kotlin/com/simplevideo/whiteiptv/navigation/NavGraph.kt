@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
 import com.simplevideo.whiteiptv.feature.splash.SplashScreen
 
@@ -50,8 +51,7 @@ fun AppNavGraph(
 
         // Main app screen
         composable<Route.Main> {
-            // TODO: Implement main app screen with bottom navigation
-            // This will contain Home, AllChannels, Favorites, Settings tabs
+            ChannelsScreen()
         }
     }
 }
