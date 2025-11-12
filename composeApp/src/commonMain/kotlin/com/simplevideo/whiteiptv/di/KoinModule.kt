@@ -8,6 +8,7 @@ import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
+import com.simplevideo.whiteiptv.feature.settings.SettingsViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -19,6 +20,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModelOf(::SplashViewModel)
     viewModelOf(::OnboardingViewModel)
+    viewModelOf(::SettingsViewModel)
 }
 
 val repositoryModule = module {
