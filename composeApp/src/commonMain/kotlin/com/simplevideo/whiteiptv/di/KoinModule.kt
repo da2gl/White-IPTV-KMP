@@ -7,9 +7,13 @@ import com.simplevideo.whiteiptv.data.network.HttpClientFactory
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetFavoriteChannelCategoriesUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetFavoriteChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetSportsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
+import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
+import com.simplevideo.whiteiptv.feature.favorites.FavoritesViewModel
 import com.simplevideo.whiteiptv.feature.home.HomeViewModel
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
@@ -24,6 +28,7 @@ val viewModelModule = module {
     viewModelOf(::SplashViewModel)
     viewModelOf(::OnboardingViewModel)
     viewModelOf(::HomeViewModel)
+    viewModelOf(::FavoritesViewModel)
 }
 
 val repositoryModule = module {
@@ -40,6 +45,9 @@ val useCaseModule = module {
     factoryOf(::GetContinueWatchingUseCase)
     factoryOf(::GetFavoritesUseCase)
     factoryOf(::GetSportsUseCase)
+    factoryOf(::GetFavoriteChannelsUseCase)
+    factoryOf(::GetFavoriteChannelCategoriesUseCase)
+    factoryOf(::ToggleFavoriteUseCase)
 }
 
 val networkModule = module {

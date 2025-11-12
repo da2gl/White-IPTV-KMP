@@ -8,7 +8,7 @@ data class HomeState(
     val favoriteChannels: List<Channel> = emptyList(),
     val sportsChannels: List<Channel> = emptyList(),
     val isLoading: Boolean = true,
-    val error: String? = null
+    val error: String? = null,
 )
 
 sealed interface HomeEvent {

@@ -102,30 +102,12 @@ The project uses multiple lint tools to ensure code quality and consistency acro
 - Configuration: `config/detekt/detekt.yml`
 - Version: 1.23.8
 
-**Compose Lint** - Compose-specific checks:
-
-- Android Lint rules for Jetpack Compose
-- Slack compose-lint-checks 1.4.2
-- Configuration: `composeApp/lint.xml`
-
 ### Commands
 
-**Run all lint checks:**
-
-```bash
-./gradlew lintAll
-```
-
-**Format all Kotlin code:**
+**Format all Kotlin code and auto-fix issues (including unused imports):**
 
 ```bash
 ./gradlew formatAll
-```
-
-**Auto-fix what's possible:**
-
-```bash
-./gradlew lintFix
 ```
 
 **Individual tools:**
@@ -137,10 +119,8 @@ The project uses multiple lint tools to ensure code quality and consistency acro
 
 # Detekt
 ./gradlew detekt             # Run static analysis
+./gradlew detektFormat       # Auto-fix issues (unused imports, etc.)
 ./gradlew detektBaseline     # Create baseline for existing issues
-
-# Android Lint
-./gradlew :composeApp:lint   # Run Android lint checks
 ```
 
 ### Git Hooks
@@ -167,7 +147,6 @@ git commit --no-verify
 
 - `.editorconfig` - Code style settings (120 char line length, trailing commas, etc.)
 - `config/detekt/detekt.yml` - Detekt rules configuration
-- `composeApp/lint.xml` - Compose-specific lint rules
 - `.git-hooks/pre-commit` - Pre-commit hook script
 
 ### Baseline Files

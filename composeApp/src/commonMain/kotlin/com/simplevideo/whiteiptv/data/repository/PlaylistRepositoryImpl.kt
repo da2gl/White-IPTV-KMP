@@ -59,4 +59,12 @@ class PlaylistRepositoryImpl(
     override suspend fun deleteChannelsByPlaylistId(playlistId: Long) {
         playlistDao.deleteChannelsByPlaylistId(playlistId)
     }
+
+    override fun getFavoriteChannels(): Flow<List<ChannelEntity>> {
+        return playlistDao.getFavoriteChannels()
+    }
+
+    override suspend fun toggleFavoriteStatus(channelId: Long) {
+        playlistDao.toggleFavoriteStatus(channelId)
+    }
 }

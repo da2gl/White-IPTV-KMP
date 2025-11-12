@@ -1,6 +1,5 @@
 package com.simplevideo.whiteiptv.feature.home
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 class HomeViewModel(
     private val getContinueWatchingUseCase: GetContinueWatchingUseCase,
     private val getFavoritesUseCase: GetFavoritesUseCase,
-    private val getSportsUseCase: GetSportsUseCase
+    private val getSportsUseCase: GetSportsUseCase,
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialState = HomeState()) {
 
     init {
@@ -32,7 +31,7 @@ class HomeViewModel(
                     continueWatchingItems = continueWatchingItems,
                     favoriteChannels = favoriteChannels,
                     sportsChannels = sportsChannels,
-                    isLoading = false
+                    isLoading = false,
                 )
             } catch (e: Exception) {
                 viewState = viewState.copy(error = e.message, isLoading = false)
