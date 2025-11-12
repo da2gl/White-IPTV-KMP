@@ -128,7 +128,6 @@ private fun EmptyState() {
     }
 }
 
-
 @Composable
 private fun ChannelsGrid(
     state: FavoritesState,

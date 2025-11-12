@@ -62,5 +62,3 @@ private fun SplashScreenContent(modifier: Modifier = Modifier) {
 private fun SplashScreenPreview() {
     SplashScreenContent()
 }
-
-

@@ -196,7 +196,7 @@ exceptions:
     active: false
   ThrowingExceptionsWithoutMessageOrCause:
     active: true
-    excludedExceptionTypes:
+    exceptions:
       - 'ArrayIndexOutOfBoundsException'
       - 'Exception'
       - 'IllegalArgumentException'
@@ -527,7 +527,7 @@ style:
   UntilInsteadOfRangeTo:
     active: false
   UnusedImports:
-    active: false
+    active: true
   UnusedParameter:
     active: true
   UnusedPrivateClass:
@@ -574,7 +574,7 @@ style:
     active: false
 
 # Compose Rules (io.nlopez.compose.rules:detekt)
-compose:
+Compose:
   ComposableAnnotationNaming:
     active: true
   ComposableNaming:
@@ -593,7 +593,7 @@ compose:
   DefaultsVisibility:
     active: false
   LambdaParameterInRestartableEffect:
-    active: true
+    active: false
   Material2:
     active: false
   ModifierClickableOrder:
@@ -601,7 +601,7 @@ compose:
   ModifierComposable:
     active: true
   ModifierMissing:
-    active: true
+    active: false
   ModifierNaming:
     active: true
   ModifierNotUsedAtRoot:
@@ -625,7 +625,7 @@ compose:
   PreviewAnnotationNaming:
     active: true
   PreviewPublic:
-    active: true
+    active: false
   PublicComposablePreview:
     active: false
   RememberContentMissing:

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class GetFavoriteChannelCategoriesUseCase(
-    private val playlistRepository: PlaylistRepository
+    private val playlistRepository: PlaylistRepository,
 ) {
     operator fun invoke(): Flow<List<String>> {
         return playlistRepository.getFavoriteChannels().map { channels ->

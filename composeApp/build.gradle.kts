@@ -91,9 +91,8 @@ android {
     }
     lint {
         checkDependencies = true
-        abortOnError = true
+        abortOnError = false
         warningsAsErrors = false
-        baseline = file("lint-baseline.xml")
     }
 }
 

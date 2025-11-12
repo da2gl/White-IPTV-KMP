@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
@@ -47,21 +49,19 @@ ktlint {
     }
 }
 
-// Common tasks for all lint and format operations
-tasks.register("lintAll") {
-    group = "verification"
-    description = "Run all lint checks (ktlint + detekt)"
-    dependsOn("ktlintCheck", "detekt")
+// Configure detekt to auto-fix issues when running formatAll
+tasks.register<Detekt>("detektFormat") {
+    description = "Auto-fix code issues (including unused imports)"
+    jvmTarget = "11"
+    setSource(files("composeApp/src"))
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+    autoCorrect = true
+    ignoreFailures = true
 }
 
 tasks.register("formatAll") {
     group = "formatting"
-    description = "Format all Kotlin code with ktlint"
-    dependsOn("ktlintFormat")
-}
-
-tasks.register("lintFix") {
-    group = "verification"
-    description = "Auto-fix lint issues where possible"
-    dependsOn("ktlintFormat", "detekt")
+    description = "Format all Kotlin code with ktlint and auto-fix detekt issues (including unused imports)"
+    dependsOn("ktlintFormat", "detektFormat")
 }

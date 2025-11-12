@@ -24,9 +24,9 @@ private class IOSFilePicker : FilePicker {
 
     override fun pickFile(onFileSelected: (uri: String, fileName: String) -> Unit) {
         val documentTypes = listOf(
-            "public.audio",              // Audio files including .m3u
-            "public.text",               // Text files
-            "public.item",               // All files
+            "public.audio", // Audio files including .m3u
+            "public.text", // Text files
+            "public.item", // All files
         )
 
         val picker = UIDocumentPickerViewController(

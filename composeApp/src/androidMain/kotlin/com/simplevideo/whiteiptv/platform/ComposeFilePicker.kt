@@ -41,10 +41,10 @@ actual fun rememberFilePicker(): FilePicker {
                     putExtra(
                         Intent.EXTRA_MIME_TYPES,
                         arrayOf(
-                            "audio/x-mpegurl",      // .m3u
+                            "audio/x-mpegurl", // .m3u
                             "application/x-mpegurl", // .m3u
                             "application/vnd.apple.mpegurl", // .m3u8
-                            "text/plain",            // .m3u as text
+                            "text/plain", // .m3u as text
                         ),
                     )
                 }
