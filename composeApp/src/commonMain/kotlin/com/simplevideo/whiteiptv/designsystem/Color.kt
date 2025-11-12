@@ -11,6 +11,15 @@ val OnPrimary = Color.White
 val OnBackgroundLight = Color(0xFF101c22)
 val OnBackgroundDark = Color(0xFFf6f7f8)
 
+// Slate color variants for text hierarchy and borders (matching Tailwind slate scale)
+val Slate200 = Color(0xFFe2e8f0)
+val Slate300 = Color(0xFFcbd5e1)
+val Slate400 = Color(0xFF94a3b8)
+val Slate500 = Color(0xFF64748b)
+val Slate600 = Color(0xFF475569)
+val Slate700 = Color(0xFF334155)
+val Slate800 = Color(0xFF1e293b)
+
 // Keeping other colors from the original file for a complete theme
 val LightPrimaryContainer = Color(0xFFEADDFF)
 val LightOnPrimaryContainer = Color(0xFF21005D)
@@ -49,6 +58,9 @@ val AppLightColorScheme = lightColorScheme(
     surface = BackgroundLight,
     onBackground = OnBackgroundLight,
     onSurface = OnBackgroundLight,
+    onSurfaceVariant = Slate600,
+    outline = Slate300,
+    surfaceVariant = Slate200,
     primaryContainer = LightPrimaryContainer,
     onPrimaryContainer = LightOnPrimaryContainer,
     secondary = LightSecondary,
@@ -72,6 +84,9 @@ val AppDarkColorScheme = darkColorScheme(
     surface = BackgroundDark,
     onBackground = OnBackgroundDark,
     onSurface = OnBackgroundDark,
+    onSurfaceVariant = Slate400,
+    outline = Slate700,
+    surfaceVariant = Slate800,
     primaryContainer = DarkPrimaryContainer,
     onPrimaryContainer = DarkOnPrimaryContainer,
     secondary = DarkSecondary,

@@ -1,12 +1,12 @@
 package com.simplevideo.whiteiptv.feature.home.mvi
 
+import com.simplevideo.whiteiptv.data.parser.playlist.model.Channel
 import com.simplevideo.whiteiptv.domain.model.ContinueWatchingItem
-import com.simplevideo.whiteiptv.domain.repository.FIXMEChannel
 
 data class HomeState(
     val continueWatchingItems: List<ContinueWatchingItem> = emptyList(),
-    val favoriteFIXMEChannels: List<FIXMEChannel> = emptyList(),
-    val sportsFIXMEChannels: List<FIXMEChannel> = emptyList(),
+    val favoriteChannels: List<Channel> = emptyList(),
+    val sportsChannels: List<Channel> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
 )

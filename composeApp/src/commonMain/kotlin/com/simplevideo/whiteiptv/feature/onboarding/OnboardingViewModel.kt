@@ -27,10 +27,9 @@ class OnboardingViewModel(
     }
 
     private fun handleEnterPlaylistUrl(url: String) {
-        val isValid = validatePlaylistUrl(url)
         viewState = viewState.copy(
             playlistUrl = url,
-            isValidUrl = isValid,
+            isValidUrl = validatePlaylistUrl(url),
             error = null,
         )
     }
@@ -49,11 +48,11 @@ class OnboardingViewModel(
     }
 
     private fun handleImportPlaylist() {
-        if (viewState.playlistUrl.isNotBlank()) {
-            importPlaylistFromSource(PlaylistSource.Url(url = viewState.playlistUrl))
-        } else {
-            viewState = viewState.copy(error = "Please enter a playlist URL or choose a file")
-        }
+        importPlaylistFromSource(PlaylistSource.Url(url = viewState.playlistUrl))
+    }
+
+    private fun handleUseDemoPlaylist() {
+        importPlaylistFromSource(PlaylistSource.Url(url = "https://iptv-org.github.io/iptv/index.m3u"))
     }
 
     private fun importPlaylistFromSource(source: PlaylistSource) {
@@ -72,11 +71,6 @@ class OnboardingViewModel(
                 viewState = viewState.copy(isLoading = false, error = errorMessage)
             }
         }
-    }
-
-    private fun handleUseDemoPlaylist() {
-        viewState = viewState.copy(isLoading = true, error = null)
-        // TODO: Implement demo playlist loading
     }
 
     private fun validatePlaylistUrl(url: String): Boolean {

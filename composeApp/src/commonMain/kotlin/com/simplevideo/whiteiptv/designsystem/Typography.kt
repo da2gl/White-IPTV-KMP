@@ -39,10 +39,10 @@ val AppTypography = Typography(
     // Headline styles
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
         lineHeight = 40.sp,
-        letterSpacing = 0.sp,
+        letterSpacing = (-0.32).sp,
     ),
     headlineMedium = TextStyle(
         fontFamily = FontFamily.Default,
@@ -53,10 +53,10 @@ val AppTypography = Typography(
     ),
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 32.sp,
-        letterSpacing = 0.sp,
+        letterSpacing = (-0.24).sp,
     ),
 
     // Title styles

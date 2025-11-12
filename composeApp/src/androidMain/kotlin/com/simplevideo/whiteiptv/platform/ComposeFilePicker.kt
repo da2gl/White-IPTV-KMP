@@ -1,61 +1,54 @@
 package com.simplevideo.whiteiptv.platform
 
-import android.app.Activity
-import android.content.Intent
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
 /**
  * Android Compose implementation of FilePicker
  * Uses rememberLauncherForActivityResult with SAF (Storage Access Framework)
+ * and specialized OpenDocument contract for type-safe file picking
  */
 @Composable
 actual fun rememberFilePicker(): FilePicker {
     val context = LocalContext.current
 
-    var currentCallback by remember { mutableStateOf<((uri: String, fileName: String) -> Unit)?>(null) }
+    val callbackHolder = remember { CallbackHolder() }
 
     val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            result.data?.data?.let { uri ->
-                val fileName = getFileName(context, uri)
-                currentCallback?.invoke(uri.toString(), fileName)
-                currentCallback = null
-            }
+        contract = ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        uri?.let {
+            val fileName = getFileName(context, it)
+            callbackHolder.callback?.invoke(it.toString(), fileName)
         }
     }
 
     return remember {
         object : FilePicker {
             override fun pickFile(onFileSelected: (uri: String, fileName: String) -> Unit) {
-                currentCallback = onFileSelected
+                callbackHolder.callback = onFileSelected
 
-                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                    addCategory(Intent.CATEGORY_OPENABLE)
-                    type = "*/*"
-                    putExtra(
-                        Intent.EXTRA_MIME_TYPES,
-                        arrayOf(
-                            "audio/x-mpegurl", // .m3u
-                            "application/x-mpegurl", // .m3u
-                            "application/vnd.apple.mpegurl", // .m3u8
-                            "text/plain", // .m3u as text
-                        ),
-                    )
-                }
-
-                launcher.launch(intent)
+                launcher.launch(
+                    arrayOf(
+                        "audio/x-mpegurl", // .m3u
+                        "application/x-mpegurl", // .m3u
+                        "application/vnd.apple.mpegurl", // .m3u8
+                        "text/plain", // .m3u as text
+                    ),
+                )
             }
         }
     }
 }
 
-private fun getFileName(context: android.content.Context, uri: Uri): String {
+private class CallbackHolder(var callback: ((uri: String, fileName: String) -> Unit)? = null)
+
+private fun getFileName(context: Context, uri: Uri): String {
     var fileName = "playlist.m3u"
 
     context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
