@@ -6,7 +6,11 @@ import com.simplevideo.whiteiptv.data.mapper.PlaylistMapper
 import com.simplevideo.whiteiptv.data.network.HttpClientFactory
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetSportsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
+import com.simplevideo.whiteiptv.feature.home.HomeViewModel
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
 import org.koin.core.module.Module
@@ -19,6 +23,7 @@ import org.koin.dsl.module
 val viewModelModule = module {
     viewModelOf(::SplashViewModel)
     viewModelOf(::OnboardingViewModel)
+    viewModelOf(::HomeViewModel)
 }
 
 val repositoryModule = module {
@@ -32,6 +37,9 @@ val mapperModule = module {
 
 val useCaseModule = module {
     factoryOf(::ImportPlaylistUseCase)
+    factoryOf(::GetContinueWatchingUseCase)
+    factoryOf(::GetFavoritesUseCase)
+    factoryOf(::GetSportsUseCase)
 }
 
 val networkModule = module {
