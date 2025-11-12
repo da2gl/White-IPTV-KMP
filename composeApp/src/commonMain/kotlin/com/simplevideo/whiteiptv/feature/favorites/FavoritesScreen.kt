@@ -8,6 +8,9 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,19 +22,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesEvent
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesState
-import org.jetbrains.compose.resources.painterResource
-import whiteiptvkmp.composeapp.generated.resources.Res
-import whiteiptvkmp.composeapp.generated.resources.ic_search
-import whiteiptvkmp.composeapp.generated.resources.ic_star
+import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesScreen(
-    viewModel: FavoritesViewModel
-) {
+fun FavoritesScreen() {
+    val viewModel = koinViewModel<FavoritesViewModel>()
     val state by viewModel.viewStates().collectAsState()
 
     Scaffold(
@@ -40,22 +40,22 @@ fun FavoritesScreen(
                 title = { Text("⭐ Favorites") },
                 actions = {
                     IconButton(onClick = { /* TODO: Search */ }) {
-                        Icon(painterResource(Res.drawable.ic_search), contentDescription = "Search")
+                        Icon(Icons.Default.Search, contentDescription = "Search")
                     }
-                }
+                },
             )
-        }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             FilterChips(state = state, onEvent = viewModel::obtainEvent)
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
                 }
@@ -71,17 +71,17 @@ fun FavoritesScreen(
 @Composable
 private fun FilterChips(
     state: FavoritesState,
-    onEvent: (FavoritesEvent) -> Unit
+    onEvent: (FavoritesEvent) -> Unit,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Button(
             onClick = { /* TODO: Playlist filter */ },
-            shape = RoundedCornerShape(50)
+            shape = RoundedCornerShape(50),
         ) {
             Text("Playlist: All")
         }
@@ -89,7 +89,7 @@ private fun FilterChips(
             FilterChip(
                 selected = state.selectedCategory == category,
                 onClick = { onEvent(FavoritesEvent.OnCategorySelected(category)) },
-                label = { Text(category) }
+                label = { Text(category) },
             )
         }
     }
@@ -99,30 +99,30 @@ private fun FilterChips(
 private fun EmptyState() {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         ) {
             Icon(
-                painter = painterResource(Res.drawable.ic_star),
+                imageVector = Icons.Default.Star,
                 contentDescription = null,
                 modifier = Modifier.size(72.dp),
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "You haven’t added any favorite channels yet",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Add channels to Favorites by tapping the ⭐ icon.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
             )
         }
     }
@@ -132,7 +132,7 @@ private fun EmptyState() {
 @Composable
 private fun ChannelsGrid(
     state: FavoritesState,
-    onEvent: (FavoritesEvent) -> Unit
+    onEvent: (FavoritesEvent) -> Unit,
 ) {
     val filteredChannels =
         if (state.selectedCategory != null) {
@@ -145,12 +145,12 @@ private fun ChannelsGrid(
         columns = GridCells.Adaptive(158.dp),
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(filteredChannels, key = { it.id }) { channel ->
             ChannelCard(
                 channel = channel,
-                onToggleFavorite = { onEvent(FavoritesEvent.OnToggleFavorite(channel.id)) }
+                onToggleFavorite = { onEvent(FavoritesEvent.OnToggleFavorite(channel.id)) },
             )
         }
     }
@@ -158,29 +158,29 @@ private fun ChannelsGrid(
 
 @Composable
 private fun ChannelCard(
-    channel: com.simplevideo.whiteiptv.data.local.model.ChannelEntity,
-    onToggleFavorite: () -> Unit
+    channel: ChannelEntity,
+    onToggleFavorite: () -> Unit,
 ) {
     Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp)),
         ) {
             AsyncImage(
                 model = channel.logoUrl,
                 contentDescription = channel.name,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(8.dp)
+                    .padding(8.dp),
             ) {
                 Icon(
-                    painter = painterResource(Res.drawable.ic_star),
+                    imageVector = Icons.Default.Star,
                     contentDescription = "Favorite",
                     tint = Color.Yellow,
                     modifier = Modifier
@@ -188,7 +188,7 @@ private fun ChannelCard(
                         .background(Color.Black.copy(alpha = 0.5f), CircleShape)
                         .clip(CircleShape)
                         .clickable(onClick = onToggleFavorite)
-                        .padding(4.dp)
+                        .padding(4.dp),
                 )
             }
         }
@@ -196,13 +196,13 @@ private fun ChannelCard(
         Text(
             text = channel.name,
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
         if (channel.groupTitle != null) {
             Text(
                 text = channel.groupTitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
             )
         }
     }

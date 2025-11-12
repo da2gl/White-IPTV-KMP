@@ -1,29 +1,30 @@
 [versions]
-agp = "8.4.1"
-android-compileSdk = "34"
+agp = "8.13.1"
+android-compileSdk = "36"
 android-minSdk = "24"
-android-targetSdk = "34"
-androidx-activity = "1.9.0"
-androidx-appcompat = "1.6.1"
-androidx-core = "1.12.0"
-androidx-espresso = "3.5.1"
-androidx-lifecycle = "2.8.0"
-androidx-navigation = "2.7.7"
-androidx-testExt = "1.1.5"
-composeMultiplatform = "1.6.10"
-detekt = "1.23.6"
+android-targetSdk = "36"
+androidx-activity = "1.11.0"
+androidx-appcompat = "1.7.1"
+androidx-core = "1.17.0"
+androidx-espresso = "3.7.0"
+androidx-lifecycle = "2.9.6"
+androidx-navigation = "2.9.1"
+androidx-testExt = "1.3.0"
+composeMultiplatform = "1.9.3"
+detekt = "1.23.8"
 detektComposeRules = "0.4.27"
 junit = "4.13.2"
-koin = "3.5.6"
-kotlin = "2.0.0"
-ktlint = "1.3.1" # version.set(libs.versions.ktlint.get())
-ktlintGradle = "12.1.1"
+koin = "4.1.1"
+kotlin = "2.2.21"
+ktlint = "1.7.1" # version.set(libs.versions.ktlint.get())
+ktlintGradle = "13.1.0"
 composeLintChecks = "1.4.2"
-ktor = "2.3.11"
-room = "2.6.1"
-sqlite = "2.4.0"
-ksp = "2.0.0-1.0.21"
-kotlinx-datetime = "0.6.0"
+ktor = "3.3.2"
+room = "2.8.3"
+sqlite = "2.6.1"
+ksp = "2.2.21-2.0.4"
+kotlinx-datetime = "0.7.1"
+coil = "3.3.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -53,6 +54,8 @@ androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.r
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -13,7 +13,7 @@ plugins {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_1_8)
+            jvmTarget.set(JvmTarget.JVM_11)
         }
     }
 
@@ -55,6 +55,8 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -84,8 +86,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     lint {
         checkDependencies = true

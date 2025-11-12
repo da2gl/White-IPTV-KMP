@@ -6,5 +6,5 @@ data class FavoritesState(
     val channels: List<ChannelEntity> = emptyList(),
     val categories: List<String> = emptyList(),
     val selectedCategory: String? = null,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
 )

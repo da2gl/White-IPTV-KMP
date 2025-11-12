@@ -8,8 +8,6 @@ import androidx.navigation.compose.rememberNavController
 import com.simplevideo.whiteiptv.feature.main.MainScreen
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
 import com.simplevideo.whiteiptv.feature.splash.SplashScreen
-import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
-import org.koin.compose.koinInject
 
 /**
  * Main navigation graph for WhiteIPTV app
@@ -50,13 +48,6 @@ fun AppNavGraph(
         // Main app screen
         composable<Route.Main> {
             MainScreen()
-        }
-
-        // Favorites screen
-        composable<Route.Favorites> {
-            FavoritesScreen(
-                viewModel = koinInject()
-            )
         }
     }
 }

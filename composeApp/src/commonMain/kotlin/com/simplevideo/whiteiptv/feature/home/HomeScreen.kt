@@ -14,6 +14,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.simplevideo.whiteiptv.domain.model.Channel
+import com.simplevideo.whiteiptv.domain.model.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -26,19 +28,19 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             HomeTopAppBar()
-        }
+        },
     ) { paddingValues ->
         if (state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = androidx.compose.ui.Alignment.Center
+                contentAlignment = androidx.compose.ui.Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
         } else {
             HomeContent(
                 state = state,
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier.padding(paddingValues),
             )
         }
     }
@@ -56,21 +58,21 @@ private fun HomeTopAppBar() {
             IconButton(onClick = { /* TODO */ }) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings")
             }
-        }
+        },
     )
 }
 
 @Composable
 private fun HomeContent(
     state: HomeState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         // Continue Watching
         Section(title = "Continue Watching") {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(state.continueWatchingItems) { item ->
                     ContinueWatchingItem(item)
@@ -82,7 +84,7 @@ private fun HomeContent(
         Section(title = "Favorites") {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(state.favoriteChannels) { channel ->
                     ChannelItem(channel)
@@ -94,7 +96,7 @@ private fun HomeContent(
         Section(title = "Sports") {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(state.sportsChannels) { channel ->
                     ChannelItem(channel)
@@ -107,20 +109,20 @@ private fun HomeContent(
 @Composable
 private fun Section(
     title: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
         )
         content()
     }
 }
 
 @Composable
-private fun ContinueWatchingItem(item: com.simplevideo.whiteiptv.domain.model.ContinueWatchingItem) {
+private fun ContinueWatchingItem(item: ContinueWatchingItem) {
     Card(modifier = Modifier.width(200.dp)) {
         Column {
             // TODO: Replace with an async image loading library
@@ -135,7 +137,7 @@ private fun ContinueWatchingItem(item: com.simplevideo.whiteiptv.domain.model.Co
 }
 
 @Composable
-private fun ChannelItem(channel: com.simplevideo.whiteiptv.domain.model.Channel) {
+private fun ChannelItem(channel: Channel) {
     Card(modifier = Modifier.width(150.dp)) {
         Column {
             // TODO: Replace with an async image loading library

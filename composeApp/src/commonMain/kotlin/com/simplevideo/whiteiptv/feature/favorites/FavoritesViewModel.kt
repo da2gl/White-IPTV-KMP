@@ -17,9 +17,9 @@ import kotlinx.coroutines.launch
 class FavoritesViewModel(
     private val getFavoriteChannelsUseCase: GetFavoriteChannelsUseCase,
     private val getFavoriteChannelCategoriesUseCase: GetFavoriteChannelCategoriesUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : BaseViewModel<FavoritesState, FavoritesAction, FavoritesEvent>(
-    initialState = FavoritesState()
+    initialState = FavoritesState(),
 ) {
     private val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
@@ -33,7 +33,7 @@ class FavoritesViewModel(
             is FavoritesEvent.OnCategorySelected -> {
                 viewState =
                     viewState.copy(
-                        selectedCategory = if (viewState.selectedCategory == viewEvent.category) null else viewEvent.category
+                        selectedCategory = if (viewState.selectedCategory == viewEvent.category) null else viewEvent.category,
                     )
             }
 
@@ -51,7 +51,7 @@ class FavoritesViewModel(
                 viewState =
                     viewState.copy(
                         channels = channels,
-                        isLoading = false
+                        isLoading = false,
                     )
             }.launchIn(viewModelScope)
     }
@@ -61,7 +61,7 @@ class FavoritesViewModel(
             .onEach { categories ->
                 viewState =
                     viewState.copy(
-                        categories = categories
+                        categories = categories,
                     )
             }.launchIn(viewModelScope)
     }

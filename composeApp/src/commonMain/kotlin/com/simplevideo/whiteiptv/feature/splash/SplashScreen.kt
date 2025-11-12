@@ -22,7 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SplashScreen(
     onNavigate: (Route) -> Unit,
 ) {
-    val viewModel: SplashViewModel = koinViewModel()
+    val viewModel = koinViewModel<SplashViewModel>()
     val action by viewModel.viewActions().collectAsState(null)
 
     LaunchedEffect(action) {
