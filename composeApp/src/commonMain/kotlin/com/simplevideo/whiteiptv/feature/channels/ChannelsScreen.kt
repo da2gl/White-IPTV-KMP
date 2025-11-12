@@ -84,11 +84,11 @@ fun ChannelsScreen() {
 //    }
 }
 //
-//@Composable
-//fun ChannelItem(
+// @Composable
+// fun ChannelItem(
 //    channel: com.simplevideo.whiteiptv.domain.model.Channel,
 //    onToggleFavorite: (String) -> Unit,
-//) {
+// ) {
 //    Column(
 //        modifier = Modifier.clickable { /* TODO */ },
 //        horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,4 +124,4 @@ fun ChannelsScreen() {
 //        Spacer(modifier = Modifier.height(8.dp))
 //        Text(text = channel.name, style = MaterialTheme.typography.bodyMedium)
 //    }
-//}
+// }

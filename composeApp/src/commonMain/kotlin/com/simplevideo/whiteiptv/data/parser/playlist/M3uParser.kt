@@ -165,8 +165,14 @@ object M3uParser {
 
         val attrs = parseAttributes(attributesString)
 
-        // Find URL (next non-comment line)
-        val url = findNextUrl(lines, startIndex) ?: return null
+        // Scan for EXTVLCOPT/KODIPROP lines between EXTINF and URL
+        // This handles the iptv-org format where options come after EXTINF
+        val (url, inlineVlcOpts, inlineKodiProps) = findUrlAndInlineOptions(lines, startIndex)
+            ?: return null
+
+        // Merge pending options (before EXTINF) with inline options (after EXTINF)
+        val allVlcOpts = pendingVlcOpts + inlineVlcOpts
+        val allKodiProps = pendingKodiProps + inlineKodiProps
 
         // Build catchup config
         val catchup = buildCatchupConfig(attrs)
@@ -202,13 +208,66 @@ object M3uParser {
             provider = attrs["provider"],
             providerType = attrs["provider-type"] ?: attrs["provider_type"],
             // Player options
-            vlcOpts = pendingVlcOpts,
-            kodiProps = pendingKodiProps,
+            vlcOpts = allVlcOpts,
+            kodiProps = allKodiProps,
             // Additional metadata
             additionalMetadata = attrs.filterKeys { key ->
                 key !in KNOWN_ATTRIBUTES
             },
         )
+    }
+
+    /**
+     * Find URL and scan for inline EXTVLCOPT/KODIPROP options between EXTINF and URL
+     *
+     * Returns Triple of (url, vlcOpts, kodiProps) or null if URL not found
+     *
+     * Handles both formats:
+     * - Traditional: #EXTVLCOPT before #EXTINF (collected as pending)
+     * - iptv-org: #EXTVLCOPT after #EXTINF but before URL (inline)
+     */
+    private fun findUrlAndInlineOptions(
+        lines: List<String>,
+        startIndex: Int,
+    ): Triple<String, Map<String, String>, Map<String, String>>? {
+        val vlcOpts = mutableMapOf<String, String>()
+        val kodiProps = mutableMapOf<String, String>()
+
+        for (i in (startIndex + 1) until lines.size) {
+            val line = lines[i].trim()
+
+            when {
+                line.isEmpty() -> continue
+
+                // Found EXTVLCOPT - collect it
+                line.startsWith("#EXTVLCOPT:") -> {
+                    val opt = line.substringAfter("#EXTVLCOPT:").trim()
+                    val (key, value) = parseKeyValue(opt)
+                    if (key != null && value != null) {
+                        vlcOpts[key] = value
+                    }
+                }
+
+                // Found KODIPROP - collect it
+                line.startsWith("#KODIPROP:") -> {
+                    val prop = line.substringAfter("#KODIPROP:").trim()
+                    val (key, value) = parseKeyValue(prop)
+                    if (key != null && value != null) {
+                        kodiProps[key] = value
+                    }
+                }
+
+                // Found another comment - skip it
+                line.startsWith("#") -> continue
+
+                // Found non-comment line - this is the URL
+                else -> {
+                    return Triple(line, vlcOpts, kodiProps)
+                }
+            }
+        }
+
+        return null
     }
 
     /**
