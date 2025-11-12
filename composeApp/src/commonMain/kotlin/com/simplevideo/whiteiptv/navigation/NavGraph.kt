@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
+import com.simplevideo.whiteiptv.feature.settings.SettingsScreen
 import com.simplevideo.whiteiptv.feature.splash.SplashScreen
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Main navigation graph for WhiteIPTV app
@@ -52,6 +54,13 @@ fun AppNavGraph(
         composable<Route.Main> {
             // TODO: Implement main app screen with bottom navigation
             // This will contain Home, AllChannels, Favorites, Settings tabs
+            navController.navigate(Route.Settings)
+        }
+
+        composable<Route.Settings> {
+            SettingsScreen(
+                viewModel = koinViewModel(),
+            )
         }
     }
 }
