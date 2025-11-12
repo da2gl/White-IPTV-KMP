@@ -29,8 +29,8 @@ class HomeViewModel(
                 val sportsChannels = getSportsUseCase()
                 viewState = viewState.copy(
                     continueWatchingItems = continueWatchingItems,
-                    favoriteChannels = favoriteChannels,
-                    sportsChannels = sportsChannels,
+                    favoriteFIXMEChannels = favoriteChannels,
+                    sportsFIXMEChannels = sportsChannels,
                     isLoading = false,
                 )
             } catch (e: Exception) {

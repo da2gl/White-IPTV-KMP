@@ -1,10 +1,10 @@
 package com.simplevideo.whiteiptv.domain.repository
 
-import com.simplevideo.whiteiptv.domain.model.Channel
-import com.simplevideo.whiteiptv.domain.model.ChannelCategory
-
 interface ChannelsRepository {
-    suspend fun getChannels(): List<Channel>
-    suspend fun getChannelCategories(): List<ChannelCategory>
-    suspend fun toggleFavoriteStatus(channelId: String): Channel
+    suspend fun getChannels(): List<FIXMEChannel>
+    suspend fun getChannelCategories(): List<FIXMEChannelCategory>
+    suspend fun toggleFavoriteStatus(channelId: String): FIXMEChannel
 }
+
+class FIXMEChannel
+class FIXMEChannelCategory
