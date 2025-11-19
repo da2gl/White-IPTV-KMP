@@ -25,7 +25,4 @@ actual fun platformModule(): Module = module {
     single<FileReader> {
         AndroidFileReader(get())
     }
-
-    // Note: FilePicker requires ComponentActivity, which should be provided by Composable
-    // Use rememberLauncherForActivityResult in Compose instead
 }

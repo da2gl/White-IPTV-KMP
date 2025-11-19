@@ -1,13 +1,15 @@
 package com.simplevideo.whiteiptv.data.network
 
+import co.touchlab.kermit.Logger
+import com.simplevideo.whiteiptv.common.AppLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 /**
  * Factory for creating configured HttpClient instances
@@ -35,9 +37,9 @@ object HttpClientFactory {
 
             // HTTP request/response logging
             install(Logging) {
-                logger = object : Logger {
+                logger = object : KtorLogger {
                     override fun log(message: String) {
-                        println("[HTTP] $message")
+                        Logger.withTag(AppLogger.Tags.HTTP).i { message }
                     }
                 }
                 level = LogLevel.INFO

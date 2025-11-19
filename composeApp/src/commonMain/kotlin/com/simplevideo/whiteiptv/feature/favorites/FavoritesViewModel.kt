@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.feature.favorites
 
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.domain.usecase.GetFavoriteChannelCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesAction
@@ -10,13 +9,10 @@ import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
     private val getFavoritesUseCase: GetFavoritesUseCase,
-    private val getFavoriteChannelCategoriesUseCase: GetFavoriteChannelCategoriesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : BaseViewModel<FavoritesState, FavoritesAction, FavoritesEvent>(
     initialState = FavoritesState(),
@@ -25,7 +21,6 @@ class FavoritesViewModel(
 
     init {
         observeFavorites()
-        observeCategories()
     }
 
     override fun obtainEvent(viewEvent: FavoritesEvent) {
@@ -46,23 +41,13 @@ class FavoritesViewModel(
     }
 
     private fun observeFavorites() {
-        getFavoritesUseCase()
-            .onEach { channels ->
-                viewState =
-                    viewState.copy(
-                        channels = channels,
-                        isLoading = false,
-                    )
-            }.launchIn(viewModelScope)
-    }
-
-    private fun observeCategories() {
-        getFavoriteChannelCategoriesUseCase()
-            .onEach { categories ->
-                viewState =
-                    viewState.copy(
-                        categories = categories,
-                    )
-            }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            // TODO: Update to use Flow from repository
+            val channels = getFavoritesUseCase()
+            viewState = viewState.copy(
+                channels = channels,
+                isLoading = false,
+            )
+        }
     }
 }

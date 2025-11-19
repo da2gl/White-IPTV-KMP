@@ -158,7 +158,7 @@ object M3uParser {
 
         // Extract attributes (before last comma)
         val attributesString = if (lastCommaIndex != -1) {
-            attributesAndTitle.substring(0, lastCommaIndex).trim()
+            attributesAndTitle.take(lastCommaIndex).trim()
         } else {
             ""
         }
@@ -193,7 +193,7 @@ object M3uParser {
             tvgRec = attrs["tvg-rec"]?.toIntOrNull() ?: attrs["tvg_rec"]?.toIntOrNull(),
             tvgUrl = attrs["tvg-url"] ?: attrs["tvg_url"],
             // Grouping
-            groupTitle = attrs["group-title"] ?: attrs["group_title"],
+            groupTitles = parseGroupTitles(attrs["group-title"] ?: attrs["group_title"]),
             description = attrs["description"] ?: attrs["tvg-description"] ?: attrs["tvg_description"],
             // Catchup
             catchup = catchup,
@@ -328,22 +328,23 @@ object M3uParser {
         val separatorIndex = text.indexOf('=')
         if (separatorIndex == -1) return null to null
 
-        val key = text.substring(0, separatorIndex).trim()
+        val key = text.take(separatorIndex).trim()
         val value = text.substring(separatorIndex + 1).trim()
 
         return key to value
     }
 
     /**
-     * Find next URL line (non-comment, non-empty)
+     * Parse group-title attribute which can contain multiple groups separated by semicolons
+     * Example: "Education;Science;Documentary" -> ["Education", "Science", "Documentary"]
      */
-    private fun findNextUrl(lines: List<String>, startIndex: Int): String? {
-        for (i in (startIndex + 1) until lines.size) {
-            val line = lines[i].trim()
-            if (line.isEmpty() || line.startsWith("#")) continue
-            return line
-        }
-        return null
+    private fun parseGroupTitles(rawGroupTitle: String?): List<String> {
+        if (rawGroupTitle.isNullOrBlank()) return emptyList()
+
+        return rawGroupTitle
+            .split(';')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
     }
 
     /**

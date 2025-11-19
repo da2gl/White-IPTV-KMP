@@ -133,12 +133,8 @@ private fun ChannelsGrid(
     state: FavoritesState,
     onEvent: (FavoritesEvent) -> Unit,
 ) {
-    val filteredChannels =
-        if (state.selectedCategory != null) {
-            state.channels.filter { it.groupTitle == state.selectedCategory }
-        } else {
-            state.channels
-        }
+    // TODO: Implement category filtering with new ChannelGroupEntity architecture
+    val filteredChannels = state.channels
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(158.dp),
@@ -197,12 +193,6 @@ private fun ChannelCard(
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
         )
-        if (channel.groupTitle != null) {
-            Text(
-                text = channel.groupTitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-            )
-        }
+        // TODO: Display channel groups from ChannelGroupEntity
     }
 }

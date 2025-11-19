@@ -18,7 +18,7 @@ data class Channel(
     val tvgShift: Int? = null,
     val tvgRec: Int? = null,
     val tvgUrl: String? = null,
-    val groupTitle: String? = null,
+    val groupTitles: List<String> = emptyList(),
     val description: String? = null,
 
     /**

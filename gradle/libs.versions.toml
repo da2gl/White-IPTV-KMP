@@ -17,14 +17,16 @@ junit = "4.13.2"
 koin = "4.1.1"
 kotlin = "2.2.21"
 ktlint = "1.7.1" # version.set(libs.versions.ktlint.get())
-ktlintGradle = "13.1.0"
+ktlintGradle = "14.0.1"
 composeLintChecks = "1.4.2"
 ktor = "3.3.2"
 room = "2.8.3"
 sqlite = "2.6.1"
 ksp = "2.2.21-2.0.4"
 kotlinx-datetime = "0.7.1"
+kotlinx-collections-immutable = "0.4.0"
 coil = "3.3.0"
+kermit = "2.0.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -54,8 +56,10 @@ androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.r
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
