@@ -2,7 +2,7 @@ package com.simplevideo.whiteiptv.feature.favorites
 
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoriteChannelCategoriesUseCase
-import com.simplevideo.whiteiptv.domain.usecase.GetFavoriteChannelsUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesAction
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesEvent
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
-    private val getFavoriteChannelsUseCase: GetFavoriteChannelsUseCase,
+    private val getFavoritesUseCase: GetFavoritesUseCase,
     private val getFavoriteChannelCategoriesUseCase: GetFavoriteChannelCategoriesUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : BaseViewModel<FavoritesState, FavoritesAction, FavoritesEvent>(
@@ -46,7 +46,7 @@ class FavoritesViewModel(
     }
 
     private fun observeFavorites() {
-        getFavoriteChannelsUseCase()
+        getFavoritesUseCase()
             .onEach { channels ->
                 viewState =
                     viewState.copy(

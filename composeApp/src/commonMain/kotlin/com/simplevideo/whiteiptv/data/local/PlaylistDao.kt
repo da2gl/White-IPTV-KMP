@@ -31,6 +31,9 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlists WHERE url = :url LIMIT 1")
     suspend fun getPlaylistByUrl(url: String): PlaylistEntity?
 
+    @Query("SELECT * FROM channels ORDER BY name ASC")
+    fun getAllChannels(): Flow<List<ChannelEntity>>
+
     @Query("SELECT * FROM channels WHERE playlistId = :playlistId")
     fun getChannels(playlistId: Long): Flow<List<ChannelEntity>>
 
@@ -45,7 +48,7 @@ interface PlaylistDao {
         UPDATE channels
         SET isFavorite = NOT isFavorite
         WHERE id = :channelId
-        """
+        """,
     )
     suspend fun toggleFavoriteStatus(channelId: Long)
 

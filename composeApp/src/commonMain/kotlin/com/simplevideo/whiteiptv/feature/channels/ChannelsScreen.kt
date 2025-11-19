@@ -1,11 +1,24 @@
 package com.simplevideo.whiteiptv.feature.channels
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ChannelsScreen() {
     val viewModel = koinViewModel<ChannelsViewModel>()
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text("All Channels Screen")
+    }
+
 //    val state by viewModel.state.collectAsState()
 //
 //    Scaffold(
@@ -71,11 +84,11 @@ fun ChannelsScreen() {
 //    }
 }
 //
-//@Composable
-//fun ChannelItem(
+// @Composable
+// fun ChannelItem(
 //    channel: com.simplevideo.whiteiptv.domain.model.Channel,
 //    onToggleFavorite: (String) -> Unit,
-//) {
+// ) {
 //    Column(
 //        modifier = Modifier.clickable { /* TODO */ },
 //        horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,4 +124,4 @@ fun ChannelsScreen() {
 //        Spacer(modifier = Modifier.height(8.dp))
 //        Text(text = channel.name, style = MaterialTheme.typography.bodyMedium)
 //    }
-//}
+// }

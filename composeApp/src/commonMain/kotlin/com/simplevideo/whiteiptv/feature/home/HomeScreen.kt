@@ -14,15 +14,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.simplevideo.whiteiptv.data.parser.playlist.model.Channel
 import com.simplevideo.whiteiptv.domain.model.ContinueWatchingItem
-import com.simplevideo.whiteiptv.domain.repository.FIXMEChannel
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel(),
-) {
+fun HomeScreen() {
+    val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.viewStates().collectAsState()
 
     Scaffold(
@@ -86,7 +85,7 @@ private fun HomeContent(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(state.favoriteFIXMEChannels) { channel ->
+                items(state.favoriteChannels) { channel ->
                     ChannelItem(channel)
                 }
             }
@@ -98,7 +97,7 @@ private fun HomeContent(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(state.sportsFIXMEChannels) { channel ->
+                items(state.sportsChannels) { channel ->
                     ChannelItem(channel)
                 }
             }
@@ -137,7 +136,7 @@ private fun ContinueWatchingItem(item: ContinueWatchingItem) {
 }
 
 @Composable
-private fun ChannelItem(FIXMEChannel: FIXMEChannel) {
+private fun ChannelItem(channel: Channel) {
     Card(modifier = Modifier.width(150.dp)) {
 //        Column {
 //            // TODO: Replace with an async image loading library

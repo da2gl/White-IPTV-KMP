@@ -1,17 +1,14 @@
 package com.simplevideo.whiteiptv.feature.channels
 
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.domain.usecase.GetChannelCategoriesUseCase
-import com.simplevideo.whiteiptv.domain.usecase.GetChannelsUseCase
-import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteStatusUseCase
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
 
 class ChannelsViewModel(
-    private val getChannelsUseCase: GetChannelsUseCase,
-    private val getChannelCategoriesUseCase: GetChannelCategoriesUseCase,
-    private val toggleFavoriteStatusUseCase: ToggleFavoriteStatusUseCase
+//    private val getChannelsUseCase: GetChannelsUseCase,
+//    private val getChannelCategoriesUseCase: GetChannelCategoriesUseCase,
+//    private val toggleFavoriteStatusUseCase: ToggleFavoriteStatusUseCase
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
     initialState = ChannelsState()
 ) {

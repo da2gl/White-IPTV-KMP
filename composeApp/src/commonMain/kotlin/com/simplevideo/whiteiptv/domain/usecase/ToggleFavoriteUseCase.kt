@@ -1,11 +1,11 @@
 package com.simplevideo.whiteiptv.domain.usecase
 
-import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 
 class ToggleFavoriteUseCase(
-    private val playlistRepository: PlaylistRepository
+    private val channelRepository: ChannelRepository,
 ) {
     suspend operator fun invoke(channelId: Long) {
-        playlistRepository.toggleFavoriteStatus(channelId)
+        channelRepository.toggleFavoriteStatus(channelId)
     }
 }

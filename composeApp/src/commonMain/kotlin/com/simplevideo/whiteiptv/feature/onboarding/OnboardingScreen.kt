@@ -77,7 +77,7 @@ private fun OnboardingContent(
             // Header: Logo and App Name
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Image(
                     painter = painterResource(Res.drawable.ic_play_circle),
@@ -90,7 +90,7 @@ private fun OnboardingContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Text Block
             Column(
@@ -110,7 +110,7 @@ private fun OnboardingContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Input Section
             Column(
@@ -130,6 +130,7 @@ private fun OnboardingContent(
 
                 // OR Separator
                 Row(
+                    modifier = Modifier.padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -145,7 +146,9 @@ private fun OnboardingContent(
                 // File Upload Button
                 Button(
                     onClick = { onEvent(OnboardingEvent.ChooseFile) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
                     enabled = !state.isLoading,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -156,7 +159,7 @@ private fun OnboardingContent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Primary CTA and Feedback
             Column(
@@ -201,44 +204,44 @@ private fun OnboardingContent(
                 Text(text = stringResource(Res.string.demo_playlist_link))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenPreview() {
-    AppTheme {
-        OnboardingContent(
-            state = OnboardingState(),
-            onEvent = {},
-        )
-    }
-}
+// @Preview(showBackground = true)
+// @Composable
+// private fun OnboardingScreenPreview() {
+//    AppTheme {
+//        OnboardingContent(
+//            state = OnboardingState(),
+//            onEvent = {},
+//        )
+//    }
+// }
 
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenLoadingPreview() {
-    AppTheme {
-        OnboardingContent(
-            state = OnboardingState(isLoading = true),
-            onEvent = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenErrorPreview() {
-    AppTheme {
-        OnboardingContent(
-            state = OnboardingState(error = "Invalid playlist format"),
-            onEvent = {},
-        )
-    }
-}
-
+// @Preview(showBackground = true)
+// @Composable
+// private fun OnboardingScreenLoadingPreview() {
+//    AppTheme {
+//        OnboardingContent(
+//            state = OnboardingState(isLoading = true),
+//            onEvent = {},
+//        )
+//    }
+// }
+//
+// @Preview(showBackground = true)
+// @Composable
+// private fun OnboardingScreenErrorPreview() {
+//    AppTheme {
+//        OnboardingContent(
+//            state = OnboardingState(error = "Invalid playlist format"),
+//            onEvent = {},
+//        )
+//    }
+// }
+//
 @Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenDarkPreview() {
@@ -249,25 +252,25 @@ private fun OnboardingScreenDarkPreview() {
         )
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenLoadingDarkPreview() {
-    AppTheme(darkTheme = true) {
-        OnboardingContent(
-            state = OnboardingState(isLoading = true),
-            onEvent = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun OnboardingScreenErrorDarkPreview() {
-    AppTheme(darkTheme = true) {
-        OnboardingContent(
-            state = OnboardingState(error = "Invalid playlist format"),
-            onEvent = {},
-        )
-    }
-}
+// //
+// @Preview(showBackground = true)
+// @Composable
+// private fun OnboardingScreenLoadingDarkPreview() {
+//    AppTheme(darkTheme = true) {
+//        OnboardingContent(
+//            state = OnboardingState(isLoading = true),
+//            onEvent = {},
+//        )
+//    }
+// }
+//
+// @Preview(showBackground = true)
+// @Composable
+// private fun OnboardingScreenErrorDarkPreview() {
+//    AppTheme(darkTheme = true) {
+//        OnboardingContent(
+//            state = OnboardingState(error = "Invalid playlist format"),
+//            onEvent = {},
+//        )
+//    }
+// }

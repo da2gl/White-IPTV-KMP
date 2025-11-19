@@ -8,6 +8,7 @@ import com.simplevideo.whiteiptv.data.parser.playlist.model.Channel
 import com.simplevideo.whiteiptv.data.parser.playlist.model.PlaylistHeader
 import com.simplevideo.whiteiptv.domain.exception.PlaylistException
 import com.simplevideo.whiteiptv.domain.model.PlaylistSource
+import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.platform.FileReader
 import io.ktor.client.HttpClient
@@ -36,7 +37,8 @@ import kotlinx.coroutines.withContext
  * ```
  */
 class ImportPlaylistUseCase(
-    private val repository: PlaylistRepository,
+    private val playlistRepository: PlaylistRepository,
+    private val channelRepository: ChannelRepository,
     private val httpClient: HttpClient,
     private val fileReader: FileReader,
     private val channelMapper: ChannelMapper,
@@ -81,7 +83,7 @@ class ImportPlaylistUseCase(
             }
 
             val existingPlaylist = try {
-                repository.getPlaylistByUrl(playlistUrl)
+                playlistRepository.getPlaylistByUrl(playlistUrl)
             } catch (e: Exception) {
                 throw PlaylistException.DatabaseError("Failed to check existing playlist", e)
             }
@@ -133,7 +135,7 @@ class ImportPlaylistUseCase(
             channelCount = channels.size,
         )
 
-        val playlistId = repository.insertPlaylist(playlistEntity)
+        val playlistId = playlistRepository.insertPlaylist(playlistEntity)
 
         // CPU-intensive, move to Default dispatcher
         val channelEntities = withContext(Dispatchers.Default) {
@@ -155,7 +157,7 @@ class ImportPlaylistUseCase(
         header: PlaylistHeader,
         newChannels: List<Channel>,
     ) {
-        val existingPlaylist = repository.getPlaylistById(playlistId)
+        val existingPlaylist = playlistRepository.getPlaylistById(playlistId)
             ?: throw PlaylistException.NotFound(playlistId)
 
         val updatedPlaylist = playlistMapper.updateEntity(
@@ -163,9 +165,9 @@ class ImportPlaylistUseCase(
             header = header,
             channelCount = newChannels.size,
         )
-        repository.updatePlaylist(updatedPlaylist)
+        playlistRepository.updatePlaylist(updatedPlaylist)
 
-        val existingChannels = repository.getChannelsList(playlistId)
+        val existingChannels = channelRepository.getChannelsList(playlistId)
 
         // CPU-intensive: build favorites sets and map channels
         val newChannelEntities = withContext(Dispatchers.Default) {
@@ -185,7 +187,7 @@ class ImportPlaylistUseCase(
             )
         }
 
-        repository.deleteChannelsByPlaylistId(playlistId)
+        channelRepository.deleteChannelsByPlaylistId(playlistId)
         insertChannelsBatched(newChannelEntities)
     }
 
@@ -194,10 +196,10 @@ class ImportPlaylistUseCase(
     ) {
         if (channels.size > BATCH_SIZE) {
             channels.chunked(BATCH_SIZE).forEach { batch ->
-                repository.insertChannels(batch)
+                channelRepository.insertChannels(batch)
             }
         } else {
-            repository.insertChannels(channels)
+            channelRepository.insertChannels(channels)
         }
     }
 
