@@ -5,8 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.simplevideo.whiteiptv.feature.main.MainScreen
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
+import com.simplevideo.whiteiptv.feature.player.PlayerScreen
 import com.simplevideo.whiteiptv.feature.splash.SplashScreen
 
 /**
@@ -48,6 +50,12 @@ fun AppNavGraph(
         // Main app screen
         composable<Route.Main> {
             MainScreen()
+        }
+
+        // Player screen
+        composable<Route.Player> { backStackEntry ->
+            val route = backStackEntry.toRoute<Route.Player>()
+            PlayerScreen(channelId = route.channelId)
         }
     }
 }

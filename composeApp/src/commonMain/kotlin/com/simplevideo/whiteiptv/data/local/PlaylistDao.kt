@@ -42,6 +42,9 @@ interface PlaylistDao {
     @Query("SELECT * FROM channels WHERE isFavorite = 1")
     fun getFavoriteChannels(): Flow<List<ChannelEntity>>
 
+    @Query("SELECT * FROM channels WHERE isFavorite = 1 AND playlistId = :playlistId")
+    fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>>
+
     @Query(
         """
         UPDATE channels

@@ -4,7 +4,12 @@ import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelCategory
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 
 /**
  * Fetches top categories with random channels for home screen display
@@ -20,11 +25,11 @@ class GetCategoriesUseCase(
     private val invalidNames = setOf("undefined", "unknown", "other", "")
     private val priorityKeywords = listOf("news", "sport", "music", "general")
 
-    suspend operator fun invoke(
+    operator fun invoke(
         playlistId: Long? = null,
         categoryLimit: Int = 5,
         channelsPerCategory: Int = 10,
-    ): List<Pair<ChannelCategory.Group, List<ChannelEntity>>> {
+    ): Flow<List<Pair<ChannelCategory.Group, List<ChannelEntity>>>> = flow {
         val allGroups = if (playlistId != null) {
             channelRepository.getTopGroupsByPlaylist(playlistId, limit = 20).first()
         } else {
@@ -37,20 +42,25 @@ class GetCategoriesUseCase(
 
         val selectedGroups = selectCategories(validGroups, categoryLimit)
 
-        return selectedGroups.map { group ->
-            val category = ChannelCategory.Group(
-                id = group.id.toString(),
-                displayName = group.name,
-                icon = group.icon,
-                channelCount = group.channelCount,
-                playlistId = group.playlistId,
-            )
-            val channels = channelRepository.getRandomChannelsByGroupId(
-                groupId = group.id,
-                limit = channelsPerCategory,
-            )
-            category to channels
+        val result = coroutineScope {
+            selectedGroups.map { group ->
+                async {
+                    val category = ChannelCategory.Group(
+                        id = group.id.toString(),
+                        displayName = group.name,
+                        icon = group.icon,
+                        channelCount = group.channelCount,
+                        playlistId = group.playlistId,
+                    )
+                    val channels = channelRepository.getRandomChannelsByGroupId(
+                        groupId = group.id,
+                        limit = channelsPerCategory,
+                    )
+                    category to channels
+                }
+            }.awaitAll()
         }
+        emit(result)
     }
 
     private fun selectCategories(

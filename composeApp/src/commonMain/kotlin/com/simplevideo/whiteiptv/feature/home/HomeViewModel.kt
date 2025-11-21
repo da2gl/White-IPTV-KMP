@@ -10,40 +10,41 @@ import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
-    getContinueWatchingUseCase: GetContinueWatchingUseCase,
     channelRepository: ChannelRepository,
-    private val getCategoriesUseCase: GetCategoriesUseCase,
     playlistRepository: PlaylistRepository,
+    getContinueWatching: GetContinueWatchingUseCase,
+    getCategories: GetCategoriesUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialState = HomeState()) {
 
     init {
-        combine(
-            playlistRepository.getPlaylists(),
-            currentPlaylistRepository.selectedPlaylistId,
-            getContinueWatchingUseCase(),
-            channelRepository.getFavoriteChannels(),
-        ) { playlists, selectedPlaylistId, continueWatching, favorites ->
-            val categories = getCategoriesUseCase(playlistId = selectedPlaylistId)
-            HomeState(
-                playlists = playlists,
-                selectedPlaylistId = selectedPlaylistId,
-                continueWatchingItems = continueWatching,
-                favoriteChannels = favorites,
-                categories = categories,
-                isLoading = false,
-            )
-        }.catch { e ->
-            emit(HomeState(error = e.message, isLoading = false))
-        }.onEach { state ->
-            viewState = state
-        }.launchIn(viewModelScope)
+        currentPlaylistRepository.selectedPlaylistId
+            .flatMapLatest { selectedId ->
+                combine(
+                    playlistRepository.getPlaylists(),
+                    getContinueWatching(),
+                    channelRepository.getFavoriteChannels(),
+                    getCategories(playlistId = selectedId),
+                ) { playlists, continueWatching, favorites, categories ->
+                    HomeState(
+                        playlists = playlists,
+                        selectedPlaylistId = selectedId,
+                        continueWatchingItems = continueWatching,
+                        favoriteChannels = favorites,
+                        categories = categories,
+                        isLoading = false,
+                    )
+                }
+            }.catch { e ->
+                emit(HomeState(error = e.message, isLoading = false))
+            }.onEach { state ->
+                viewState = state
+            }.launchIn(viewModelScope)
     }
 
     override fun obtainEvent(viewEvent: HomeEvent) {

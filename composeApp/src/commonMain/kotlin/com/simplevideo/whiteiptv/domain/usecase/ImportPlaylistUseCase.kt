@@ -189,12 +189,7 @@ class ImportPlaylistUseCase(
             groups = groups,
             channels = channelEntities,
             crossRefsProvider = { channelIds, groupIds ->
-                // Create mapping without zip: group name -> database ID
-                val groupNameToId = buildMap(groups.size) {
-                    for (i in groups.indices) {
-                        put(groups[i].name, groupIds[i])
-                    }
-                }
+                val groupNameToId = groups.mapIndexed { i, group -> group.name to groupIds[i] }.toMap()
                 val crossRefs = channelMapper.createCrossRefsWithIds(channelIds, channels, groupNameToId)
                 log.d { "Created ${crossRefs.size} channel-group cross-references" }
                 crossRefs
@@ -213,10 +208,12 @@ class ImportPlaylistUseCase(
         header: PlaylistHeader,
         newChannels: List<Channel>,
     ) {
-        val existingPlaylist = playlistRepository.getPlaylistById(playlistId)
-            ?: throw PlaylistException.NotFound(playlistId)
-
-        val existingChannels = channelRepository.getChannelsList(playlistId)
+        // Parallel fetch: playlist metadata and channels are independent
+        val (existingPlaylist, existingChannels) = coroutineScope {
+            val playlistDeferred = async { playlistRepository.getPlaylistById(playlistId) }
+            val channelsDeferred = async { channelRepository.getChannelsList(playlistId) }
+            (playlistDeferred.await() ?: throw PlaylistException.NotFound(playlistId)) to channelsDeferred.await()
+        }
         log.d { "Found ${existingChannels.size} existing channels" }
 
         log.d { "Preparing data for playlist update..." }
@@ -264,12 +261,7 @@ class ImportPlaylistUseCase(
             groups = groups,
             channels = channelEntities,
             crossRefsProvider = { channelIds, groupIds ->
-                // Create mapping without zip: group name -> database ID
-                val groupNameToId = buildMap(groups.size) {
-                    for (i in groups.indices) {
-                        put(groups[i].name, groupIds[i])
-                    }
-                }
+                val groupNameToId = groups.mapIndexed { i, group -> group.name to groupIds[i] }.toMap()
                 val crossRefs = channelMapper.createCrossRefsWithIds(channelIds, newChannels, groupNameToId)
                 log.d { "Created ${crossRefs.size} channel-group cross-references" }
                 crossRefs

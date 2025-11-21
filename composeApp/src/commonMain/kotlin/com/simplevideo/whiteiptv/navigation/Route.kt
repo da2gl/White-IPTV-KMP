@@ -32,6 +32,12 @@ sealed class Route {
     data object Main : Route()
 
     /**
+     * Player screen for channel playback
+     */
+    @Serializable
+    data class Player(val channelId: Long) : Route()
+
+    /**
      * Main screen tabs
      */
     @Serializable

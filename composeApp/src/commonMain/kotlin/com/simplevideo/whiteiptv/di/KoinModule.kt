@@ -45,6 +45,7 @@ val useCaseModule = module {
     factoryOf(::ImportPlaylistUseCase)
     factoryOf(::GetContinueWatchingUseCase)
     factoryOf(::GetFavoritesUseCase)
+    factoryOf(::GetPlaylistsUseCase)
     factoryOf(::GetCategoriesUseCase)
     factoryOf(::ToggleFavoriteUseCase)
 }

@@ -22,6 +22,7 @@ import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
 import com.simplevideo.whiteiptv.feature.home.HomeScreen
 import com.simplevideo.whiteiptv.feature.settings.SettingsScreen
+import com.simplevideo.whiteiptv.navigation.Route
 import com.simplevideo.whiteiptv.navigation.Route.MainTab
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -57,7 +58,7 @@ fun MainScreen() {
             composable<MainTab.Home> {
                 HomeScreen(
                     onNavigateToChannels = { categoryId ->
-                        navController.navigate(MainTab.Channels(categoryId)) {
+                        navController.navigate(MainTab.Channels(categoryId = categoryId)) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -67,7 +68,13 @@ fun MainScreen() {
                     },
                 )
             }
-            composable<MainTab.Favorites> { FavoritesScreen() }
+            composable<MainTab.Favorites> {
+                FavoritesScreen(
+                    onNavigateToPlayer = { channelId ->
+                        navController.navigate(Route.Player(channelId = channelId))
+                    },
+                )
+            }
             composable<MainTab.Channels> { backStackEntry ->
                 val route = backStackEntry.toRoute<MainTab.Channels>()
                 ChannelsScreen(initialCategoryId = route.categoryId)

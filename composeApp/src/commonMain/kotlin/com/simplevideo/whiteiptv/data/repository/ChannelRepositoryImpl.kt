@@ -41,6 +41,10 @@ class ChannelRepositoryImpl(
         return playlistDao.getFavoriteChannels()
     }
 
+    override fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>> {
+        return playlistDao.getFavoriteChannelsByPlaylist(playlistId)
+    }
+
     override suspend fun toggleFavoriteStatus(channelId: Long) {
         playlistDao.toggleFavoriteStatus(channelId)
     }
