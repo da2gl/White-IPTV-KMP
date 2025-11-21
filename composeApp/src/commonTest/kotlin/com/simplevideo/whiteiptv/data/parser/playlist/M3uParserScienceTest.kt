@@ -24,7 +24,7 @@ class M3uParserScienceTest {
         assertEquals("BFM Tech & Co (1080p)", bfmTech.title)
         assertEquals("BFMTechCo.fr@SD", bfmTech.tvgId)
         assertEquals("https://i.imgur.com/FQ0FpXV.png", bfmTech.tvgLogo)
-        assertEquals("News;Science", bfmTech.groupTitle)
+        assertEquals(listOf("News", "Science"), bfmTech.groupTitles)
         assertEquals(
             "https://ncdn-live-bfm.pfd.sfr.net/shls/LIVE\$BFM_TECHANDCO/index.m3u8?end=END&start=LIVE",
             bfmTech.url,
@@ -43,11 +43,11 @@ class M3uParserScienceTest {
 
         val brtv = channels.find { it.title.contains("BRTV") }
         assertNotNull(brtv)
-        assertEquals("Education;Science", brtv.groupTitle)
+        assertEquals(listOf("Education", "Science"), brtv.groupTitles)
 
         val jilin = channels.find { it.title.contains("Jilin Rural") }
         assertNotNull(jilin)
-        assertEquals("Education;Lifestyle;Science", jilin.groupTitle)
+        assertEquals(listOf("Education", "Lifestyle", "Science"), jilin.groupTitles)
     }
 
     @Test
@@ -152,7 +152,7 @@ class M3uParserScienceTest {
             assertNotNull(channel.url, "Every channel must have a URL")
             assertNotNull(channel.tvgId, "Every channel must have tvg-id")
             assertNotNull(channel.tvgLogo, "Every channel must have tvg-logo")
-            assertNotNull(channel.groupTitle, "Every channel must have group-title")
+            assertTrue(channel.groupTitles.isNotEmpty(), "Every channel must have group-title")
             assertEquals(-1, channel.duration, "Duration should be -1 (unlimited)")
         }
 
@@ -162,7 +162,7 @@ class M3uParserScienceTest {
         assertEquals("BFM Tech & Co (1080p)", bfmTech.title)
         assertEquals("BFMTechCo.fr@SD", bfmTech.tvgId)
         assertEquals("https://i.imgur.com/FQ0FpXV.png", bfmTech.tvgLogo)
-        assertEquals("News;Science", bfmTech.groupTitle)
+        assertEquals(listOf("News", "Science"), bfmTech.groupTitles)
         assertEquals(1, bfmTech.vlcOpts.size, "Should have 1 VLC option")
         assertTrue(bfmTech.vlcOpts.containsKey("http-user-agent"))
 
@@ -176,13 +176,13 @@ class M3uParserScienceTest {
         // Verify channel with complex group-title
         val jilin = channels.find { it.tvgId == "JilinRuralChannel.cn@SD" }
         assertNotNull(jilin)
-        assertEquals("Education;Lifestyle;Science", jilin.groupTitle)
+        assertEquals(listOf("Education", "Lifestyle", "Science"), jilin.groupTitles)
 
         // Count channels by group
-        val scienceOnly = channels.filter { it.groupTitle == "Science" }
+        val scienceOnly = channels.filter { it.groupTitles == listOf("Science") }
         assertTrue(scienceOnly.size >= 5, "Should have multiple Science-only channels")
 
-        val multiGroup = channels.filter { it.groupTitle?.contains(";") == true }
+        val multiGroup = channels.filter { it.groupTitles.size > 1 }
         assertTrue(multiGroup.size >= 5, "Should have channels with multiple groups")
     }
 

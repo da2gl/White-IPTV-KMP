@@ -5,9 +5,20 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
+import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 
-@Database(entities = [PlaylistEntity::class, ChannelEntity::class], version = 1, exportSchema = true)
+@Database(
+    entities = [
+        PlaylistEntity::class,
+        ChannelEntity::class,
+        ChannelGroupEntity::class,
+        ChannelGroupCrossRef::class,
+    ],
+    version = 2,
+    exportSchema = true,
+)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao

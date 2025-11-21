@@ -50,9 +50,10 @@ sealed class Route {
 
         /**
          * Channels screen
+         * @param categoryId Optional category ID to pre-select. Null means "All" channels
          */
         @Serializable
-        data object Channels : MainTab()
+        data class Channels(val categoryId: String? = null) : MainTab()
 
         /**
          * Settings screen

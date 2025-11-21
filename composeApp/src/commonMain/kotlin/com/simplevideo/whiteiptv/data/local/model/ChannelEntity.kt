@@ -23,7 +23,6 @@ import androidx.room.PrimaryKey
     indices = [
         Index(value = ["playlistId"]),
         Index(value = ["tvgId"]),
-        Index(value = ["groupTitle"]),
         Index(value = ["isFavorite"]),
     ],
 )
@@ -50,12 +49,6 @@ data class ChannelEntity(
     val tvgChno: String? = null,
     val tvgLanguage: String? = null,
     val tvgCountry: String? = null,
-
-    /**
-     * Channel group/category (from group-title attribute)
-     * Used for organizing channels into categories in UI
-     */
-    val groupTitle: String? = null,
 
     /**
      * Whether channel is marked as favorite by user

@@ -27,7 +27,7 @@ class M3uParserAnimationTest {
         val disneyChannel = channels.find { it.tvgId == "DisneyChannelLatinAmerica.ar@Panregional" }
         assertNotNull(disneyChannel, "Disney Channel Latin America should exist")
         assertEquals("Disney Channel Latin America (1080p)", disneyChannel.title)
-        assertEquals("Animation;Kids", disneyChannel.groupTitle)
+        assertEquals(listOf("Animation", "Kids"), disneyChannel.groupTitles)
 
         val disneyJrTurkey = channels.find { it.tvgId == "DisneyJr.tr@SD" }
         assertNotNull(disneyJrTurkey, "Disney Jr. Turkey should exist")
@@ -41,7 +41,7 @@ class M3uParserAnimationTest {
         val animeAllDay = channels.find { it.tvgId == "AnimeAllDay.us@US" }
         assertNotNull(animeAllDay, "Anime All Day should exist")
         assertEquals("Anime All Day", animeAllDay.title)
-        assertEquals("Animation", animeAllDay.groupTitle)
+        assertEquals(listOf("Animation"), animeAllDay.groupTitles)
 
         val animeVision = channels.find { it.tvgId == "AnimeVision.es@SD" }
         assertNotNull(animeVision, "Anime Vision should exist")
@@ -104,16 +104,16 @@ class M3uParserAnimationTest {
     fun `animation playlist - verify group-title variations`() {
         val (_, channels) = M3uParser.parse(REAL_ANIMATION_PLAYLIST)
 
-        val multipleGroups = channels.filter { it.groupTitle?.contains(";") == true }
+        val multipleGroups = channels.filter { it.groupTitles.size > 1 }
         assertTrue(multipleGroups.size >= 30, "Should have many channels with multiple groups")
 
-        val animationKids = channels.filter { it.groupTitle == "Animation;Kids" }
+        val animationKids = channels.filter { it.groupTitles == listOf("Animation", "Kids") }
         assertTrue(animationKids.size >= 15, "Should have many Animation;Kids channels")
 
-        val animationKidsReligious = channels.filter { it.groupTitle == "Animation;Kids;Religious" }
+        val animationKidsReligious = channels.filter { it.groupTitles == listOf("Animation", "Kids", "Religious") }
         assertTrue(animationKidsReligious.isNotEmpty(), "Should have religious kids animation")
 
-        val animationOnly = channels.filter { it.groupTitle == "Animation" }
+        val animationOnly = channels.filter { it.groupTitles == listOf("Animation") }
         assertTrue(animationOnly.size >= 10, "Should have animation-only channels")
     }
 
@@ -141,12 +141,12 @@ class M3uParserAnimationTest {
         val bbcFour = channels.find { it.tvgId == "BBCFourCBeebies.uk@HD" }
         assertNotNull(bbcFour, "BBC Four/CBeebies should exist")
         assertEquals("BBC Four/CBeebies (1080p)", bbcFour.title)
-        assertEquals("Animation;General;Kids", bbcFour.groupTitle)
+        assertEquals(listOf("Animation", "General", "Kids"), bbcFour.groupTitles)
 
         val bbcThree = channels.find { it.tvgId == "BBCThreeCBBC.uk@HD" }
         assertNotNull(bbcThree, "BBC Three/CBBC should exist")
         assertEquals("BBC Three/CBBC (1080p)", bbcThree.title)
-        assertEquals("Animation;Family;Kids", bbcThree.groupTitle)
+        assertEquals(listOf("Animation", "Family", "Kids"), bbcThree.groupTitles)
     }
 
     @Test
@@ -156,7 +156,7 @@ class M3uParserAnimationTest {
         val southPark = channels.find { it.tvgId == "SouthPark.us@Canada" }
         assertNotNull(southPark, "South Park should exist")
         assertEquals("South Park", southPark.title)
-        assertEquals("Animation", southPark.groupTitle)
+        assertEquals(listOf("Animation"), southPark.groupTitles)
         assertTrue(southPark.url.contains("pluto.tv"))
     }
 
@@ -167,7 +167,7 @@ class M3uParserAnimationTest {
         val nickelodeon = channels.find { it.tvgId == "Nickelodeon.ee@SD" }
         assertNotNull(nickelodeon, "Nickelodeon should exist")
         assertEquals("Nickelodeon (576p)", nickelodeon.title)
-        assertEquals("Animation;Kids", nickelodeon.groupTitle)
+        assertEquals(listOf("Animation", "Kids"), nickelodeon.groupTitles)
     }
 
     @Test
@@ -196,12 +196,12 @@ class M3uParserAnimationTest {
         val retroCrush = channels.find { it.tvgId == "RetroCrush.us@SD" }
         assertNotNull(retroCrush, "RetroCrush should exist")
         assertEquals("RetroCrush (1080p)", retroCrush.title)
-        assertEquals("Animation;Classic", retroCrush.groupTitle)
+        assertEquals(listOf("Animation", "Classic"), retroCrush.groupTitles)
 
         val cartoonClassics = channels.find { it.tvgId == "CartoonClassics.pl@FAST" }
         assertNotNull(cartoonClassics, "Cartoon Classics should exist")
         assertEquals("Cartoon Classics", cartoonClassics.title)
-        assertEquals("Animation;Kids", cartoonClassics.groupTitle)
+        assertEquals(listOf("Animation", "Kids"), cartoonClassics.groupTitles)
     }
 
     @Test
@@ -234,7 +234,7 @@ class M3uParserAnimationTest {
                 "Channel ${channel.title} should have valid HTTP(S) URL",
             )
             assertNotNull(channel.tvgId, "Every channel must have tvg-id")
-            assertNotNull(channel.groupTitle, "Every channel must have group-title")
+            assertTrue(channel.groupTitles.isNotEmpty(), "Every channel must have group-title")
             assertEquals(-1, channel.duration, "Duration should be -1 (unlimited)")
         }
 
@@ -305,6 +305,6 @@ class M3uParserAnimationTest {
         val dreamWorks = channels.find { it.tvgId == "DreamWorksChannelAsia.us@Vietnam" }
         assertNotNull(dreamWorks, "DreamWorks Channel Asia should exist")
         assertEquals("DreamWorks Channel Asia Vietnam (1080p)", dreamWorks.title)
-        assertEquals("Animation", dreamWorks.groupTitle)
+        assertEquals(listOf("Animation"), dreamWorks.groupTitles)
     }
 }

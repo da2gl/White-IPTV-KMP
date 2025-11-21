@@ -7,6 +7,7 @@ import com.simplevideo.whiteiptv.data.network.HttpClientFactory
 import com.simplevideo.whiteiptv.data.repository.ChannelRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
+import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.usecase.*
 import com.simplevideo.whiteiptv.feature.channels.ChannelsViewModel
@@ -32,6 +33,7 @@ val viewModelModule = module {
 val repositoryModule = module {
     singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
     singleOf(::ChannelRepositoryImpl) bind ChannelRepository::class
+    singleOf(::CurrentPlaylistRepository)
 }
 
 val mapperModule = module {
@@ -43,8 +45,7 @@ val useCaseModule = module {
     factoryOf(::ImportPlaylistUseCase)
     factoryOf(::GetContinueWatchingUseCase)
     factoryOf(::GetFavoritesUseCase)
-    factoryOf(::GetSportsUseCase)
-    factoryOf(::GetFavoriteChannelCategoriesUseCase)
+    factoryOf(::GetCategoriesUseCase)
     factoryOf(::ToggleFavoriteUseCase)
 }
 

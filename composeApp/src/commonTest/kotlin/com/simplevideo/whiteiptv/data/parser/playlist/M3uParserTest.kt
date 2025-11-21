@@ -52,7 +52,7 @@ class M3uParserTest {
         assertEquals(-1, channel.duration)
         assertNull(channel.tvgId)
         assertNull(channel.tvgLogo)
-        assertNull(channel.groupTitle)
+        assertTrue(channel.groupTitles.isEmpty())
     }
 
     @Test
@@ -75,7 +75,7 @@ class M3uParserTest {
         assertEquals("English", channel.tvgLanguage)
         assertEquals("US", channel.tvgCountry)
         assertEquals("video", channel.tvgType)
-        assertEquals("Entertainment", channel.groupTitle)
+        assertEquals(listOf("Entertainment"), channel.groupTitles)
         assertEquals("Full TVG Channel", channel.title)
     }
 
@@ -238,7 +238,7 @@ class M3uParserTest {
         assertEquals(2, channel.tvgShift)
         assertEquals(3, channel.tvgRec)
         assertEquals("https://epg.xml", channel.tvgUrl)
-        assertEquals("Test", channel.groupTitle)
+        assertEquals(listOf("Test"), channel.groupTitles)
         assertEquals("Test description", channel.description)
         assertEquals("Full TVG Test", channel.title)
     }

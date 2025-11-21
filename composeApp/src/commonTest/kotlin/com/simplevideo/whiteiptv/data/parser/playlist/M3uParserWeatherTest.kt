@@ -27,7 +27,7 @@ class M3uParserWeatherTest {
         assertNotNull(accuWeather, "AccuWeather channel should exist")
         assertEquals("AccuWeather Now (1080p)", accuWeather.title)
         assertEquals("https://i.imgur.com/M8wbVYK.png", accuWeather.tvgLogo)
-        assertEquals("Weather", accuWeather.groupTitle)
+        assertEquals(listOf("Weather"), accuWeather.groupTitles)
         assertTrue(accuWeather.url.contains("amagi.tv"))
     }
 
@@ -39,7 +39,7 @@ class M3uParserWeatherTest {
         assertNotNull(foxWeather, "Fox Weather channel should exist")
         assertEquals("Fox Weather (720p)", foxWeather.title)
         assertTrue(foxWeather.tvgLogo!!.contains("Fox_Weather"))
-        assertEquals("Weather", foxWeather.groupTitle)
+        assertEquals(listOf("Weather"), foxWeather.groupTitles)
         assertTrue(foxWeather.url.contains("foxweather.com"))
     }
 
@@ -48,7 +48,7 @@ class M3uParserWeatherTest {
         val (_, channels) = M3uParser.parse(REAL_WEATHER_PLAYLIST)
 
         val weatherChannels = channels.filter {
-            it.groupTitle?.contains("Weather", ignoreCase = true) == true
+            it.groupTitles.contains("Weather")
         }
 
         assertTrue(weatherChannels.size >= 14, "Most channels should be in Weather category")
