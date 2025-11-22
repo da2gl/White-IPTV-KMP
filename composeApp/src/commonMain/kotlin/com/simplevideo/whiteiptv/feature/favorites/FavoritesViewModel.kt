@@ -24,16 +24,16 @@ class FavoritesViewModel(
 ) {
 
     init {
-        currentPlaylistRepository.selectedPlaylistId
-            .flatMapLatest { selectedId ->
+        currentPlaylistRepository.selection
+            .flatMapLatest { selection ->
                 combine(
                     getPlaylists(),
-                    getFavorites(selectedId),
+                    getFavorites(selection),
                 ) { playlists, channels ->
                     viewState.copy(
                         playlists = playlists,
                         channels = channels,
-                        selectedPlaylistId = selectedId,
+                        selection = selection,
                         isLoading = false,
                         error = null,
                     )
@@ -48,7 +48,7 @@ class FavoritesViewModel(
     override fun obtainEvent(viewEvent: FavoritesEvent) {
         when (viewEvent) {
             is FavoritesEvent.OnPlaylistSelected -> {
-                currentPlaylistRepository.selectPlaylist(viewEvent.playlistId)
+                currentPlaylistRepository.select(viewEvent.selection)
             }
 
             is FavoritesEvent.OnToggleFavorite -> {

@@ -49,7 +49,11 @@ fun AppNavGraph(
 
         // Main app screen
         composable<Route.Main> {
-            MainScreen()
+            MainScreen(
+                onNavigateToPlayer = { channelId ->
+                    navController.navigate(Route.Player(channelId))
+                },
+            )
         }
 
         // Player screen

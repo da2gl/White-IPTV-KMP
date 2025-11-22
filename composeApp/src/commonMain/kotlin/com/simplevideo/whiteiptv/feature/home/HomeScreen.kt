@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,22 +23,55 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.domain.model.ChannelCategory
+import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
+import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
+import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
+import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
-    onNavigateToChannels: (categoryId: String?) -> Unit = {},
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToChannels: (ChannelsDestination) -> Unit,
+    onNavigateToPlayer: (Long) -> Unit,
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.viewStates().collectAsState()
+    val action by viewModel.viewActions().collectAsState(initial = null)
+
+    LaunchedEffect(action) {
+        when (val currentAction = action) {
+            is HomeAction.NavigateToFavorites -> {
+                onNavigateToFavorites()
+                viewModel.clearAction()
+            }
+
+            is HomeAction.NavigateToChannels -> {
+                onNavigateToChannels(currentAction.destination)
+                viewModel.clearAction()
+            }
+
+            is HomeAction.NavigateToPlayer -> {
+                onNavigateToPlayer(currentAction.channelId)
+                viewModel.clearAction()
+            }
+
+            else -> Unit
+        }
+    }
 
     Scaffold(
         topBar = {
-            HomeTopAppBar()
+            HomeTopAppBar(
+                playlists = state.playlists,
+                selection = state.selection,
+                onPlaylistSelected = { selection ->
+                    viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
+                },
+            )
         },
     ) { paddingValues ->
         if (state.isLoading) {
@@ -50,9 +84,14 @@ fun HomeScreen(
         } else {
             HomeContent(
                 state = state,
-                onViewAllClick = onNavigateToChannels,
-                onPlaylistSelected = { playlistId ->
-                    viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(playlistId))
+                onFavoritesViewAllClick = {
+                    viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
+                },
+                onGroupViewAllClick = { groupId ->
+                    viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
+                },
+                onChannelClick = { channelId ->
+                    viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
                 },
                 modifier = Modifier.padding(paddingValues),
             )
@@ -62,9 +101,19 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeTopAppBar() {
+private fun HomeTopAppBar(
+    playlists: List<PlaylistEntity>,
+    selection: PlaylistSelection,
+    onPlaylistSelected: (PlaylistSelection) -> Unit,
+) {
     TopAppBar(
-        title = { Text("My Playlist") },
+        title = {
+            HomeTopAppBarTitle(
+                playlists = playlists,
+                selection = selection,
+                onPlaylistSelected = onPlaylistSelected,
+            )
+        },
         actions = {
             IconButton(onClick = { /* TODO */ }) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
@@ -77,10 +126,24 @@ private fun HomeTopAppBar() {
 }
 
 @Composable
+private fun HomeTopAppBarTitle(
+    playlists: List<PlaylistEntity>,
+    selection: PlaylistSelection,
+    onPlaylistSelected: (PlaylistSelection) -> Unit,
+) {
+    PlaylistDropdown(
+        playlists = playlists,
+        selection = selection,
+        onPlaylistSelected = onPlaylistSelected,
+    )
+}
+
+@Composable
 private fun HomeContent(
     state: HomeState,
-    onViewAllClick: (categoryId: String?) -> Unit,
-    onPlaylistSelected: (Long?) -> Unit,
+    onFavoritesViewAllClick: () -> Unit,
+    onGroupViewAllClick: (groupId: String) -> Unit,
+    onChannelClick: (channelId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -88,14 +151,6 @@ private fun HomeContent(
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
     ) {
-        // Playlist selector
-        PlaylistDropdown(
-            playlists = state.playlists,
-            selectedPlaylistId = state.selectedPlaylistId,
-            onPlaylistSelected = onPlaylistSelected,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        )
-
         // Continue Watching
         if (state.continueWatchingItems.isNotEmpty()) {
             Section(title = "Continue Watching") {
@@ -114,32 +169,38 @@ private fun HomeContent(
         if (state.favoriteChannels.isNotEmpty()) {
             Section(
                 title = "Favorites",
-                onViewAllClick = { onViewAllClick(ChannelCategory.Favorites.id) },
+                onViewAllClick = onFavoritesViewAllClick,
             ) {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(state.favoriteChannels) { channel ->
-                        ChannelItem(channel)
+                        ChannelItem(
+                            channel = channel,
+                            onClick = { onChannelClick(channel.id) },
+                        )
                     }
                 }
             }
         }
 
-        // Dynamic Categories
-        state.categories.forEach { (category, channels) ->
+        // Dynamic Groups
+        state.categories.forEach { (group, channels) ->
             if (channels.isNotEmpty()) {
                 Section(
-                    title = category.displayName,
-                    onViewAllClick = { onViewAllClick(category.id) },
+                    title = group.displayName,
+                    onViewAllClick = { onGroupViewAllClick(group.id) },
                 ) {
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(channels) { channel ->
-                            ChannelItem(channel)
+                            ChannelItem(
+                                channel = channel,
+                                onClick = { onChannelClick(channel.id) },
+                            )
                         }
                     }
                 }
@@ -199,8 +260,15 @@ private fun ContinueWatchingItem(item: ContinueWatchingItem) {
 }
 
 @Composable
-private fun ChannelItem(channel: ChannelEntity) {
-    Card(modifier = Modifier.width(150.dp)) {
+private fun ChannelItem(
+    channel: ChannelEntity,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .width(150.dp)
+            .clickable(onClick = onClick),
+    ) {
         Column {
             AsyncImage(
                 model = channel.logoUrl,

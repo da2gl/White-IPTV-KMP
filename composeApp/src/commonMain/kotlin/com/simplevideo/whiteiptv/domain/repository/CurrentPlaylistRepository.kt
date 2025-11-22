@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.domain.repository
 
+import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,14 +12,10 @@ import kotlinx.coroutines.flow.asStateFlow
  * Used by HomeScreen and ChannelsScreen to sync playlist filter.
  */
 class CurrentPlaylistRepository {
-    private val _selectedPlaylistId = MutableStateFlow<Long?>(null)
-    val selectedPlaylistId: StateFlow<Long?> = _selectedPlaylistId.asStateFlow()
+    private val _selection = MutableStateFlow<PlaylistSelection>(PlaylistSelection.All)
+    val selection: StateFlow<PlaylistSelection> = _selection.asStateFlow()
 
-    fun selectPlaylist(id: Long?) {
-        _selectedPlaylistId.value = id
-    }
-
-    fun clear() {
-        _selectedPlaylistId.value = null
+    fun select(selection: PlaylistSelection) {
+        _selection.value = selection
     }
 }

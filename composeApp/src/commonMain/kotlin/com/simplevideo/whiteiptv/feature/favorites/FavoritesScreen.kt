@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.simplevideo.whiteiptv.common.components.DropdownSelector
+import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesAction
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesEvent
@@ -40,12 +40,11 @@ fun FavoritesScreen(
     val action by viewModel.viewActions().collectAsState(initial = null)
 
     LaunchedEffect(action) {
-        when (action) {
+        when (val currentAction = action) {
             is FavoritesAction.NavigateToPlayer -> {
-                onNavigateToPlayer((action as FavoritesAction.NavigateToPlayer).channelId)
+                onNavigateToPlayer(currentAction.channelId)
                 viewModel.clearAction()
             }
-
             else -> Unit
         }
     }
@@ -67,14 +66,12 @@ fun FavoritesScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
-            DropdownSelector(
-                label = "Playlist",
-                items = state.playlists,
-                selectedItem = state.playlists.find { it.id == state.selectedPlaylistId },
-                onItemSelected = { playlist ->
-                    viewModel.obtainEvent(FavoritesEvent.OnPlaylistSelected(playlist?.id))
+            PlaylistDropdown(
+                playlists = state.playlists,
+                selection = state.selection,
+                onPlaylistSelected = { selection ->
+                    viewModel.obtainEvent(FavoritesEvent.OnPlaylistSelected(selection))
                 },
-                itemText = { it.name },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             )
             if (state.isLoading) {

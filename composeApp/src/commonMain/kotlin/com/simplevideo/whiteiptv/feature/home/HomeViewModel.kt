@@ -10,6 +10,7 @@ import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
+import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
@@ -23,17 +24,17 @@ class HomeViewModel(
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialState = HomeState()) {
 
     init {
-        currentPlaylistRepository.selectedPlaylistId
-            .flatMapLatest { selectedId ->
+        currentPlaylistRepository.selection
+            .flatMapLatest { selection ->
                 combine(
                     playlistRepository.getPlaylists(),
                     getContinueWatching(),
                     channelRepository.getFavoriteChannels(),
-                    getCategories(playlistId = selectedId),
+                    getCategories(selection = selection),
                 ) { playlists, continueWatching, favorites, categories ->
                     HomeState(
                         playlists = playlists,
-                        selectedPlaylistId = selectedId,
+                        selection = selection,
                         continueWatchingItems = continueWatching,
                         favoriteChannels = favorites,
                         categories = categories,
@@ -49,11 +50,21 @@ class HomeViewModel(
 
     override fun obtainEvent(viewEvent: HomeEvent) {
         when (viewEvent) {
-            is HomeEvent.OnPlaylistSelected -> selectPlaylist(viewEvent.playlistId)
-        }
-    }
+            is HomeEvent.OnPlaylistSelected -> {
+                currentPlaylistRepository.select(viewEvent.selection)
+            }
 
-    private fun selectPlaylist(playlistId: Long?) {
-        currentPlaylistRepository.selectPlaylist(playlistId)
+            is HomeEvent.OnFavoritesViewAllClick -> {
+                viewAction = HomeAction.NavigateToFavorites
+            }
+
+            is HomeEvent.OnGroupViewAllClick -> {
+                viewAction = HomeAction.NavigateToChannels(ChannelsDestination.Group(viewEvent.groupId))
+            }
+
+            is HomeEvent.OnChannelClick -> {
+                viewAction = HomeAction.NavigateToPlayer(viewEvent.channelId)
+            }
+        }
     }
 }

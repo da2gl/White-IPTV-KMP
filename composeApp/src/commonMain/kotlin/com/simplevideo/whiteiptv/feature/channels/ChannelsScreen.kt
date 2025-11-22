@@ -21,23 +21,44 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.simplevideo.whiteiptv.common.components.CategoryDropdown
+import com.simplevideo.whiteiptv.common.components.GroupDropdown
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.domain.model.ChannelCategory
+import com.simplevideo.whiteiptv.domain.model.ChannelGroup
+import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
+import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
+import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ChannelsScreen(
-    initialCategoryId: String? = null,
+    initialDestination: ChannelsDestination = ChannelsDestination.All,
+    onNavigateToPlayer: (Long) -> Unit,
 ) {
     val viewModel = koinViewModel<ChannelsViewModel>()
     val state by viewModel.viewStates().collectAsState()
+    val action by viewModel.viewActions().collectAsState(initial = null)
+
+    val initialGroupId = when (initialDestination) {
+        is ChannelsDestination.All -> null
+        is ChannelsDestination.Group -> initialDestination.groupId
+    }
 
     LaunchedEffect(Unit) {
-        viewModel.setInitialCategory(initialCategoryId)
+        viewModel.setInitialGroup(initialGroupId)
+    }
+
+    LaunchedEffect(action) {
+        when (val currentAction = action) {
+            is ChannelsAction.NavigateToPlayer -> {
+                onNavigateToPlayer(currentAction.channelId)
+                viewModel.clearAction()
+            }
+
+            else -> Unit
+        }
     }
 
     Scaffold(
@@ -47,11 +68,14 @@ fun ChannelsScreen(
     ) { paddingValues ->
         ChannelsContent(
             state = state,
-            onPlaylistSelected = { playlistId ->
-                viewModel.obtainEvent(ChannelsEvent.OnPlaylistSelected(playlistId))
+            onPlaylistSelected = { selection ->
+                viewModel.obtainEvent(ChannelsEvent.OnPlaylistSelected(selection))
             },
-            onCategorySelected = { category ->
-                viewModel.obtainEvent(ChannelsEvent.OnCategorySelected(category))
+            onGroupSelected = { group ->
+                viewModel.obtainEvent(ChannelsEvent.OnGroupSelected(group))
+            },
+            onChannelClick = { channelId ->
+                viewModel.obtainEvent(ChannelsEvent.OnChannelClick(channelId))
             },
             onToggleFavorite = { channelId ->
                 viewModel.obtainEvent(ChannelsEvent.OnToggleFavorite(channelId))
@@ -77,23 +101,24 @@ private fun ChannelsTopAppBar() {
 @Composable
 private fun ChannelsContent(
     state: ChannelsState,
-    onPlaylistSelected: (Long?) -> Unit,
-    onCategorySelected: (ChannelCategory) -> Unit,
+    onPlaylistSelected: (PlaylistSelection) -> Unit,
+    onGroupSelected: (ChannelGroup?) -> Unit,
+    onChannelClick: (Long) -> Unit,
     onToggleFavorite: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         PlaylistDropdown(
             playlists = state.playlists,
-            selectedPlaylistId = state.selectedPlaylistId,
+            selection = state.selection,
             onPlaylistSelected = onPlaylistSelected,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
-        CategoryDropdown(
-            categories = state.categories,
-            selectedCategory = state.selectedCategory,
-            onCategorySelected = onCategorySelected,
+        GroupDropdown(
+            groups = state.groups,
+            selectedGroup = state.selectedGroup,
+            onGroupSelected = onGroupSelected,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
@@ -125,6 +150,7 @@ private fun ChannelsContent(
                 items(state.channels) { channel ->
                     ChannelGridItem(
                         channel = channel,
+                        onClick = { onChannelClick(channel.id) },
                         onToggleFavorite = { onToggleFavorite(channel.id) },
                     )
                 }
@@ -136,10 +162,12 @@ private fun ChannelsContent(
 @Composable
 private fun ChannelGridItem(
     channel: ChannelEntity,
+    onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),

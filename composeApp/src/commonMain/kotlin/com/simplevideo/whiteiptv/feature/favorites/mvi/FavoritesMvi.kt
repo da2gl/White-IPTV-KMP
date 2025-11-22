@@ -2,17 +2,18 @@ package com.simplevideo.whiteiptv.feature.favorites.mvi
 
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
+import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 
 data class FavoritesState(
     val channels: List<ChannelEntity> = emptyList(),
     val playlists: List<PlaylistEntity> = emptyList(),
-    val selectedPlaylistId: Long? = null,
+    val selection: PlaylistSelection = PlaylistSelection.All,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
 
 sealed interface FavoritesEvent {
-    data class OnPlaylistSelected(val playlistId: Long?) : FavoritesEvent
+    data class OnPlaylistSelected(val selection: PlaylistSelection) : FavoritesEvent
     data class OnToggleFavorite(val channelId: Long) : FavoritesEvent
     data class OnChannelClick(val channelId: Long) : FavoritesEvent
 }

@@ -22,13 +22,14 @@ import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
 import com.simplevideo.whiteiptv.feature.home.HomeScreen
 import com.simplevideo.whiteiptv.feature.settings.SettingsScreen
-import com.simplevideo.whiteiptv.navigation.Route
 import com.simplevideo.whiteiptv.navigation.Route.MainTab
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    onNavigateToPlayer: (Long) -> Unit,
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -57,8 +58,8 @@ fun MainScreen() {
         ) {
             composable<MainTab.Home> {
                 HomeScreen(
-                    onNavigateToChannels = { categoryId ->
-                        navController.navigate(MainTab.Channels(categoryId = categoryId)) {
+                    onNavigateToFavorites = {
+                        navController.navigate(MainTab.Favorites) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
@@ -66,18 +67,29 @@ fun MainScreen() {
                             restoreState = true
                         }
                     },
+                    onNavigateToChannels = { destination ->
+                        navController.navigate(MainTab.Channels(destination = destination)) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    onNavigateToPlayer = onNavigateToPlayer,
                 )
             }
             composable<MainTab.Favorites> {
                 FavoritesScreen(
-                    onNavigateToPlayer = { channelId ->
-                        navController.navigate(Route.Player(channelId = channelId))
-                    },
+                    onNavigateToPlayer = onNavigateToPlayer,
                 )
             }
             composable<MainTab.Channels> { backStackEntry ->
                 val route = backStackEntry.toRoute<MainTab.Channels>()
-                ChannelsScreen(initialCategoryId = route.categoryId)
+                ChannelsScreen(
+                    initialDestination = route.destination,
+                    onNavigateToPlayer = onNavigateToPlayer,
+                )
             }
             composable<MainTab.Settings> { SettingsScreen() }
         }

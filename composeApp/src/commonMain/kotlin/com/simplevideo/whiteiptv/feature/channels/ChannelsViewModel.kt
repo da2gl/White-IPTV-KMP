@@ -2,7 +2,8 @@ package com.simplevideo.whiteiptv.feature.channels
 
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.domain.model.ChannelCategory
+import com.simplevideo.whiteiptv.domain.model.ChannelGroup
+import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
@@ -21,12 +22,12 @@ class ChannelsViewModel(
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
     initialState = ChannelsState()
 ) {
-    private var initialCategoryId: String? = null
+    private var initialGroupId: String? = null
     private var isInitialized = false
 
-    fun setInitialCategory(categoryId: String?) {
+    fun setInitialGroup(groupId: String?) {
         if (!isInitialized) {
-            initialCategoryId = categoryId
+            initialGroupId = groupId
             isInitialized = true
             loadData()
         }
@@ -36,99 +37,93 @@ class ChannelsViewModel(
         combine(
             playlistRepository.getPlaylists(),
             channelRepository.getAllGroups(),
-            currentPlaylistRepository.selectedPlaylistId,
-        ) { playlists, groups, selectedPlaylistId ->
-            val filteredGroups = if (selectedPlaylistId != null) {
-                groups.filter { it.playlistId == selectedPlaylistId }
-            } else {
-                groups
+            currentPlaylistRepository.selection,
+        ) { playlists, groups, selection ->
+            val filteredGroups = when (selection) {
+                is PlaylistSelection.Selected ->
+                    groups.filter { it.playlistId == selection.id }
+
+                PlaylistSelection.All -> groups
             }
 
-            val categories = buildList {
-                add(ChannelCategory.All)
-                add(ChannelCategory.Favorites)
-                filteredGroups.forEach { group ->
-                    add(
-                        ChannelCategory.Group(
-                            id = group.id.toString(),
-                            displayName = group.name,
-                            icon = group.icon,
-                            channelCount = group.channelCount,
-                            playlistId = group.playlistId,
-                        ),
-                    )
-                }
+            val channelGroups = filteredGroups.map { group ->
+                ChannelGroup(
+                    id = group.id.toString(),
+                    displayName = group.name,
+                    icon = group.icon,
+                    channelCount = group.channelCount,
+                    playlistId = group.playlistId,
+                )
             }
 
-            val selectedCategory = when (initialCategoryId) {
-                null, "_all" -> ChannelCategory.All
-                "_favorites" -> ChannelCategory.Favorites
-                else -> categories.find { it.id == initialCategoryId } ?: ChannelCategory.All
+            val selectedGroup = initialGroupId?.let { id ->
+                channelGroups.find { it.id == id }
             }
 
             Triple(
-                playlists to selectedPlaylistId,
-                categories,
-                selectedCategory,
+                playlists to selection,
+                channelGroups,
+                selectedGroup,
             )
-        }.onEach { (playlistData, categories, selectedCategory) ->
-            val (playlists, selectedPlaylistId) = playlistData
+        }.onEach { (playlistData, groups, selectedGroup) ->
+            val (playlists, selection) = playlistData
             viewState = viewState.copy(
                 playlists = playlists,
-                selectedPlaylistId = selectedPlaylistId,
-                categories = categories,
+                selection = selection,
+                groups = groups,
             )
-            selectCategory(selectedCategory)
+            selectGroup(selectedGroup)
         }.launchIn(viewModelScope)
     }
 
     override fun obtainEvent(viewEvent: ChannelsEvent) {
         when (viewEvent) {
-            is ChannelsEvent.OnPlaylistSelected -> selectPlaylist(viewEvent.playlistId)
-            is ChannelsEvent.OnCategorySelected -> selectCategory(viewEvent.category)
+            is ChannelsEvent.OnPlaylistSelected -> selectPlaylist(viewEvent.selection)
+            is ChannelsEvent.OnGroupSelected -> selectGroup(viewEvent.group)
             is ChannelsEvent.OnToggleFavorite -> toggleFavorite(viewEvent.channelId)
+            is ChannelsEvent.OnChannelClick -> {
+                viewAction = ChannelsAction.NavigateToPlayer(viewEvent.channelId)
+            }
         }
     }
 
-    private fun selectPlaylist(playlistId: Long?) {
-        currentPlaylistRepository.selectPlaylist(playlistId)
+    private fun selectPlaylist(selection: PlaylistSelection) {
+        currentPlaylistRepository.select(selection)
         viewState = viewState.copy(
-            selectedCategory = ChannelCategory.All,
+            selectedGroup = null,
             isLoading = true,
         )
     }
 
-    private fun selectCategory(category: ChannelCategory) {
+    private fun selectGroup(group: ChannelGroup?) {
         viewState = viewState.copy(
-            selectedCategory = category,
+            selectedGroup = group,
             isLoading = true,
         )
 
-        val selectedPlaylistId = viewState.selectedPlaylistId
+        val selection = viewState.selection
 
-        val channelsFlow = when (category) {
-            is ChannelCategory.All -> {
-                if (selectedPlaylistId != null) {
-                    channelRepository.getChannels(selectedPlaylistId)
-                } else {
-                    channelRepository.getAllChannels()
-                }
+        val channelsFlow = if (group != null) {
+            val groupId = group.id.toLongOrNull()
+            if (groupId != null) {
+                channelRepository.getChannelsByGroupId(groupId)
+            } else {
+                channelRepository.getAllChannels()
             }
-            is ChannelCategory.Favorites -> channelRepository.getFavoriteChannels()
-            is ChannelCategory.Group -> {
-                val groupId = category.id.toLongOrNull()
-                if (groupId != null) {
-                    channelRepository.getChannelsByGroupId(groupId)
-                } else {
+        } else {
+            when (selection) {
+                is PlaylistSelection.Selected ->
+                    channelRepository.getChannels(selection.id)
+
+                PlaylistSelection.All ->
                     channelRepository.getAllChannels()
-                }
             }
         }
 
         channelsFlow.onEach { channels ->
             viewState = viewState.copy(
                 channels = channels,
-                selectedCategory = category,
+                selectedGroup = group,
                 isLoading = false,
             )
         }.launchIn(viewModelScope)

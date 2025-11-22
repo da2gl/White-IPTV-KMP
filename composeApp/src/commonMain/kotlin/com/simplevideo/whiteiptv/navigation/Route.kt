@@ -56,10 +56,12 @@ sealed class Route {
 
         /**
          * Channels screen
-         * @param categoryId Optional category ID to pre-select. Null means "All" channels
+         * @param destination Target destination - All channels or specific Group
          */
         @Serializable
-        data class Channels(val categoryId: String? = null) : MainTab()
+        data class Channels(
+            val destination: ChannelsDestination = ChannelsDestination.All,
+        ) : MainTab()
 
         /**
          * Settings screen
@@ -67,4 +69,16 @@ sealed class Route {
         @Serializable
         data object Settings : MainTab()
     }
+}
+
+/**
+ * Type-safe destination for Channels screen
+ */
+@Serializable
+sealed class ChannelsDestination {
+    @Serializable
+    data object All : ChannelsDestination()
+
+    @Serializable
+    data class Group(val groupId: String) : ChannelsDestination()
 }
