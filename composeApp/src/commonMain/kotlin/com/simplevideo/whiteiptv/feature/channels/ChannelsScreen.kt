@@ -29,26 +29,15 @@ import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
-import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ChannelsScreen(
-    initialDestination: ChannelsDestination = ChannelsDestination.All,
     onNavigateToPlayer: (Long) -> Unit,
 ) {
     val viewModel = koinViewModel<ChannelsViewModel>()
     val state by viewModel.viewStates().collectAsState()
     val action by viewModel.viewActions().collectAsState(initial = null)
-
-    val initialGroupId = when (initialDestination) {
-        is ChannelsDestination.All -> null
-        is ChannelsDestination.Group -> initialDestination.groupId
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.setInitialGroup(initialGroupId)
-    }
 
     LaunchedEffect(action) {
         when (val currentAction = action) {

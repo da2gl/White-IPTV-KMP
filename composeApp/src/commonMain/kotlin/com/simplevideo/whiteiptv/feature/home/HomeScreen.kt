@@ -29,13 +29,12 @@ import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
-import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeScreen(
     onNavigateToFavorites: () -> Unit,
-    onNavigateToChannels: (ChannelsDestination) -> Unit,
+    onNavigateToChannels: (String?) -> Unit,
     onNavigateToPlayer: (Long) -> Unit,
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
@@ -50,7 +49,7 @@ fun HomeScreen(
             }
 
             is HomeAction.NavigateToChannels -> {
-                onNavigateToChannels(currentAction.destination)
+                onNavigateToChannels(currentAction.groupId)
                 viewModel.clearAction()
             }
 

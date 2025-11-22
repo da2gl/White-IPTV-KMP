@@ -4,7 +4,6 @@ import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
-import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 
 data class HomeState(
     val playlists: List<PlaylistEntity> = emptyList(),
@@ -25,6 +24,6 @@ sealed interface HomeEvent {
 
 sealed interface HomeAction {
     data object NavigateToFavorites : HomeAction
-    data class NavigateToChannels(val destination: ChannelsDestination) : HomeAction
+    data class NavigateToChannels(val groupId: String?) : HomeAction
     data class NavigateToPlayer(val channelId: Long) : HomeAction
 }

@@ -13,10 +13,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class FavoritesViewModel(
     getPlaylists: GetPlaylistsUseCase,
-    private val getFavorites: GetFavoritesUseCase,
+    getFavorites: GetFavoritesUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<FavoritesState, FavoritesAction, FavoritesEvent>(
@@ -24,6 +23,7 @@ class FavoritesViewModel(
 ) {
 
     init {
+        @OptIn(ExperimentalCoroutinesApi::class)
         currentPlaylistRepository.selection
             .flatMapLatest { selection ->
                 combine(

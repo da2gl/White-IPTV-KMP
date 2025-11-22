@@ -17,7 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
 import com.simplevideo.whiteiptv.feature.home.HomeScreen
@@ -67,13 +66,13 @@ fun MainScreen(
                             restoreState = true
                         }
                     },
-                    onNavigateToChannels = { destination ->
-                        navController.navigate(MainTab.Channels(destination = destination)) {
+                    onNavigateToChannels = { groupId ->
+                        navController.navigate(MainTab.Channels(groupId = groupId)) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
                             }
                             launchSingleTop = true
-                            restoreState = true
+                            restoreState = false
                         }
                     },
                     onNavigateToPlayer = onNavigateToPlayer,
@@ -84,10 +83,8 @@ fun MainScreen(
                     onNavigateToPlayer = onNavigateToPlayer,
                 )
             }
-            composable<MainTab.Channels> { backStackEntry ->
-                val route = backStackEntry.toRoute<MainTab.Channels>()
+            composable<MainTab.Channels> {
                 ChannelsScreen(
-                    initialDestination = route.destination,
                     onNavigateToPlayer = onNavigateToPlayer,
                 )
             }
@@ -109,7 +106,11 @@ private fun BottomNavigationBar(
             } == true
             NavigationBarItem(
                 selected = isSelected,
-                onClick = { onItemClick(item.route) },
+                onClick = {
+                    if (!isSelected) {
+                        onItemClick(item.route)
+                    }
+                },
                 icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(item.title) },
             )

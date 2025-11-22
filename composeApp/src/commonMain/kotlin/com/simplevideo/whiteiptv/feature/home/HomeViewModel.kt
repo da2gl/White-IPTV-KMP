@@ -2,23 +2,22 @@ package com.simplevideo.whiteiptv.feature.home
 
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
-import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.usecase.GetCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
-import com.simplevideo.whiteiptv.navigation.ChannelsDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
-    channelRepository: ChannelRepository,
-    playlistRepository: PlaylistRepository,
+    getPlaylists: GetPlaylistsUseCase,
     getContinueWatching: GetContinueWatchingUseCase,
+    getFavorites: GetFavoritesUseCase,
     getCategories: GetCategoriesUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialState = HomeState()) {
@@ -27,10 +26,10 @@ class HomeViewModel(
         currentPlaylistRepository.selection
             .flatMapLatest { selection ->
                 combine(
-                    playlistRepository.getPlaylists(),
+                    getPlaylists(),
                     getContinueWatching(),
-                    channelRepository.getFavoriteChannels(),
-                    getCategories(selection = selection),
+                    getFavorites(selection),
+                    getCategories(selection),
                 ) { playlists, continueWatching, favorites, categories ->
                     HomeState(
                         playlists = playlists,
@@ -59,7 +58,7 @@ class HomeViewModel(
             }
 
             is HomeEvent.OnGroupViewAllClick -> {
-                viewAction = HomeAction.NavigateToChannels(ChannelsDestination.Group(viewEvent.groupId))
+                viewAction = HomeAction.NavigateToChannels(viewEvent.groupId)
             }
 
             is HomeEvent.OnChannelClick -> {

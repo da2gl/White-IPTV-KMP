@@ -1,7 +1,9 @@
 package com.simplevideo.whiteiptv.feature.channels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
+import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
@@ -10,27 +12,34 @@ import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChannelsViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val channelRepository: ChannelRepository,
     private val playlistRepository: PlaylistRepository,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
     initialState = ChannelsState()
 ) {
-    private var initialGroupId: String? = null
-    private var isInitialized = false
+    companion object {
+        private const val GROUP_ID_KEY = "groupId"
+    }
 
-    fun setInitialGroup(groupId: String?) {
-        if (!isInitialized) {
-            initialGroupId = groupId
-            isInitialized = true
-            loadData()
-        }
+    private val selectedGroupIdFlow: StateFlow<String?> = savedStateHandle.getStateFlow(
+        key = GROUP_ID_KEY,
+        initialValue = savedStateHandle[GROUP_ID_KEY],
+    )
+
+    init {
+        loadData()
+    }
+
+    private fun updateSelectedGroupId(groupId: String?) {
+        savedStateHandle[GROUP_ID_KEY] = groupId
     }
 
     private fun loadData() {
@@ -38,7 +47,8 @@ class ChannelsViewModel(
             playlistRepository.getPlaylists(),
             channelRepository.getAllGroups(),
             currentPlaylistRepository.selection,
-        ) { playlists, groups, selection ->
+            selectedGroupIdFlow,
+        ) { playlists, groups, selection, selectedGroupId ->
             val filteredGroups = when (selection) {
                 is PlaylistSelection.Selected ->
                     groups.filter { it.playlistId == selection.id }
@@ -56,25 +66,48 @@ class ChannelsViewModel(
                 )
             }
 
-            val selectedGroup = initialGroupId?.let { id ->
+            val selectedGroup = selectedGroupId?.let { id ->
                 channelGroups.find { it.id == id }
             }
 
-            Triple(
-                playlists to selection,
-                channelGroups,
-                selectedGroup,
-            )
-        }.onEach { (playlistData, groups, selectedGroup) ->
-            val (playlists, selection) = playlistData
-            viewState = viewState.copy(
-                playlists = playlists,
-                selection = selection,
-                groups = groups,
-            )
-            selectGroup(selectedGroup)
+            DataState(playlists, selection, channelGroups, selectedGroup)
+        }.flatMapLatest { data ->
+            val channelsFlow = if (data.selectedGroup != null) {
+                val groupId = data.selectedGroup.id.toLongOrNull()
+                if (groupId != null) {
+                    channelRepository.getChannelsByGroupId(groupId)
+                } else {
+                    channelRepository.getAllChannels()
+                }
+            } else {
+                when (data.selection) {
+                    is PlaylistSelection.Selected ->
+                        channelRepository.getChannels(data.selection.id)
+
+                    PlaylistSelection.All ->
+                        channelRepository.getAllChannels()
+                }
+            }
+
+            channelsFlow.onEach { channels ->
+                viewState = ChannelsState(
+                    channels = channels,
+                    playlists = data.playlists,
+                    selection = data.selection,
+                    groups = data.groups,
+                    selectedGroup = data.selectedGroup,
+                    isLoading = false,
+                )
+            }
         }.launchIn(viewModelScope)
     }
+
+    private data class DataState(
+        val playlists: List<PlaylistEntity>,
+        val selection: PlaylistSelection,
+        val groups: List<ChannelGroup>,
+        val selectedGroup: ChannelGroup?,
+    )
 
     override fun obtainEvent(viewEvent: ChannelsEvent) {
         when (viewEvent) {
@@ -89,44 +122,11 @@ class ChannelsViewModel(
 
     private fun selectPlaylist(selection: PlaylistSelection) {
         currentPlaylistRepository.select(selection)
-        viewState = viewState.copy(
-            selectedGroup = null,
-            isLoading = true,
-        )
+        updateSelectedGroupId(null)
     }
 
     private fun selectGroup(group: ChannelGroup?) {
-        viewState = viewState.copy(
-            selectedGroup = group,
-            isLoading = true,
-        )
-
-        val selection = viewState.selection
-
-        val channelsFlow = if (group != null) {
-            val groupId = group.id.toLongOrNull()
-            if (groupId != null) {
-                channelRepository.getChannelsByGroupId(groupId)
-            } else {
-                channelRepository.getAllChannels()
-            }
-        } else {
-            when (selection) {
-                is PlaylistSelection.Selected ->
-                    channelRepository.getChannels(selection.id)
-
-                PlaylistSelection.All ->
-                    channelRepository.getAllChannels()
-            }
-        }
-
-        channelsFlow.onEach { channels ->
-            viewState = viewState.copy(
-                channels = channels,
-                selectedGroup = group,
-                isLoading = false,
-            )
-        }.launchIn(viewModelScope)
+        updateSelectedGroupId(group?.id)
     }
 
     private fun toggleFavorite(channelId: Long) {
