@@ -7,16 +7,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +28,6 @@ import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesAction
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesEvent
-import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesState
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,16 +49,33 @@ fun FavoritesScreen(
         }
     }
 
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(state.isSearchActive) {
+        if (state.isSearchActive) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("⭐ Favorites") },
-                actions = {
-                    IconButton(onClick = { /* TODO: Search */ }) {
-                        Icon(Icons.Default.Search, contentDescription = "Search")
-                    }
-                },
-            )
+            if (state.isSearchActive) {
+                SearchTopBar(
+                    query = state.searchQuery,
+                    onQueryChange = { viewModel.obtainEvent(FavoritesEvent.OnSearchQueryChanged(it)) },
+                    onClose = { viewModel.obtainEvent(FavoritesEvent.OnToggleSearch) },
+                    focusRequester = focusRequester,
+                )
+            } else {
+                TopAppBar(
+                    title = { Text("⭐ Favorites") },
+                    actions = {
+                        IconButton(onClick = { viewModel.obtainEvent(FavoritesEvent.OnToggleSearch) }) {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        }
+                    },
+                )
+            }
         },
     ) { paddingValues ->
         Column(
@@ -82,9 +99,13 @@ fun FavoritesScreen(
                     CircularProgressIndicator()
                 }
             } else if (state.channels.isEmpty()) {
-                EmptyState()
+                if (state.searchQuery.isNotEmpty()) {
+                    SearchEmptyState(query = state.searchQuery)
+                } else {
+                    EmptyState()
+                }
             } else {
-                ChannelsList(state = state, onEvent = viewModel::obtainEvent)
+                ChannelsList(channels = state.channels, onEvent = viewModel::obtainEvent)
             }
         }
     }
@@ -123,16 +144,93 @@ private fun EmptyState() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchTopBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onClose: () -> Unit,
+    focusRequester: FocusRequester,
+) {
+    TopAppBar(
+        navigationIcon = {
+            IconButton(onClick = onClose) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Close search",
+                )
+            }
+        },
+        title = {
+            TextField(
+                value = query,
+                onValueChange = onQueryChange,
+                placeholder = { Text("Search favorites...") },
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
+            )
+        },
+        actions = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(Icons.Default.Close, contentDescription = "Clear search")
+                }
+            }
+        },
+    )
+}
+
+@Composable
+private fun SearchEmptyState(query: String) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                modifier = Modifier.size(72.dp),
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "No results found",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "No favorites match \"$query\"",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            )
+        }
+    }
+}
+
 @Composable
 private fun ChannelsList(
-    state: FavoritesState,
+    channels: List<ChannelEntity>,
     onEvent: (FavoritesEvent) -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        items(state.channels, key = { it.id }) { channel ->
+        items(channels, key = { it.id }) { channel ->
             ChannelListItem(
                 channel = channel,
                 onChannelClick = { onEvent(FavoritesEvent.OnChannelClick(channel.id)) },

@@ -8,6 +8,8 @@ data class FavoritesState(
     val channels: List<ChannelEntity> = emptyList(),
     val playlists: List<PlaylistEntity> = emptyList(),
     val selection: PlaylistSelection = PlaylistSelection.All,
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -16,6 +18,8 @@ sealed interface FavoritesEvent {
     data class OnPlaylistSelected(val selection: PlaylistSelection) : FavoritesEvent
     data class OnToggleFavorite(val channelId: Long) : FavoritesEvent
     data class OnChannelClick(val channelId: Long) : FavoritesEvent
+    data class OnSearchQueryChanged(val query: String) : FavoritesEvent
+    data object OnToggleSearch : FavoritesEvent
 }
 
 sealed interface FavoritesAction {
