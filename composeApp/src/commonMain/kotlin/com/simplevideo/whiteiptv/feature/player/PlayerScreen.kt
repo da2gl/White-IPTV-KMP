@@ -1,8 +1,6 @@
 package com.simplevideo.whiteiptv.feature.player
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -12,26 +10,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.simplevideo.whiteiptv.feature.player.components.GestureOverlay
 import com.simplevideo.whiteiptv.feature.player.components.PlayerControlsOverlay
 import com.simplevideo.whiteiptv.feature.player.components.TrackSelectionDialog
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerAction
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerState
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
-import com.simplevideo.whiteiptv.platform.KeepScreenOn
-import com.simplevideo.whiteiptv.platform.PlayerListener
-import com.simplevideo.whiteiptv.platform.TracksInfo
-import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
+import com.simplevideo.whiteiptv.platform.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @Composable
 fun PlayerScreen(
-    channelId: Long,
     onNavigateBack: () -> Unit,
 ) {
-    val viewModel = koinViewModel<PlayerViewModel> { parametersOf(channelId) }
+    val viewModel = koinViewModel<PlayerViewModel>()
     val state by viewModel.viewStates().collectAsState()
     val action by viewModel.viewActions().collectAsState(initial = null)
 
@@ -41,7 +38,6 @@ fun PlayerScreen(
                 onNavigateBack()
                 viewModel.clearAction()
             }
-
             null -> Unit
         }
     }
@@ -60,11 +56,33 @@ private fun PlayerScreenContent(
 ) {
     val playerFactory = koinInject<VideoPlayerFactory>()
     val player = remember { playerFactory.createPlayer() }
+    val systemControls = rememberSystemControls()
+    val scope = rememberCoroutineScope()
+    var hideJob: Job? = remember { null }
 
-    // Keep screen on during playback
+    // Local state for volume and brightness to ensure proper updates
+    var currentVolume by remember { mutableFloatStateOf(systemControls.getVolume()) }
+    var currentBrightness by remember { mutableFloatStateOf(systemControls.getBrightness()) }
+
+    // Auto-hide controls after 3 seconds
+    fun scheduleHideControls() {
+        hideJob?.cancel()
+        hideJob = scope.launch {
+            delay(3000)
+            onEvent(PlayerEvent.OnScreenTap) // Toggle off
+        }
+    }
+
+    // Show controls and schedule auto-hide
+    fun showControlsWithAutoHide() {
+        if (!state.controlsVisible) {
+            onEvent(PlayerEvent.OnScreenTap)
+        }
+        scheduleHideControls()
+    }
+
     KeepScreenOn()
 
-    // Set up player listener
     DisposableEffect(player) {
         val listener = object : PlayerListener {
             override fun onPlaybackStateChanged(isPlaying: Boolean, isBuffering: Boolean) {
@@ -83,10 +101,10 @@ private fun PlayerScreenContent(
         onDispose {
             player.removeListener(listener)
             player.release()
+            systemControls.restoreBrightness()
         }
     }
 
-    // Load media when channel changes
     LaunchedEffect(state.channel) {
         state.channel?.let {
             player.setMediaSource(
@@ -95,66 +113,94 @@ private fun PlayerScreenContent(
                 referer = it.referer,
             )
             player.play()
+            // Schedule auto-hide when player starts
+            scheduleHideControls()
         }
     }
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Black)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                onEvent(PlayerEvent.OnScreenTap)
-            },
+            .background(Color.Black),
     ) {
-        when {
-            state.isLoading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    color = Color.White,
-                )
-            }
+        // Video surface (always present when channel loaded)
+        if (state.channel != null) {
+            player.PlayerView(
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
 
-            state.error != null -> {
-                Text(
-                    text = state.error,
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
+        // Gesture overlay - always available for channel switching
+        GestureOverlay(
+            currentVolume = currentVolume,
+            currentBrightness = currentBrightness,
+            onBrightnessChange = {
+                currentBrightness = it
+                systemControls.setBrightness(it)
+                showControlsWithAutoHide()
+            },
+            onVolumeChange = {
+                currentVolume = it
+                systemControls.setVolume(it)
+                showControlsWithAutoHide()
+            },
+            onChannelChange = { direction ->
+                if (direction > 0) {
+                    onEvent(PlayerEvent.OnNextChannel)
+                } else {
+                    onEvent(PlayerEvent.OnPreviousChannel)
+                }
+                showControlsWithAutoHide()
+            },
+            onTap = {
+                // Toggle controls visibility
+                val wasVisible = state.controlsVisible
+                onEvent(PlayerEvent.OnScreenTap)
+                if (wasVisible) {
+                    hideJob?.cancel()
+                } else {
+                    scheduleHideControls()
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
+        )
 
-            state.channel != null -> {
-                // Video surface
-                player.PlayerView(
-                    modifier = Modifier.fillMaxSize(),
-                )
+        // Loading indicator
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = Color.White,
+            )
+        }
 
-                // Controls overlay
-                PlayerControlsOverlay(
-                    channelName = state.channel.name,
-                    isVisible = state.controlsVisible,
-                    isBuffering = state.isBuffering,
-                    liveOffsetMs = player.getCurrentLiveOffset(),
-                    tracksInfo = state.tracksInfo,
-                    onBackClick = { onEvent(PlayerEvent.OnBackClick) },
-                    onSeekToLive = {
-                        player.seekToLiveEdge()
-                        onEvent(PlayerEvent.OnSeekToLive)
-                    },
-                    onShowAudioTracks = {
-                        onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.AUDIO))
-                    },
-                    onShowSubtitles = {
-                        onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.SUBTITLE))
-                    },
-                    onShowQuality = {
-                        onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.QUALITY))
-                    },
-                )
-            }
+        // Error message
+        if (state.error != null) {
+            Text(
+                text = state.error,
+                color = Color.White,
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+
+        // Controls overlay
+        if (state.channel != null) {
+            PlayerControlsOverlay(
+                channelName = state.channel.name,
+                isVisible = state.controlsVisible,
+                isBuffering = state.isBuffering,
+                tracksInfo = state.tracksInfo,
+                onBackClick = { onEvent(PlayerEvent.OnBackClick) },
+                onShowAudioTracks = {
+                    onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.AUDIO))
+                },
+                onShowSubtitles = {
+                    onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.SUBTITLE))
+                },
+                onShowQuality = {
+                    onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.QUALITY))
+                },
+            )
         }
 
         // Track selection dialog

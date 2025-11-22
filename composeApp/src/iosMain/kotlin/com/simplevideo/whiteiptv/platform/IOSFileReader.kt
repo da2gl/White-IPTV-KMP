@@ -21,8 +21,8 @@ class IOSFileReader : FileReader {
         val url = NSURL.URLWithString(uri)
             ?: throw IllegalArgumentException("Invalid file URI: $uri")
 
-        val data: NSData = NSData.dataWithContentsOfURL(url)
-            ?: throw IllegalStateException("Failed to read file: $uri")
+        val data = NSData.dataWithContentsOfURL(url)
+        checkNotNull(data) { "Failed to read file: $uri" }
 
         val byteArray = ByteArray(data.length.toInt())
         byteArray.usePinned { pinnedArray ->

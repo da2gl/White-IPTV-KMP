@@ -9,7 +9,7 @@ import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 fun PlaylistDropdown(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
-    onPlaylistSelected: (PlaylistSelection) -> Unit,
+    onPlaylistSelect: (PlaylistSelection) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val selectedPlaylist = when (selection) {
@@ -21,13 +21,13 @@ fun PlaylistDropdown(
         label = "Playlist",
         items = playlists,
         selectedItem = selectedPlaylist,
-        onItemSelected = { playlist ->
+        onItemSelect = { playlist ->
             val newSelection = if (playlist != null) {
                 PlaylistSelection.Selected(playlist.id)
             } else {
                 PlaylistSelection.All
             }
-            onPlaylistSelected(newSelection)
+            onPlaylistSelect(newSelection)
         },
         itemText = { it.name },
         modifier = modifier,

@@ -8,14 +8,14 @@ import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 fun GroupDropdown(
     groups: List<ChannelGroup>,
     selectedGroup: ChannelGroup?,
-    onGroupSelected: (ChannelGroup?) -> Unit,
+    onGroupSelect: (ChannelGroup?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     DropdownSelector(
         label = "Group",
         items = groups,
         selectedItem = selectedGroup,
-        onItemSelected = { group -> onGroupSelected(group) },
+        onItemSelect = { group -> onGroupSelect(group) },
         itemText = { it.displayName },
         modifier = modifier,
         allItemLabel = "All",

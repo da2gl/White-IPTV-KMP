@@ -14,10 +14,7 @@ class GetFavoritesUseCase(
 ) {
     operator fun invoke(selection: PlaylistSelection = PlaylistSelection.All): Flow<List<ChannelEntity>> =
         when (selection) {
-            is PlaylistSelection.Selected ->
-                channelRepository.getFavoriteChannelsByPlaylist(selection.id)
-
-            PlaylistSelection.All ->
-                channelRepository.getFavoriteChannels()
+            is PlaylistSelection.Selected -> channelRepository.getFavoriteChannelsByPlaylist(selection.id)
+            is PlaylistSelection.All -> channelRepository.getFavoriteChannels()
         }
 }

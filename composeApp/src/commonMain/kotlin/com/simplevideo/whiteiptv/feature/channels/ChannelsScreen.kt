@@ -57,10 +57,10 @@ fun ChannelsScreen(
     ) { paddingValues ->
         ChannelsContent(
             state = state,
-            onPlaylistSelected = { selection ->
+            onPlaylistSelect = { selection ->
                 viewModel.obtainEvent(ChannelsEvent.OnPlaylistSelected(selection))
             },
-            onGroupSelected = { group ->
+            onGroupSelect = { group ->
                 viewModel.obtainEvent(ChannelsEvent.OnGroupSelected(group))
             },
             onChannelClick = { channelId ->
@@ -90,8 +90,8 @@ private fun ChannelsTopAppBar() {
 @Composable
 private fun ChannelsContent(
     state: ChannelsState,
-    onPlaylistSelected: (PlaylistSelection) -> Unit,
-    onGroupSelected: (ChannelGroup?) -> Unit,
+    onPlaylistSelect: (PlaylistSelection) -> Unit,
+    onGroupSelect: (ChannelGroup?) -> Unit,
     onChannelClick: (Long) -> Unit,
     onToggleFavorite: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -100,14 +100,14 @@ private fun ChannelsContent(
         PlaylistDropdown(
             playlists = state.playlists,
             selection = state.selection,
-            onPlaylistSelected = onPlaylistSelected,
+            onPlaylistSelect = onPlaylistSelect,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
         GroupDropdown(
             groups = state.groups,
             selectedGroup = state.selectedGroup,
-            onGroupSelected = onGroupSelected,
+            onGroupSelect = onGroupSelect,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 

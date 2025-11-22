@@ -67,7 +67,7 @@ fun HomeScreen(
             HomeTopAppBar(
                 playlists = state.playlists,
                 selection = state.selection,
-                onPlaylistSelected = { selection ->
+                onPlaylistSelect = { selection ->
                     viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
                 },
             )
@@ -103,14 +103,14 @@ fun HomeScreen(
 private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
-    onPlaylistSelected: (PlaylistSelection) -> Unit,
+    onPlaylistSelect: (PlaylistSelection) -> Unit,
 ) {
     TopAppBar(
         title = {
             HomeTopAppBarTitle(
                 playlists = playlists,
                 selection = selection,
-                onPlaylistSelected = onPlaylistSelected,
+                onPlaylistSelect = onPlaylistSelect,
             )
         },
         actions = {
@@ -128,12 +128,12 @@ private fun HomeTopAppBar(
 private fun HomeTopAppBarTitle(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
-    onPlaylistSelected: (PlaylistSelection) -> Unit,
+    onPlaylistSelect: (PlaylistSelection) -> Unit,
 ) {
     PlaylistDropdown(
         playlists = playlists,
         selection = selection,
-        onPlaylistSelected = onPlaylistSelected,
+        onPlaylistSelect = onPlaylistSelect,
     )
 }
 

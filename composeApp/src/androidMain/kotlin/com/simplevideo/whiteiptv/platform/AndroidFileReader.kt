@@ -19,10 +19,12 @@ class AndroidFileReader(
         val contentUri = uri.toUri()
         val contentResolver = context.contentResolver
 
-        contentResolver.openInputStream(contentUri)?.use { inputStream ->
-            BufferedReader(InputStreamReader(inputStream, Charsets.UTF_8)).use { reader ->
+        val inputStream = contentResolver.openInputStream(contentUri)
+        checkNotNull(inputStream) { "Failed to open file: $uri" }
+        inputStream.use { stream ->
+            BufferedReader(InputStreamReader(stream, Charsets.UTF_8)).use { reader ->
                 reader.readText()
             }
-        } ?: throw IllegalStateException("Failed to open file: $uri")
+        }
     }
 }

@@ -7,6 +7,10 @@ import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Use case for retrieving channel groups
+ * Supports filtering by playlist selection or getting all groups
+ */
 class GetGroupsUseCase(
     private val channelRepository: ChannelRepository,
     private val channelGroupMapper: ChannelGroupMapper,
@@ -17,7 +21,7 @@ class GetGroupsUseCase(
                 is PlaylistSelection.Selected ->
                     groups.filter { it.playlistId == selection.id }
 
-                PlaylistSelection.All -> groups
+                is PlaylistSelection.All -> groups
             }
 
             channelGroupMapper.toDomainList(filteredGroups)

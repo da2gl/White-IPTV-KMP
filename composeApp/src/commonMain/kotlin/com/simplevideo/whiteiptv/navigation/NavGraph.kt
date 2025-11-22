@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.simplevideo.whiteiptv.feature.main.MainScreen
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingScreen
 import com.simplevideo.whiteiptv.feature.player.PlayerScreen
@@ -57,10 +56,8 @@ fun AppNavGraph(
         }
 
         // Player screen
-        composable<Route.Player> { backStackEntry ->
-            val route = backStackEntry.toRoute<Route.Player>()
+        composable<Route.Player> {
             PlayerScreen(
-                channelId = route.channelId,
                 onNavigateBack = { navController.popBackStack() },
             )
         }

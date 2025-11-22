@@ -8,8 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Audiotrack
@@ -20,7 +18,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -36,10 +33,8 @@ fun PlayerControlsOverlay(
     channelName: String,
     isVisible: Boolean,
     isBuffering: Boolean,
-    liveOffsetMs: Long,
     tracksInfo: TracksInfo,
     onBackClick: () -> Unit,
-    onSeekToLive: () -> Unit,
     onShowAudioTracks: () -> Unit,
     onShowSubtitles: () -> Unit,
     onShowQuality: () -> Unit,
@@ -112,15 +107,9 @@ fun PlayerControlsOverlay(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        // Live indicator
-                        LiveIndicator(
-                            liveOffsetMs = liveOffsetMs,
-                            onClick = onSeekToLive,
-                        )
-
                         // Track selection buttons
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -158,47 +147,6 @@ fun PlayerControlsOverlay(
             }
         }
     }
-}
-
-@Composable
-fun LiveIndicator(
-    liveOffsetMs: Long,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val isLive = liveOffsetMs < 10_000 // Within 10 seconds of live edge
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
-            .background(
-                if (isLive) Color.Red else Color.Gray,
-                RoundedCornerShape(4.dp),
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .background(Color.White, CircleShape),
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = if (isLive) "LIVE" else formatOffset(liveOffsetMs),
-            style = MaterialTheme.typography.labelMedium,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-        )
-    }
-}
-
-private fun formatOffset(offsetMs: Long): String {
-    val seconds = (offsetMs / 1000).toInt()
-    val minutes = seconds / 60
-    val secs = seconds % 60
-    return if (minutes > 0) "-${minutes}m ${secs}s" else "-${secs}s"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

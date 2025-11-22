@@ -64,13 +64,7 @@ interface VideoPlayer {
 
 /**
  * Platform-specific video player factory
- * Android: Creates ExoPlayer-based VideoPlayer
- * iOS: Creates AVPlayer-based VideoPlayer (placeholder)
  */
 interface VideoPlayerFactory {
-    /**
-     * Create a new player instance
-     * Player lifecycle should be managed by the caller
-     */
     fun createPlayer(): VideoPlayer
 }

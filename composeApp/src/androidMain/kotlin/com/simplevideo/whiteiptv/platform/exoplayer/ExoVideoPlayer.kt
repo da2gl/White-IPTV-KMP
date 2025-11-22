@@ -1,7 +1,12 @@
 package com.simplevideo.whiteiptv.platform.exoplayer
 
 import androidx.annotation.OptIn
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.media3.common.*
 import androidx.media3.common.util.UnstableApi
@@ -21,7 +26,7 @@ import com.simplevideo.whiteiptv.platform.VideoPlayer
 
 /**
  * Android implementation of VideoPlayer wrapping ExoPlayer
- * Optimized for IPTV live streaming
+ * Uses custom Compose controls with gesture support
  */
 @OptIn(UnstableApi::class)
 class ExoVideoPlayer(
@@ -33,6 +38,7 @@ class ExoVideoPlayer(
 
     private val listeners = mutableListOf<PlayerListener>()
     private val tracksInfoMapper = TracksInfoMapper(trackSelector)
+    private val videoAspectRatio = mutableFloatStateOf(16f / 9f) // Default 16:9
 
     init {
         exoPlayer.addListener(
@@ -53,14 +59,47 @@ class ExoVideoPlayer(
                     listeners.forEach { it.onTracksChanged(tracksInfo) }
                 }
 
-                override fun onPlayerError(error: PlaybackException) {
-                    listeners.forEach { it.onError(error.errorCode, error.message ?: "Unknown error") }
+                override fun onVideoSizeChanged(videoSize: VideoSize) {
+                    if (videoSize.width > 0 && videoSize.height > 0) {
+                        val ratio = (videoSize.width * videoSize.pixelWidthHeightRatio) / videoSize.height
+                        videoAspectRatio.floatValue = ratio
+                    }
+                }
 
-                    // Auto-recover from behind live window error
+                override fun onPlayerError(error: PlaybackException) {
+                    // Auto-recover from behind live window error without showing to user
                     if (error.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {
                         exoPlayer.seekToDefaultPosition()
                         exoPlayer.prepare()
+                        return
                     }
+
+                    // User-friendly error messages
+                    val message = when (error.errorCode) {
+                        PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED ->
+                            "Network connection failed"
+
+                        PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT ->
+                            "Connection timeout"
+
+                        PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS -> {
+                            val cause = error.cause
+                            if (cause?.message?.contains("404") == true) {
+                                "Channel not available (404)"
+                            } else if (cause?.message?.contains("403") == true) {
+                                "Access denied (403)"
+                            } else {
+                                "Server error: ${cause?.message ?: "Unknown"}"
+                            }
+                        }
+
+                        PlaybackException.ERROR_CODE_PARSING_MANIFEST_MALFORMED ->
+                            "Invalid stream format"
+
+                        else -> error.message ?: "Playback error"
+                    }
+
+                    listeners.forEach { it.onError(error.errorCode, message) }
                 }
             },
         )
@@ -88,7 +127,13 @@ class ExoVideoPlayer(
     override fun getCurrentLiveOffset(): Long = exoPlayer.currentLiveOffset
 
     override fun seekToLiveEdge() {
-        exoPlayer.seekToDefaultPosition()
+        // seekToDefaultPosition() goes to targetLiveOffset, not actual live edge
+        // Use duration to seek to the real live edge (0 offset)
+        if (exoPlayer.isCurrentMediaItemLive) {
+            exoPlayer.seekTo(exoPlayer.duration)
+        } else {
+            exoPlayer.seekToDefaultPosition()
+        }
     }
 
     override fun addListener(listener: PlayerListener) {
@@ -226,10 +271,15 @@ class ExoVideoPlayer(
 
     @Composable
     override fun PlayerView(modifier: Modifier) {
-        PlayerSurface(
-            player = exoPlayer,
-            surfaceType = SURFACE_TYPE_SURFACE_VIEW,
-            modifier = modifier,
-        )
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            PlayerSurface(
+                player = exoPlayer,
+                surfaceType = SURFACE_TYPE_SURFACE_VIEW,
+                modifier = Modifier.aspectRatio(videoAspectRatio.floatValue),
+            )
+        }
     }
 }

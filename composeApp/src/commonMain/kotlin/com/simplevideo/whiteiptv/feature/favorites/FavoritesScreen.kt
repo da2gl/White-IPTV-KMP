@@ -86,7 +86,7 @@ fun FavoritesScreen(
             PlaylistDropdown(
                 playlists = state.playlists,
                 selection = state.selection,
-                onPlaylistSelected = { selection ->
+                onPlaylistSelect = { selection ->
                     viewModel.obtainEvent(FavoritesEvent.OnPlaylistSelected(selection))
                 },
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),

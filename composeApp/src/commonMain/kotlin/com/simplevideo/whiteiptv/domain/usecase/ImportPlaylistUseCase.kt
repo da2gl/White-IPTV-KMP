@@ -252,7 +252,10 @@ class ImportPlaylistUseCase(
         }
 
         val favoritesCount = channelEntities.count { it.isFavorite }
-        log.d { "Data prepared: ${channelEntities.size} channels, ${groups.size} groups, $favoritesCount favorites preserved" }
+        log.d {
+            "Data prepared: ${channelEntities.size} channels, ${groups.size} groups, " +
+                "$favoritesCount favorites preserved"
+        }
         log.d { "Updating database..." }
 
         // All database operations

@@ -9,11 +9,11 @@ package com.simplevideo.whiteiptv.platform
  */
 data class PlayerConfig(
     // Buffer configuration
-    val minBufferMs: Int = 15_000,
+    val minBufferMs: Int = 10_000,
     val maxBufferMs: Int = 30_000,
-    val bufferForPlaybackMs: Int = 2_500,
-    val bufferForPlaybackAfterRebufferMs: Int = 5_000,
-    val backBufferMs: Int = 30_000,
+    val bufferForPlaybackMs: Int = 1_000,
+    val bufferForPlaybackAfterRebufferMs: Int = 2_000,
+    val backBufferMs: Int = 10_000,
 
     // Network configuration
     val connectTimeoutMs: Int = 15_000,

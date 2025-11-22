@@ -56,6 +56,7 @@ val useCaseModule = module {
     factoryOf(::GetChannelsUseCase)
     factoryOf(::ToggleFavoriteUseCase)
     factoryOf(::GetChannelByIdUseCase)
+    factoryOf(::GetAdjacentChannelUseCase)
 }
 
 val networkModule = module {

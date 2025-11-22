@@ -16,7 +16,7 @@ fun <T> DropdownSelector(
     label: String,
     items: List<T>,
     selectedItem: T?,
-    onItemSelected: (T?) -> Unit,
+    onItemSelect: (T?) -> Unit,
     itemText: (T) -> String,
     modifier: Modifier = Modifier,
     allItemLabel: String = "All",
@@ -57,7 +57,7 @@ fun <T> DropdownSelector(
                 DropdownMenuItem(
                     text = { Text(allItemLabel) },
                     onClick = {
-                        onItemSelected(null)
+                        onItemSelect(null)
                         expanded = false
                     },
                 )
@@ -66,7 +66,7 @@ fun <T> DropdownSelector(
                 DropdownMenuItem(
                     text = { Text(itemText(item)) },
                     onClick = {
-                        onItemSelected(item)
+                        onItemSelect(item)
                         expanded = false
                     },
                 )

@@ -11,6 +11,5 @@ import kotlinx.coroutines.flow.Flow
 class GetPlaylistsUseCase(
     private val playlistRepository: PlaylistRepository,
 ) {
-    operator fun invoke(): Flow<List<PlaylistEntity>> =
-        playlistRepository.getPlaylists()
+    operator fun invoke(): Flow<List<PlaylistEntity>> = playlistRepository.getPlaylists()
 }

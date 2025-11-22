@@ -10,6 +10,5 @@ import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 class GetChannelByIdUseCase(
     private val playlistDao: PlaylistDao,
 ) {
-    suspend operator fun invoke(channelId: Long): ChannelEntity? =
-        playlistDao.getChannelById(channelId)
+    suspend operator fun invoke(channelId: Long): ChannelEntity? = playlistDao.getChannelById(channelId)
 }

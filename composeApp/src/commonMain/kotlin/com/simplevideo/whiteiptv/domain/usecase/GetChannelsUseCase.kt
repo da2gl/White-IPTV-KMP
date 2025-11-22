@@ -5,6 +5,10 @@ import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Use case for retrieving channels with flexible filtering
+ * Supports all channels, by playlist, or by group
+ */
 class GetChannelsUseCase(
     private val channelRepository: ChannelRepository,
 ) {
