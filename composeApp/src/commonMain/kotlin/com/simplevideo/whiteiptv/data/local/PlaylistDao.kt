@@ -34,7 +34,7 @@ interface PlaylistDao {
     fun getAllChannels(): Flow<List<ChannelEntity>>
 
     @Query("SELECT * FROM channels WHERE playlistId = :playlistId")
-    fun getChannels(playlistId: Long): Flow<List<ChannelEntity>>
+    fun getChannelsByPlaylistId(playlistId: Long): Flow<List<ChannelEntity>>
 
     @Query("SELECT COUNT(*) FROM playlists")
     suspend fun getPlaylistCount(): Int

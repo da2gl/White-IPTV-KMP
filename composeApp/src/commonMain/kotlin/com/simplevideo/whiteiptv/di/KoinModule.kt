@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.di
 
 import com.simplevideo.whiteiptv.data.local.AppDatabase
+import com.simplevideo.whiteiptv.data.mapper.ChannelGroupMapper
 import com.simplevideo.whiteiptv.data.mapper.ChannelMapper
 import com.simplevideo.whiteiptv.data.mapper.PlaylistMapper
 import com.simplevideo.whiteiptv.data.network.HttpClientFactory
@@ -38,15 +39,19 @@ val repositoryModule = module {
 
 val mapperModule = module {
     factoryOf(::ChannelMapper)
+    factoryOf(::ChannelGroupMapper)
     factoryOf(::PlaylistMapper)
 }
 
 val useCaseModule = module {
     factoryOf(::ImportPlaylistUseCase)
+    factoryOf(::HasPlaylistUseCase)
     factoryOf(::GetContinueWatchingUseCase)
     factoryOf(::GetFavoritesUseCase)
     factoryOf(::GetPlaylistsUseCase)
-    factoryOf(::GetCategoriesUseCase)
+    factoryOf(::GetHomeCategoriesUseCase)
+    factoryOf(::GetGroupsUseCase)
+    factoryOf(::GetChannelsUseCase)
     factoryOf(::ToggleFavoriteUseCase)
 }
 

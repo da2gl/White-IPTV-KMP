@@ -3,9 +3,9 @@ package com.simplevideo.whiteiptv.feature.home
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
-import com.simplevideo.whiteiptv.domain.usecase.GetCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetHomeCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
@@ -18,7 +18,7 @@ class HomeViewModel(
     getPlaylists: GetPlaylistsUseCase,
     getContinueWatching: GetContinueWatchingUseCase,
     getFavorites: GetFavoritesUseCase,
-    getCategories: GetCategoriesUseCase,
+    getHomeCategories: GetHomeCategoriesUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialState = HomeState()) {
 
@@ -29,7 +29,7 @@ class HomeViewModel(
                     getPlaylists(),
                     getContinueWatching(),
                     getFavorites(selection),
-                    getCategories(selection),
+                    getHomeCategories(selection),
                 ) { playlists, continueWatching, favorites, categories ->
                     HomeState(
                         playlists = playlists,

@@ -3,12 +3,14 @@ package com.simplevideo.whiteiptv.feature.channels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
+import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
-import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
-import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.domain.usecase.GetChannelsUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetGroupsUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
+import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
@@ -19,8 +21,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalCoroutinesApi::class)
 class ChannelsViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val channelRepository: ChannelRepository,
-    private val playlistRepository: PlaylistRepository,
+    private val getPlaylists: GetPlaylistsUseCase,
+    private val getGroups: GetGroupsUseCase,
+    private val getChannels: GetChannelsUseCase,
+    private val toggleFavorite: ToggleFavoriteUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
     initialState = ChannelsState()
@@ -44,52 +48,36 @@ class ChannelsViewModel(
 
     private fun loadData() {
         combine(
-            playlistRepository.getPlaylists(),
-            channelRepository.getAllGroups(),
+            getPlaylists(),
             currentPlaylistRepository.selection,
             selectedGroupIdFlow,
-        ) { playlists, groups, selection, selectedGroupId ->
-            val filteredGroups = when (selection) {
-                is PlaylistSelection.Selected ->
-                    groups.filter { it.playlistId == selection.id }
-
-                PlaylistSelection.All -> groups
+        ) { playlists, selection, selectedGroupId ->
+            Triple(playlists, selection, selectedGroupId)
+        }.flatMapLatest { (playlists, selection, selectedGroupId) ->
+            getGroups(selection).map { groups ->
+                val selectedGroup = selectedGroupId?.let { id ->
+                    groups.find { it.id == id }
+                }
+                DataState(playlists, selection, groups, selectedGroup)
             }
-
-            val channelGroups = filteredGroups.map { group ->
-                ChannelGroup(
-                    id = group.id.toString(),
-                    displayName = group.name,
-                    icon = group.icon,
-                    channelCount = group.channelCount,
-                    playlistId = group.playlistId,
-                )
-            }
-
-            val selectedGroup = selectedGroupId?.let { id ->
-                channelGroups.find { it.id == id }
-            }
-
-            DataState(playlists, selection, channelGroups, selectedGroup)
         }.flatMapLatest { data ->
-            val channelsFlow = if (data.selectedGroup != null) {
-                val groupId = data.selectedGroup.id.toLongOrNull()
-                if (groupId != null) {
-                    channelRepository.getChannelsByGroupId(groupId)
-                } else {
-                    channelRepository.getAllChannels()
+            val filter = when {
+                data.selectedGroup != null -> {
+                    val groupId = data.selectedGroup.id.toLongOrNull()
+                    if (groupId != null) {
+                        ChannelsFilter.ByGroup(groupId)
+                    } else {
+                        ChannelsFilter.All
+                    }
                 }
-            } else {
-                when (data.selection) {
-                    is PlaylistSelection.Selected ->
-                        channelRepository.getChannels(data.selection.id)
 
-                    PlaylistSelection.All ->
-                        channelRepository.getAllChannels()
+                data.selection is PlaylistSelection.Selected -> {
+                    ChannelsFilter.ByPlaylist(data.selection.id)
                 }
+
+                else -> ChannelsFilter.All
             }
-
-            channelsFlow.onEach { channels ->
+            getChannels(filter).onEach { channels ->
                 viewState = ChannelsState(
                     channels = channels,
                     playlists = data.playlists,
@@ -103,7 +91,7 @@ class ChannelsViewModel(
     }
 
     private data class DataState(
-        val playlists: List<PlaylistEntity>,
+        val playlists: List<com.simplevideo.whiteiptv.data.local.model.PlaylistEntity>,
         val selection: PlaylistSelection,
         val groups: List<ChannelGroup>,
         val selectedGroup: ChannelGroup?,
@@ -113,7 +101,7 @@ class ChannelsViewModel(
         when (viewEvent) {
             is ChannelsEvent.OnPlaylistSelected -> selectPlaylist(viewEvent.selection)
             is ChannelsEvent.OnGroupSelected -> selectGroup(viewEvent.group)
-            is ChannelsEvent.OnToggleFavorite -> toggleFavorite(viewEvent.channelId)
+            is ChannelsEvent.OnToggleFavorite -> toggleFavoriteChannel(viewEvent.channelId)
             is ChannelsEvent.OnChannelClick -> {
                 viewAction = ChannelsAction.NavigateToPlayer(viewEvent.channelId)
             }
@@ -129,10 +117,10 @@ class ChannelsViewModel(
         updateSelectedGroupId(group?.id)
     }
 
-    private fun toggleFavorite(channelId: Long) {
+    private fun toggleFavoriteChannel(channelId: Long) {
         viewModelScope.launch {
             try {
-                channelRepository.toggleFavoriteStatus(channelId)
+                toggleFavorite(channelId)
             } catch (e: Exception) {
                 viewAction = ChannelsAction.ShowError(e.message ?: "Unknown error")
             }

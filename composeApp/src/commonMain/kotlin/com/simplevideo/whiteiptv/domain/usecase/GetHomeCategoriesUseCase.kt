@@ -2,6 +2,7 @@ package com.simplevideo.whiteiptv.domain.usecase
 
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
+import com.simplevideo.whiteiptv.data.mapper.ChannelGroupMapper
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
@@ -20,8 +21,9 @@ import kotlinx.coroutines.flow.flow
  * 2. Select priority groups (news, sport, music, general) if available
  * 3. Fill remaining slots with top groups by channel count
  */
-class GetCategoriesUseCase(
+class GetHomeCategoriesUseCase(
     private val channelRepository: ChannelRepository,
+    private val channelGroupMapper: ChannelGroupMapper,
 ) {
     private val invalidNames = setOf("undefined", "unknown", "other", "")
     private val priorityKeywords = listOf("news", "sport", "music", "general")
@@ -48,13 +50,7 @@ class GetCategoriesUseCase(
         val result = coroutineScope {
             selectedGroups.map { group ->
                 async {
-                    val channelGroup = ChannelGroup(
-                        id = group.id.toString(),
-                        displayName = group.name,
-                        icon = group.icon,
-                        channelCount = group.channelCount,
-                        playlistId = group.playlistId,
-                    )
+                    val channelGroup = channelGroupMapper.toDomain(group)
                     val channels = channelRepository.getRandomChannelsByGroupId(
                         groupId = group.id,
                         limit = channelsPerGroup,
