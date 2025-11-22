@@ -59,7 +59,10 @@ fun AppNavGraph(
         // Player screen
         composable<Route.Player> { backStackEntry ->
             val route = backStackEntry.toRoute<Route.Player>()
-            PlayerScreen(channelId = route.channelId)
+            PlayerScreen(
+                channelId = route.channelId,
+                onNavigateBack = { navController.popBackStack() },
+            )
         }
     }
 }

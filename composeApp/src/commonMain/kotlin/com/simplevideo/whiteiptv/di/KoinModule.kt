@@ -15,6 +15,7 @@ import com.simplevideo.whiteiptv.feature.channels.ChannelsViewModel
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesViewModel
 import com.simplevideo.whiteiptv.feature.home.HomeViewModel
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
+import com.simplevideo.whiteiptv.feature.player.PlayerViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -29,6 +30,7 @@ val viewModelModule = module {
     viewModelOf(::HomeViewModel)
     viewModelOf(::FavoritesViewModel)
     viewModelOf(::ChannelsViewModel)
+    viewModelOf(::PlayerViewModel)
 }
 
 val repositoryModule = module {
@@ -53,6 +55,7 @@ val useCaseModule = module {
     factoryOf(::GetGroupsUseCase)
     factoryOf(::GetChannelsUseCase)
     factoryOf(::ToggleFavoriteUseCase)
+    factoryOf(::GetChannelByIdUseCase)
 }
 
 val networkModule = module {

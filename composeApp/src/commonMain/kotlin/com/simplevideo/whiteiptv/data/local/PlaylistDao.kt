@@ -33,6 +33,9 @@ interface PlaylistDao {
     @Query("SELECT * FROM channels ORDER BY name ASC")
     fun getAllChannels(): Flow<List<ChannelEntity>>
 
+    @Query("SELECT * FROM channels WHERE id = :channelId")
+    suspend fun getChannelById(channelId: Long): ChannelEntity?
+
     @Query("SELECT * FROM channels WHERE playlistId = :playlistId")
     fun getChannelsByPlaylistId(playlistId: Long): Flow<List<ChannelEntity>>
 
