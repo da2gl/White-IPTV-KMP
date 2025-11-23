@@ -48,6 +48,22 @@ class IOSVideoPlayer : VideoPlayer {
         listeners.remove(listener)
     }
 
+    override fun getTracksInfo(): TracksInfo {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectAudioTrack(trackId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectSubtitleTrack(trackId: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun selectVideoQuality(qualityId: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun setMediaSource(
         url: String,
         userAgent: String?,

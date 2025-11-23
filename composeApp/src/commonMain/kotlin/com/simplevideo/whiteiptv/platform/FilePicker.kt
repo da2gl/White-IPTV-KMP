@@ -16,9 +16,16 @@ interface FilePicker {
 }
 
 /**
- * Composable function to remember platform-specific FilePicker
- * Android: uses rememberLauncherForActivityResult
- * iOS: uses UIViewControllerRepresentable
+ * Platform-specific file picker factory
+ * Provides DI-injectable way to create FilePicker instances
+ * Android: uses ActivityResultLauncher (requires Compose context)
+ * iOS: uses UIDocumentPickerViewController
  */
-@Composable
-expect fun rememberFilePicker(): FilePicker
+interface FilePickerFactory {
+    /**
+     * Create a FilePicker instance
+     * Must be called from Composable context on Android due to ActivityResultLauncher requirements
+     */
+    @Composable
+    fun createFilePicker(): FilePicker
+}

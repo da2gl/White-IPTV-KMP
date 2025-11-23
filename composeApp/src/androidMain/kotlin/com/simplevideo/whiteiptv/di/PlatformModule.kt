@@ -4,9 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
-import com.simplevideo.whiteiptv.platform.AndroidFileReader
-import com.simplevideo.whiteiptv.platform.FileReader
-import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
+import com.simplevideo.whiteiptv.platform.*
 import com.simplevideo.whiteiptv.platform.exoplayer.ExoPlayerFactory
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -30,5 +28,9 @@ actual fun platformModule(): Module = module {
 
     single<VideoPlayerFactory> {
         ExoPlayerFactory(get())
+    }
+
+    single<FilePickerFactory> {
+        AndroidFilePickerFactory(get())
     }
 }

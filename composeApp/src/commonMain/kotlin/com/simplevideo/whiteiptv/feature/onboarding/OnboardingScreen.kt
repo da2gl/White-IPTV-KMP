@@ -16,10 +16,11 @@ import com.simplevideo.whiteiptv.designsystem.AppTypography
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
-import com.simplevideo.whiteiptv.platform.rememberFilePicker
+import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import white_iptv_kmp.composeapp.generated.resources.*
 
@@ -28,7 +29,7 @@ fun OnboardingScreen(
     onNavigateToMain: () -> Unit,
 ) {
     val viewModel = koinViewModel<OnboardingViewModel>()
-    val filePicker = rememberFilePicker()
+    val filePicker = koinInject<FilePickerFactory>().createFilePicker()
     val state by viewModel.viewStates().collectAsStateWithLifecycle()
     val action by viewModel.viewActions().collectAsStateWithLifecycle(initialValue = null)
 
@@ -209,39 +210,39 @@ private fun OnboardingContent(
     }
 }
 
-// @Preview(showBackground = true)
-// @Composable
-// private fun OnboardingScreenPreview() {
-//    AppTheme {
-//        OnboardingContent(
-//            state = OnboardingState(),
-//            onEvent = {},
-//        )
-//    }
-// }
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenPreview() {
+    AppTheme {
+        OnboardingContent(
+            state = OnboardingState(),
+            onEvent = {},
+        )
+    }
+}
 
-// @Preview(showBackground = true)
-// @Composable
-// private fun OnboardingScreenLoadingPreview() {
-//    AppTheme {
-//        OnboardingContent(
-//            state = OnboardingState(isLoading = true),
-//            onEvent = {},
-//        )
-//    }
-// }
-//
-// @Preview(showBackground = true)
-// @Composable
-// private fun OnboardingScreenErrorPreview() {
-//    AppTheme {
-//        OnboardingContent(
-//            state = OnboardingState(error = "Invalid playlist format"),
-//            onEvent = {},
-//        )
-//    }
-// }
-//
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenLoadingPreview() {
+    AppTheme {
+        OnboardingContent(
+            state = OnboardingState(isLoading = true),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenErrorPreview() {
+    AppTheme {
+        OnboardingContent(
+            state = OnboardingState(error = "Invalid playlist format"),
+            onEvent = {},
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun OnboardingScreenDarkPreview() {
@@ -252,25 +253,25 @@ private fun OnboardingScreenDarkPreview() {
         )
     }
 }
-// //
-// @Preview(showBackground = true)
-// @Composable
-// private fun OnboardingScreenLoadingDarkPreview() {
-//    AppTheme(darkTheme = true) {
-//        OnboardingContent(
-//            state = OnboardingState(isLoading = true),
-//            onEvent = {},
-//        )
-//    }
-// }
-//
-// @Preview(showBackground = true)
-// @Composable
-// private fun OnboardingScreenErrorDarkPreview() {
-//    AppTheme(darkTheme = true) {
-//        OnboardingContent(
-//            state = OnboardingState(error = "Invalid playlist format"),
-//            onEvent = {},
-//        )
-//    }
-// }
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenLoadingDarkPreview() {
+    AppTheme(darkTheme = true) {
+        OnboardingContent(
+            state = OnboardingState(isLoading = true),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun OnboardingScreenErrorDarkPreview() {
+    AppTheme(darkTheme = true) {
+        OnboardingContent(
+            state = OnboardingState(error = "Invalid playlist format"),
+            onEvent = {},
+        )
+    }
+}

@@ -12,13 +12,14 @@ import platform.UniformTypeIdentifiers.UTTypePlainText
 import platform.darwin.NSObject
 
 /**
- * iOS Compose implementation of FilePicker
+ * iOS implementation of FilePickerFactory
  * Uses UIDocumentPickerViewController with modern UTType API
  */
-@Composable
-actual fun rememberFilePicker(): FilePicker {
-    return remember {
-        IOSFilePicker()
+class IOSFilePickerFactory : FilePickerFactory {
+
+    @Composable
+    override fun createFilePicker(): FilePicker {
+        return remember { IOSFilePicker() }
     }
 }
 
