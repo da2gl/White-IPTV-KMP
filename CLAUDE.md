@@ -13,8 +13,8 @@ platform-specific implementations while maintaining a common codebase.
 
 - Kotlin 2.2.21
 - Compose Multiplatform 1.9.3
-- Gradle 9.2.0
-- Android Gradle Plugin 8.13.1
+- Gradle 9.2.1
+- Android Gradle Plugin 9.0.1
 
 **Target Platforms:**
 
@@ -85,153 +85,140 @@ Clean build artifacts:
 
 ## Code Quality
 
-The project uses multiple lint tools to ensure code quality and consistency across all platforms.
-
 ### Lint Tools
 
-**ktlint** - Kotlin code formatting and style:
+**ktlint** (1.7.1, Gradle plugin 14.0.1) - Kotlin code formatting per `.editorconfig`.
 
-- Enforces official Kotlin code style
-- Auto-formats code according to .editorconfig
-- Version: 1.7.1 (Gradle plugin: 13.1.0)
-
-**Detekt** - Static code analysis:
-
-- Checks code complexity, potential bugs, and code smells
-- Includes Compose-specific rules (io.nlopez.compose.rules 0.4.27)
-- Configuration: `config/detekt/detekt.yml`
-- Version: 1.23.8
+**Detekt** (1.23.8) - Static analysis with Compose-specific rules (io.nlopez.compose.rules
+0.4.27). Config: `config/detekt/detekt.yml`.
 
 ### Commands
 
-**Format all Kotlin code and auto-fix issues (including unused imports):**
-
 ```bash
-./gradlew formatAll
-```
+./gradlew formatAll            # Run ktlintFormat + detektFormat (use before committing)
 
-**Individual tools:**
+./gradlew ktlintCheck          # Check code style
+./gradlew ktlintFormat         # Auto-format code
 
-```bash
-# ktlint
-./gradlew ktlintCheck        # Check code style
-./gradlew ktlintFormat       # Auto-format code
-
-# Detekt
-./gradlew detekt             # Run static analysis
-./gradlew detektFormat       # Auto-fix issues (unused imports, etc.)
-./gradlew detektBaseline     # Create baseline for existing issues
+./gradlew detekt               # Run static analysis
+./gradlew detektFormat         # Auto-fix issues (unused imports, etc.)
+./gradlew detektBaseline       # Create baseline for existing issues
 ```
 
 ### Git Hooks
 
-The project includes a pre-commit hook that automatically:
-
-1. Formats staged Kotlin files with ktlint
-2. Runs Detekt static analysis
-3. Re-stages formatted files
-
-**To enable the hook:**
+Pre-commit hook formats staged Kotlin files with ktlint and runs Detekt.
 
 ```bash
-git config core.hooksPath .git-hooks
-```
-
-**To bypass (not recommended):**
-
-```bash
-git commit --no-verify
+git config core.hooksPath .git-hooks    # Enable
+git commit --no-verify                  # Bypass (not recommended)
 ```
 
 ### Configuration Files
 
-- `.editorconfig` - Code style settings (120 char line length, trailing commas, etc.)
-- `config/detekt/detekt.yml` - Detekt rules configuration
+- `.editorconfig` - Code style (120 char line length, trailing commas, 4-space indent)
+- `config/detekt/detekt.yml` - Detekt rules
+- `config/detekt/baseline.xml` - Suppressed existing issues (regenerate with `./gradlew detektBaseline`)
 - `.git-hooks/pre-commit` - Pre-commit hook script
-
-### Baseline Files
-
-If you need to suppress existing issues temporarily:
-
-```bash
-./gradlew detektBaseline
-```
-
-This creates `config/detekt/baseline.xml` with current issues that will be ignored.
 
 ## Project Structure
 
-### Module Organization
-
-The project uses a single-module structure with platform-specific source sets:
+Single-module KMM project with platform-specific source sets:
 
 ```
-composeApp/
-├── src/
-│   ├── commonMain/     # Shared code for all platforms
-│   ├── androidMain/    # Android-specific implementations
-│   └── iosMain/        # iOS-specific implementations
+composeApp/src/
+├── commonMain/kotlin/com/simplevideo/whiteiptv/
+│   ├── App.kt                     # Root composable
+│   ├── di/                        # Koin modules (KoinModule.kt, KoinInitializer.kt)
+│   ├── navigation/                # Type-safe routes (Route.kt, NavGraph.kt)
+│   ├── domain/
+│   │   ├── model/                 # Business objects (PlaylistSource, ChannelsFilter, ChannelGroup)
+│   │   ├── repository/            # Repository interfaces
+│   │   ├── usecase/               # Business logic (11 UseCases)
+│   │   └── exception/             # PlaylistException sealed class
+│   ├── data/
+│   │   ├── local/                 # Room database, entities, DAOs
+│   │   ├── repository/            # Repository implementations
+│   │   ├── mapper/                # Domain <-> Entity transformations
+│   │   ├── parser/playlist/       # M3U/M3U8 parser
+│   │   └── network/               # Ktor HTTP client
+│   ├── feature/                   # Presentation layer (MVI screens)
+│   │   ├── splash/                # Initial loading
+│   │   ├── onboarding/            # Playlist import
+│   │   ├── main/                  # Tab container
+│   │   ├── home/                  # Home tab
+│   │   ├── channels/              # Channel list tab
+│   │   ├── favorites/             # Favorites tab
+│   │   ├── player/                # Video player + components/
+│   │   └── settings/              # Settings tab
+│   ├── platform/                  # expect declarations (FileReader, FilePicker, VideoPlayerFactory)
+│   ├── designsystem/              # Material3 theme (Theme.kt, Color.kt, Typography.kt)
+│   └── common/                    # BaseViewModel, AppLogger, shared UI components
+├── androidMain/                   # Android actual implementations
+│   ├── MainActivity.kt
+│   ├── di/PlatformModule.kt
+│   └── platform/
+│       ├── AndroidFileReader.kt, AndroidFilePickerFactory.kt
+│       ├── AndroidSystemControls.kt, KeepScreenOn.android.kt
+│       └── exoplayer/             # ExoPlayer integration (5 files)
+└── iosMain/                       # iOS actual implementations
+    ├── MainViewController.kt
+    ├── di/PlatformModule.kt
+    └── platform/
+        ├── IOSFileReader.kt, IOSFilePickerFactory.kt
+        ├── IOSVideoPlayerFactory.kt, IOSSystemControls.kt
+        └── KeepScreenOn.ios.kt
 ```
 
-### Source Sets
-
-**commonMain** - Platform-agnostic code:
-
-- Uses Compose Multiplatform for UI (Material3)
-- Contains business logic and shared models
-- Defines `expect` declarations for platform-specific APIs
-
-**androidMain** - Android implementations:
-
-- `MainActivity.kt` - Entry point extending `ComponentActivity`
-- `Platform.android.kt` - Android `actual` implementations
-- Android resources (manifests, drawables, strings)
-
-**iosMain** - iOS implementations:
-
-- `MainViewController.kt` - Creates `UIViewController` for Compose UI
-- `Platform.ios.kt` - iOS `actual` implementations
-
-**iosApp** (separate Swift module):
-
-- Native iOS app shell that hosts the Kotlin framework
-- `ContentView.swift` - Bridges SwiftUI to Compose via `UIViewControllerRepresentable`
+`iosApp/` - Native iOS app shell (SwiftUI bridge to Compose via `UIViewControllerRepresentable`).
 
 ## Architecture Patterns
 
 ### Clean Architecture
 
-The project follows Clean Architecture principles with clear separation of concerns:
+```
+Presentation (feature/)  →  Domain (domain/)  →  Data (data/)
+   ViewModels, Screens       UseCases, Models     Repositories, DB, Network
+```
 
-**Domain Layer** (`domain/`):
+- **Domain layer** has no dependencies on Data or Presentation
+- **UseCases** encapsulate business logic; ViewModels delegate to them
+- **Repository interfaces** in domain/, implementations in data/
+- **Mappers** transform between domain models and database entities
 
-- **Models**: Pure business objects (Channel, Playlist, PlaylistSource)
-- **UseCases**: Business logic encapsulation (ImportPlaylistUseCase)
-- **Repository Interfaces**: Abstract data access contracts
-- **Exceptions**: Business-specific exceptions (PlaylistException)
+### MVI (Model-View-Intent)
 
-**Data Layer** (`data/`):
+Each feature follows the State/Event/Action pattern:
 
-- **Repository Implementations**: Concrete data access (PlaylistRepositoryImpl)
-- **Mappers**: Transform between domain and data models (ChannelMapper, PlaylistMapper)
-- **Local**: Room database entities and DAOs
-- **Parser**: M3U playlist parsing logic
-- **Network**: HTTP client configuration
+```kotlin
+data class XxxState(...)          // Immutable UI state, observed via collectAsState()
+sealed interface XxxEvent { ... } // User interactions, sent via viewModel.obtainEvent()
+sealed interface XxxAction { ... }// One-time side effects, consumed via LaunchedEffect
 
-**Presentation Layer** (`feature/`):
+class XxxViewModel(
+    private val useCase: SomeUseCase
+) : BaseViewModel<XxxState, XxxAction, XxxEvent>(initialState = XxxState()) {
+    override fun obtainEvent(viewEvent: XxxEvent) { ... }
+}
+```
 
-- **ViewModels**: MVI pattern with State/Action/Event
-- **Screens**: Compose UI components
-- **MVI**: State management pattern files
+`BaseViewModel` manages `MutableStateFlow<State>` for continuous observation and
+`MutableSharedFlow<Action?>` (replay=1) for one-time effects. Use `viewState` property to mutate
+state and `viewAction` to emit actions. Call `clearAction()` after consuming.
 
-**Platform Layer** (`platform/`):
+### Navigation
 
-- **Interfaces**: Platform-specific contracts (FilePicker, FileReader)
-- **Implementations**: expect/actual platform code
+Type-safe routes using Kotlin Serialization (`navigation/Route.kt`):
+
+```
+Splash → (Onboarding | Main)
+Main contains tabs: Home | Favorites | Channels(groupId?) | Settings
+Main → Player(channelId: Long)
+```
+
+`PopUpTo` clears back stack on Splash→Onboarding and Onboarding→Main transitions.
 
 ### UseCase Pattern
-
-UseCases encapsulate business logic and are reusable across the app:
 
 ```kotlin
 class ImportPlaylistUseCase(
@@ -241,517 +228,248 @@ class ImportPlaylistUseCase(
     private val channelMapper: ChannelMapper,
     private val playlistMapper: PlaylistMapper,
 ) {
-    suspend operator fun invoke(source: PlaylistSource) {
-        // Business logic here
-    }
+    suspend operator fun invoke(source: PlaylistSource) { ... }
 }
 ```
 
 Guidelines:
 
 - One UseCase per business operation
-- Accept domain models as parameters
-- Return domain models or throw domain exceptions
-- Use `Dispatchers.Default` for CPU-intensive operations (KMP-compatible)
-- Network I/O: Ktor manages threads internally
-- Database I/O: Room manages threads internally
+- Accept domain models, return domain models, throw domain exceptions
+- Use `Dispatchers.Default` for CPU-intensive work (KMP-compatible)
+- Never use `Dispatchers.IO` (not available in KMP); Ktor and Room manage threads internally
+- Registered as `factory` in Koin (stateless, new instance per injection)
 
 ### Sealed Interface Pattern
 
-Use sealed interfaces for polymorphic business logic:
+Used for type-safe polymorphism with exhaustive `when` expressions:
 
 ```kotlin
 sealed interface PlaylistSource {
     data class Url(val url: String) : PlaylistSource
     data class LocalFile(val uri: String, val fileName: String) : PlaylistSource
 }
-
-// Usage in UseCase
-when (source) {
-    is PlaylistSource.Url -> downloadFromUrl(source.url)
-    is PlaylistSource.LocalFile -> fileReader.readFile(source.uri)
-}
 ```
 
-Benefits:
+Prefer sealed interfaces over enums when subtypes carry different data.
 
-- Type-safe polymorphism
-- Exhaustive when expressions
-- Reduces code duplication
-- Clear business intent
+### Error Handling
 
-### MVI Architecture
+`PlaylistException` sealed class hierarchy for business-specific errors:
 
-ViewModels follow the MVI (Model-View-Intent) pattern:
+- `NetworkError` - HTTP/connectivity failures
+- `InvalidUrl` - URL validation
+- `ParseError` - M3U format issues
+- `EmptyPlaylist` - no channels found
+- `NotFound` - playlist lookup failures
+- `DatabaseError` - persistence failures
+- `Unknown(message, cause)` - catch-all
 
-**State**: Immutable data class representing UI state
-
-```kotlin
-data class OnboardingState(
-    val playlistUrl: String = "",
-    val isLoading: Boolean = false,
-    val error: String? = null
-)
-```
-
-**Event**: User interactions from UI
-
-```kotlin
-sealed interface OnboardingEvent {
-    data class EnterPlaylistUrl(val url: String) : OnboardingEvent
-    data object ImportPlaylist : OnboardingEvent
-}
-```
-
-**Action**: One-time side effects (navigation, show picker)
-
-```kotlin
-sealed interface OnboardingAction {
-    data object NavigateToMain : OnboardingAction
-    data object ShowFilePicker : OnboardingAction
-}
-```
-
-Guidelines:
-
-- State is observed continuously via `collectAsState()`
-- Events are sent from UI via `viewModel.obtainEvent()`
-- Actions are consumed once via `LaunchedEffect`
-- Keep business logic in UseCases, not ViewModels
-
-### Mapper Pattern
-
-Mappers transform between layers:
-
-```kotlin
-class ChannelMapper {
-    fun toEntityList(
-        playlistId: Long,
-        channels: List<Channel>, // Domain model
-        favoritesTvgIds: Set<String?> = emptySet(),
-        favoritesUrls: Set<String> = emptySet()
-    ): List<ChannelEntity> { // Data model
-        // Transformation logic
-    }
-}
-```
-
-Guidelines:
-
-- One mapper per domain model
-- Use `Dispatchers.Default` for large collections (1000+ items)
-- Preserve user preferences (favorites) during updates
-- Registered as `factory` in Koin (stateless)
+Use `runCatching` for functional error handling in UseCases.
 
 ### Expect/Actual Pattern
 
 Platform-specific code uses Kotlin's expect/actual mechanism:
 
 ```kotlin
-// commonMain/Platform.kt
-expect fun getPlatform(): Platform
+// commonMain - define expect
+interface FileReader { suspend fun readFile(uri: String): String }
 
-// androidMain/Platform.android.kt
-actual fun getPlatform(): Platform = AndroidPlatform()
+// androidMain - actual implementation
+class AndroidFileReader(val context: Context) : FileReader { ... }
 
-// iosMain/Platform.ios.kt
-actual fun getPlatform(): Platform = IOSPlatform()
+// iosMain - actual implementation
+class IOSFileReader : FileReader { ... }
 ```
 
-For platform-specific implementations that need lifecycle awareness, use Composable functions:
+For lifecycle-aware components, use Composable expect/actual:
 
 ```kotlin
-// commonMain
-@Composable
-expect fun rememberFilePicker(): FilePicker
-
-// androidMain - uses rememberLauncherForActivityResult
-@Composable
-actual fun rememberFilePicker(): FilePicker {
-    val launcher = rememberLauncherForActivityResult(...)
-    return remember { AndroidFilePicker(launcher) }
-}
-
-// iosMain - uses UIDocumentPickerViewController
-@Composable
-actual fun rememberFilePicker(): FilePicker {
-    return remember { IOSFilePicker() }
-}
+@Composable expect fun rememberFilePicker(): FilePicker
 ```
 
 When adding platform-specific functionality:
 
-1. Define the `expect` declaration in `commonMain`
-2. Provide `actual` implementations in each platform's source set
-3. Call from common code without platform checks
-4. Use Composable expect/actual for lifecycle-aware components
+1. Define the `expect` declaration in `commonMain/platform/`
+2. Provide `actual` implementations in `androidMain/platform/` and `iosMain/platform/`
+3. Register in `platformModule()` (both Android and iOS)
 
-### Compose Multiplatform UI
+## Video Player Architecture
 
-All UI is written in `commonMain` using Compose:
+The player uses a platform-abstracted interface in `commonMain/platform/`:
 
-- Use Material3 components for consistency
-- Compose state management with `remember` and `mutableStateOf`
-- Platform-specific UI tweaks should be minimal; prefer common solutions
+```kotlin
+interface VideoPlayer {
+    fun play(), pause(), stop(), release()
+    fun setMediaSource(url: String, userAgent: String?, referer: String?)
+    fun isPlaying(): Boolean
+    fun getCurrentLiveOffset(): Long
+    fun seekToLiveEdge()
+    fun addListener(listener: PlayerListener)
+    fun getTracksInfo(): TracksInfo
+    fun selectAudioTrack(trackId: String?)
+    fun selectSubtitleTrack(trackId: String?)
+    fun selectVideoQuality(qualityId: String?)
+    @Composable fun PlayerView(modifier: Modifier)
+}
 
-### iOS Bridge Pattern
+interface PlayerListener {
+    fun onPlaybackStateChanged(isPlaying: Boolean, isBuffering: Boolean)
+    fun onError(errorCode: Int, errorMessage: String)
+    fun onTracksChanged(tracksInfo: TracksInfo) {}
+}
 
-The iOS app uses `UIViewControllerRepresentable` to bridge SwiftUI to the Compose framework:
+interface VideoPlayerFactory {
+    fun createPlayer(): VideoPlayer
+}
+```
 
-- The Kotlin framework exposes `MainViewController()` function
-- Swift calls this to get a `UIViewController` containing the Compose UI
-- Framework name is `ComposeApp` (static framework)
+**Android:** ExoPlayer/Media3 implementation in `androidMain/platform/exoplayer/`:
+
+- `ExoPlayerFactory` - creates optimized player with Cronet network stack (HTTP/2, QUIC)
+- `ExoVideoPlayer` - implements VideoPlayer interface
+- `ExoPlayerComponentFactory` - configures LoadControl, TrackSelector, AudioAttributes
+- `DataSourceFactoryProvider` - HTTP datasources with custom User-Agent/Referer headers
+- `TracksInfoMapper` - converts ExoPlayer tracks to unified TrackInfo format
+
+**iOS:** AVPlayer implementation placeholder in `iosMain/platform/IOSVideoPlayerFactory.kt`.
+
+**PlayerConfig** (`commonMain/platform/PlayerConfig.kt`) provides IPTV-optimized presets:
+
+- `Default` - balanced buffering (10-30s)
+- `LowLatency` - low-delay live (3s buffer)
+- `HighBuffer` - unstable networks (30-60s)
+
+## Database
+
+Room database (version 2) with bundled SQLite for cross-platform support.
+
+**Entities:**
+
+- `PlaylistEntity` - playlist metadata (id, url, name, channelCount, importedAt)
+- `ChannelEntity` - channel info (id, playlistId, name, url, logo, tvgId, isFavorite, etc.)
+- `ChannelGroupEntity` - group metadata (id, name, displayOrder, channelCount)
+- `ChannelGroupCrossRef` - many-to-many junction table (channelId ↔ groupId)
+
+**Schema export:** `composeApp/schemas/` (for migration versioning)
+
+**Key DAO patterns:**
+
+- Flow-based queries for reactive UI updates
+- Suspend functions for one-time operations
+- `@Transaction` methods for atomic batch operations (importing channels + groups + cross-refs)
+
+**Platform initialization:** `expect/actual` via `AppDatabaseConstructor`:
+
+- Android: `getDatabaseBuilder(context)` with `applicationContext`
+- iOS: `getDatabaseBuilder()` using `NSHomeDirectory()`
+
+## Repository Interfaces
+
+**PlaylistRepository** - playlist CRUD plus transactional import:
+
+- `importPlaylistData()` - atomic insert of playlist + channels + groups + cross-refs
+- `updatePlaylistData()` - atomic update preserving favorites
+- Flow-based `getPlaylists()` for reactive playlist list
+
+**ChannelRepository** - channel queries and favorites:
+
+- Flow-based queries: `getAllChannels()`, `getChannelsByPlaylistId()`, `getChannelsByGroupId()`
+- Favorites: `getFavoriteChannels()`, `toggleFavoriteStatus()`
+- Groups: `getAllGroups()`, `getTopGroups()`, `getRandomChannelsByGroupId()`
+
+**CurrentPlaylistRepository** - shared state via `MutableStateFlow<PlaylistSelection>`:
+
+- Coordinates playlist selection between HomeScreen and ChannelsScreen
+- Single source of truth for which playlist is currently active
 
 ## Dependency Injection
 
-The project uses Koin for dependency injection with multiple modules:
+Koin DI with 7 modules defined in `di/KoinModule.kt`:
 
-### Module Structure
+| Module | Scope | Contents |
+|---|---|---|
+| `viewModelModule` | viewModel | 6 ViewModels (Splash, Onboarding, Home, Favorites, Channels, Player) |
+| `repositoryModule` | single | PlaylistRepositoryImpl, ChannelRepositoryImpl, CurrentPlaylistRepository |
+| `mapperModule` | factory | ChannelMapper, ChannelGroupMapper, PlaylistMapper |
+| `useCaseModule` | factory | 11 UseCases |
+| `networkModule` | single | Ktor HttpClient |
+| `databaseModule` | single | PlaylistDao (from AppDatabase) |
+| `platformModule()` | mixed | expect/actual: AppDatabase, FileReader, VideoPlayerFactory, FilePickerFactory |
 
-```kotlin
-// viewModelModule - ViewModel instances
-viewModelOf(::SplashViewModel)
-viewModelOf(::OnboardingViewModel)
-
-// repositoryModule - Repository implementations (singleton)
-singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
-
-// mapperModule - Data mappers (factory)
-factoryOf(::ChannelMapper)
-factoryOf(::PlaylistMapper)
-
-// useCaseModule - Business logic (factory)
-factoryOf(::ImportPlaylistUseCase)
-
-// networkModule - HTTP client (singleton)
-single { HttpClientFactory.create() }
-
-// databaseModule - Room database and DAOs (singleton)
-single { get<AppDatabase>().playlistDao() }
-
-// platformModule() - Platform-specific dependencies
-expect fun platformModule(): Module
-```
-
-### Scopes
-
-- **single**: Singleton instance (repositories, database, network client)
-- **factory**: New instance per injection (UseCases, mappers)
-- **viewModel**: Lifecycle-aware ViewModel instance
-
-### Platform Module
-
-Platform-specific dependencies are defined via expect/actual:
-
-**Android** (`androidMain/di/PlatformModule.kt`):
-
-```kotlin
-actual fun platformModule(): Module = module {
-    single<AppDatabase> { getDatabaseBuilder(get()) }
-    single<FileReader> { AndroidFileReader(get()) }
-}
-```
-
-**iOS** (`iosMain/di/PlatformModule.kt`):
-
-```kotlin
-actual fun platformModule(): Module = module {
-    single<AppDatabase> { getDatabaseBuilder() }
-    single<FileReader> { IOSFileReader() }
-}
-```
-
-### Adding New Dependencies
-
-1. Determine the appropriate module (business logic → useCaseModule, data access → repositoryModule)
-2. Choose scope: `single` for stateful, `factory` for stateless
-3. Add to the relevant module in `KoinModule.kt`
-4. For platform-specific: add to `platformModule()` in both Android and iOS
-
-## Gradle Configuration
-
-The project uses Gradle version catalogs (`gradle/libs.versions.toml`) for dependency management.
-
-### Build Configuration
-
-**Optimization Settings** (gradle.properties):
-
-- Configuration cache enabled: `org.gradle.configuration-cache=true`
-- Build caching enabled: `org.gradle.caching=true`
-- JVM heap: 4GB (`org.gradle.jvmargs=-Xmx4096M`)
-
-### Framework Configuration
-
-iOS framework settings in `composeApp/build.gradle.kts`:
-
-- Framework name: `ComposeApp`
-- Type: Static framework (`isStatic = true`)
-- Targets: `iosArm64()` and `iosSimulatorArm64()`
+**Scope rules:** `single` for stateful (repositories, DB, network), `factory` for stateless
+(UseCases, mappers), `viewModel` for lifecycle-aware ViewModels.
 
 ## Development Guidelines
 
 ### Adding Dependencies
 
-Add dependencies in `composeApp/build.gradle.kts`:
-
-- Common dependencies → `commonMain.dependencies`
-- Android-only → `androidMain.dependencies`
-- iOS-only → `iosMain.dependencies`
-
-Prefer adding dependencies to version catalog in `gradle/libs.versions.toml` first.
-
-### Testing
-
-Testing infrastructure is configured but tests need to be implemented:
-
-- Common tests → `composeApp/src/commonTest/`
-- Android tests → `composeApp/src/androidTest/`
-- iOS tests → `composeApp/src/iosTest/`
-
-Framework: `kotlin-test` for common tests, JUnit for Android, XCTest for iOS.
+1. Add version to `gradle/libs.versions.toml`
+2. Add library/plugin reference in the same file
+3. Use in `composeApp/build.gradle.kts`: `commonMain.dependencies`, `androidMain.dependencies`, or
+   `iosMain.dependencies`
 
 ### Package Structure
 
-Package name: `com.simplevideo.whiteiptv`
+Package: `com.simplevideo.whiteiptv` (consistent across all source sets)
 
-- Keep this consistent across all source sets
 - Android applicationId: `com.simplevideo.whiteiptv`
 - iOS bundle ID: `com.simplevideo.whiteiptv.WhiteIPTVKMP`
 
 ### Code Style
 
-Project uses official Kotlin code style (`kotlin.code.style=official` in gradle.properties).
+- Official Kotlin code style (`kotlin.code.style=official`)
+- Line length: 120 characters
+- Trailing commas: enabled
+- Run `./gradlew formatAll` before committing
+- Use `Dispatchers.Default` over `Dispatchers.IO` (KMP compatibility)
+- Use sealed interfaces over enums for polymorphism
+- Use `runCatching` for functional error handling
 
 ### Comments and Documentation
 
-**Class-level KDoc** - Required for:
+**Class-level KDoc** - Required for UseCases, public interfaces, complex algorithms.
 
-- UseCases: Explain business purpose and usage
-- Public interfaces: Document contract and platform considerations
-- Complex algorithms: M3U parser, batch processing, etc.
+**Inline comments** - Only for business logic explanation, non-obvious technical decisions,
+platform-specific workarounds.
 
-**Inline comments** - Only for:
+**Avoid**: decorative separators, obvious comments, implementation detail comments, section headers
+for small files.
 
-- Business logic explanation (EPG, catchup URLs, User-Agent overrides)
-- Non-obvious technical decisions (why Dispatchers.Default, batch size reasoning)
-- Platform-specific workarounds
+### iOS Bridge
 
-**Avoid**:
+The iOS app uses `UIViewControllerRepresentable` to bridge SwiftUI to Compose:
 
-- Decorative separators (`// ═══════════`)
-- Obvious comments (`// Get channel name` above `channel.name`)
-- Implementation details (`// Use repository to insert`)
-- Section headers for small files
-
-**Example - Good comments**:
-
-```kotlin
-/**
- * Use case for importing IPTV playlist from URL or local file
- *
- * Handles:
- * - URL validation and download OR file reading
- * - M3U parsing
- * - Batch insertion for large playlists (50K+ channels)
- * - Preserving user favorites during updates
- */
-class ImportPlaylistUseCase { ... }
-
-// CPU-intensive: parse M3U with 50K+ channels, move to Default dispatcher
-withContext(Dispatchers.Default) {
-    M3uParser.parse(m3uString)
-}
-
-// Preserve favorites by matching tvgId or URL
-val favoritesTvgIds = existingChannels.filter { it.isFavorite }
-```
-
-**Example - Bad comments**:
-
-```kotlin
-// ═══════════ Playlist Operations ═══════════
-
-// Insert playlist
-repository.insertPlaylist(playlist)
-
-// Get channels
-val channels = repository.getChannels(id)
-```
-
-## iOS-Specific Notes
-
-### Xcode Integration
-
-The iOS app in `iosApp/` requires:
-
-- Team ID configuration for code signing
-- Xcode integration via `embedAndSignAppleFrameworkForXcode` Gradle task
-- Framework embedding handled automatically during Xcode builds
-
-### Running iOS App
-
-Use Xcode for iOS development:
-
-1. Open `iosApp/` directory in Xcode
-2. Select target device/simulator
-3. Run directly from Xcode
-
-Xcode automatically invokes Gradle to build the Kotlin framework.
+- Kotlin exposes `MainViewController()` → Swift wraps it in `ComposeView`
+- Framework name: `ComposeApp` (static framework)
+- Xcode automatically invokes Gradle to build the Kotlin framework
+- Run iOS app from Xcode (open `iosApp/` directory)
 
 ## Common Tasks
 
-**Add new UseCase:**
-
-1. Create class in `domain/usecase/`:
-
-```kotlin
-class MyBusinessUseCase(
-    private val repository: MyRepository,
-    // other dependencies
-) {
-    suspend operator fun invoke(param: DomainModel): Result {
-        // Business logic
-    }
-}
-```
-
-2. Register in `useCaseModule`:
-
-```kotlin
-val useCaseModule = module {
-    factoryOf(::MyBusinessUseCase)
-}
-```
-
-3. Inject into ViewModel constructor
-
 **Add new MVI screen:**
 
-1. Create MVI structure in `feature/myfeature/mvi/`:
+1. Create `feature/myfeature/mvi/MyFeatureMvi.kt` with State, Event, Action
+2. Create `feature/myfeature/MyFeatureViewModel.kt` extending `BaseViewModel`
+3. Create `feature/myfeature/MyFeatureScreen.kt` observing state and actions
+4. Register ViewModel in `viewModelModule` (`viewModelOf(::MyFeatureViewModel)`)
+5. Add route to `Route.kt` and navigation entry in `NavGraph.kt`
 
-```kotlin
-// State
-data class MyFeatureState(
-    val data: String = "",
-    val isLoading: Boolean = false
-)
+**Add new UseCase:**
 
-// Event
-sealed interface MyFeatureEvent {
-    data class OnAction(val value: String) : MyFeatureEvent
-}
-
-// Action
-sealed interface MyFeatureAction {
-    data object Navigate : MyFeatureAction
-}
-```
-
-2. Create ViewModel extending `BaseViewModel`:
-
-```kotlin
-class MyFeatureViewModel(
-    private val useCase: MyBusinessUseCase
-) : BaseViewModel<MyFeatureState, MyFeatureAction, MyFeatureEvent>(
-    initialState = MyFeatureState()
-) {
-    override fun obtainEvent(viewEvent: MyFeatureEvent) {
-        when (viewEvent) {
-            is MyFeatureEvent.OnAction -> handleAction(viewEvent.value)
-        }
-    }
-}
-```
-
-3. Create Composable screen observing state and actions
-4. Register ViewModel in `viewModelModule`
+1. Create class in `domain/usecase/` with `suspend operator fun invoke()`
+2. Register in `useCaseModule` (`factoryOf(::MyUseCase)`)
+3. Inject into ViewModel constructor
 
 **Add new domain model:**
 
-1. Create sealed interface/data class in `domain/model/`:
-
-```kotlin
-sealed interface MyDomainModel {
-    data class TypeA(val data: String) : MyDomainModel
-    data class TypeB(val value: Int) : MyDomainModel
-}
-```
-
+1. Create model in `domain/model/` (prefer sealed interfaces for polymorphism)
 2. Create corresponding entity in `data/local/model/`
-3. Create mapper in `data/mapper/`:
-
-```kotlin
-class MyDomainModelMapper {
-    fun toEntity(model: MyDomainModel): MyEntity {
-        ...
-    }
-    fun toDomain(entity: MyEntity): MyDomainModel {
-        ...
-    }
-}
-```
-
-4. Register mapper in `mapperModule`
+3. Create mapper in `data/mapper/`, register in `mapperModule` (`factoryOf(::MyMapper)`)
 
 **Add platform-specific feature:**
 
-For simple functions:
-
-1. Define `expect` function in `commonMain/platform/`
+1. Define interface + `expect` in `commonMain/platform/`
 2. Implement `actual` in `androidMain/platform/` and `iosMain/platform/`
-
-For lifecycle-aware components:
-
-1. Define interface in `commonMain/platform/`:
-
-```kotlin
-interface MyPlatformFeature {
-    fun doSomething()
-}
-
-@Composable
-expect fun rememberMyPlatformFeature(): MyPlatformFeature
-```
-
-2. Implement `actual` Composable in both platforms
-3. Use lifecycle hooks (`rememberLauncherForActivityResult`, etc.)
-
-**Add sealed interface for polymorphism:**
-
-When you have similar logic with different data sources:
-
-1. Create sealed interface in `domain/model/`:
-
-```kotlin
-sealed interface DataSource {
-    data class Remote(val url: String) : DataSource
-    data class Local(val path: String) : DataSource
-    data class Cache(val key: String) : DataSource
-}
-```
-
-2. Use in UseCase with `when` expression:
-
-```kotlin
-when (source) {
-    is DataSource.Remote -> fetchFromNetwork(source.url)
-    is DataSource.Local -> readFromFile(source.path)
-    is DataSource.Cache -> getFromCache(source.key)
-}
-```
-
-**Update dependencies:**
-
-1. Modify `gradle/libs.versions.toml`
-2. Update version numbers
-3. Sync Gradle
-4. Run `./gradlew build` to verify
-
-**Code style guidelines:**
-
-1. Run `./gradlew ktlintFormat` before committing
-2. Keep comments focused on business logic or complex operations
-3. Remove decorative comments (separators, obvious descriptions)
-4. Use sealed interfaces over enums for polymorphism
-5. Use `runCatching` for functional error handling
-6. Prefer `Dispatchers.Default` over `Dispatchers.IO` (KMP compatibility)
+3. Register in `platformModule()` for both platforms
+4. For lifecycle-aware components, use `@Composable expect fun remember...()`
