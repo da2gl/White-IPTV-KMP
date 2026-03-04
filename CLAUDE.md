@@ -456,6 +456,14 @@ Product specification lives in `docs/` using a modular structure (rendered via D
 
 **Read before implementing features.** Each feature doc is the source of truth for behavior. `docs/constraints/current-limitations.md` is the backlog of unimplemented features.
 
+## Test Data
+
+Demo playlist for development and testing:
+```
+https://iptv-org.github.io/iptv/index.m3u
+```
+Used in `OnboardingViewModel.handleUseDemoPlaylist()`. This is a large public IPTV playlist (~10k channels) from iptv-org.
+
 ## Agent Pipeline
 
 The project uses a multi-agent pipeline for feature development (`.claude/PIPELINE.md`):
