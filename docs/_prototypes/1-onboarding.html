@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        ::webkit-scrollbar { display: none;}
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        accent: '#14b8a6',
+                        'dark-bg': '#0f172a',
+                        'dark-card': '#1e293b',
+                        'dark-border': '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-bg text-white min-h-screen">
+    
+    <div id="onboarding-container" class="flex flex-col h-screen max-w-sm mx-auto px-6 py-8">
+        
+        <header id="header" class="text-center mb-16">
+            <div class="flex items-center justify-center mb-4">
+                <div class="w-12 h-12 bg-accent rounded-xl flex items-center justify-center">
+                    <i class="fa-solid fa-tv text-white text-xl"></i>
+                </div>
+            </div>
+            <h1 class="text-2xl font-bold text-white">StreamTV</h1>
+        </header>
+
+        <main id="main-content" class="flex-1 flex flex-col justify-center">
+            
+            <section id="title-section" class="text-center mb-8">
+                <h2 class="text-2xl font-semibold text-white mb-3">Upload your IPTV playlist</h2>
+                <p class="text-slate-400 text-base leading-relaxed">Enter a link or choose a file to start watching</p>
+            </section>
+
+            <section id="upload-section" class="space-y-6">
+                
+                <div id="url-input-container">
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Playlist URL</label>
+                    <div class="relative">
+                        <input 
+                            type="url" 
+                            id="playlist-url"
+                            placeholder="https://example.com/playlist.m3u8"
+                            class="w-full bg-dark-card border border-dark-border rounded-xl px-4 py-3.5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all"
+                        >
+                        <i class="fa-solid fa-link absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                    </div>
+                </div>
+
+                <div id="divider" class="flex items-center">
+                    <div class="flex-1 h-px bg-dark-border"></div>
+                    <span class="px-4 text-sm text-slate-500">or</span>
+                    <div class="flex-1 h-px bg-dark-border"></div>
+                </div>
+
+                <div id="file-upload-container">
+                    <button 
+                        id="choose-file-btn"
+                        class="w-full bg-dark-card border border-dark-border rounded-xl px-4 py-3.5 text-slate-300 flex items-center justify-center space-x-3 hover:bg-slate-700 transition-colors"
+                    >
+                        <i class="fa-solid fa-upload text-accent"></i>
+                        <span>Choose file from device</span>
+                    </button>
+                    <input type="file" id="file-input" accept=".m3u,.m3u8" class="hidden">
+                </div>
+
+                <div id="status-container" class="hidden">
+                    <div id="loading-indicator" class="hidden flex items-center justify-center space-x-3 text-accent">
+                        <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-accent"></div>
+                        <span class="text-sm">Processing playlist...</span>
+                    </div>
+                    <div id="error-message" class="hidden bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-exclamation-triangle text-red-400"></i>
+                            <span class="text-red-400 text-sm">Invalid playlist format. Please try again.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section id="cta-section" class="mt-8 space-y-4">
+                <button 
+                    id="import-btn"
+                    class="w-full bg-accent hover:bg-teal-600 text-white font-semibold py-4 rounded-xl transition-colors focus:outline-none focus:ring-4 focus:ring-accent/30"
+                >
+                    Import playlist
+                </button>
+
+                <div id="demo-link-container" class="text-center">
+                    <button class="text-accent text-sm hover:text-teal-400 transition-colors">
+                        Use demo playlist
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <footer id="footer" class="text-center pt-8">
+            <p class="text-slate-500 text-xs">By continuing, you agree to our Terms of Service</p>
+        </footer>
+
+    </div>
+
+    <script>
+        document.getElementById('choose-file-btn').addEventListener('click', function() {
+            document.getElementById('file-input').click();
+        });
+
+        document.getElementById('file-input').addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                document.getElementById('choose-file-btn').innerHTML = `
+                    <i class="fa-solid fa-check text-accent"></i>
+                    <span>${fileName}</span>
+                `;
+            }
+        });
+
+        document.getElementById('import-btn').addEventListener('click', function() {
+            const statusContainer = document.getElementById('status-container');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            
+            statusContainer.classList.remove('hidden');
+            loadingIndicator.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loadingIndicator.classList.add('hidden');
+            }, 2000);
+        });
+    </script>
+
+</body>
+</html>

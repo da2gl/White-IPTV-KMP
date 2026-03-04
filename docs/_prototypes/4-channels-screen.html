@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Channels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { display: none;}
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0891b2',
+                        dark: '#0f172a',
+                        darker: '#020617'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darker text-white">
+    
+    <div id="app-container" class="min-h-screen">
+        <header id="header" class="bg-dark border-b border-slate-800 px-4 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-xl font-semibold text-white">All Channels</h1>
+                <button id="search-btn" class="p-2 rounded-lg hover:bg-slate-800 transition-colors">
+                    <i class="fa-solid fa-search text-primary"></i>
+                </button>
+            </div>
+            
+            <div id="filter-section" class="mt-4">
+                <div class="relative">
+                    <button id="category-dropdown" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-left flex items-center justify-between hover:border-primary transition-colors">
+                        <span class="text-slate-300">Category: <span id="selected-category" class="text-white font-medium">All</span></span>
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+                    </button>
+                    
+                    <div id="dropdown-menu" class="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-20 hidden">
+                        <div class="py-2">
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="All">All</button>
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="Movies">Movies</button>
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="Sports">Sports</button>
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="News">News</button>
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="Kids">Kids</button>
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="Entertainment">Entertainment</button>
+                            <button class="category-option w-full px-4 py-3 text-left hover:bg-slate-700 transition-colors" data-category="Documentary">Documentary</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="search-overlay" class="fixed inset-0 bg-darker z-30 hidden">
+            <div class="p-4">
+                <div class="flex items-center gap-3 mb-4">
+                    <button id="search-back" class="p-2 rounded-lg hover:bg-slate-800">
+                        <i class="fa-solid fa-arrow-left text-primary"></i>
+                    </button>
+                    <div class="flex-1 relative">
+                        <input type="text" id="search-input" placeholder="Search channels..." class="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-primary focus:outline-none">
+                        <i class="fa-solid fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main id="main-content" class="p-4">
+            <div id="channels-grid" class="grid grid-cols-2 gap-4">
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Movies">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-film text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-regular fa-star text-slate-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">HBO Max</h3>
+                    <p class="text-sm text-slate-400">Movies</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Sports">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-futbol text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-solid fa-star text-yellow-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">ESPN</h3>
+                    <p class="text-sm text-slate-400">Sports</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="News">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-newspaper text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-regular fa-star text-slate-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">CNN</h3>
+                    <p class="text-sm text-slate-400">News</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Kids">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-child text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-solid fa-star text-yellow-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">Cartoon Network</h3>
+                    <p class="text-sm text-slate-400">Kids</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Entertainment">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-tv text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-regular fa-star text-slate-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">Netflix</h3>
+                    <p class="text-sm text-slate-400">Entertainment</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Documentary">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-globe text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-regular fa-star text-slate-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">Discovery</h3>
+                    <p class="text-sm text-slate-400">Documentary</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Sports">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-basketball text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-regular fa-star text-slate-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">NBA TV</h3>
+                    <p class="text-sm text-slate-400">Sports</p>
+                </div>
+
+                <div class="channel-card bg-slate-800 rounded-xl p-4 border border-slate-700 hover:border-primary transition-all" data-category="Movies">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-video text-white text-lg"></i>
+                        </div>
+                        <button class="favorite-btn p-2 rounded-lg hover:bg-slate-700 transition-colors">
+                            <i class="fa-solid fa-star text-yellow-400"></i>
+                        </button>
+                    </div>
+                    <h3 class="font-medium text-white mb-1">Prime Video</h3>
+                    <p class="text-sm text-slate-400">Movies</p>
+                </div>
+            </div>
+
+            <div id="empty-state" class="text-center py-16 hidden">
+                <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-tv text-slate-400 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-white mb-2">No channels found</h3>
+                <p class="text-slate-400 mb-6">Try adjusting your search or category filter</p>
+                <button id="reload-btn" class="bg-primary hover:bg-cyan-600 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    <i class="fa-solid fa-refresh mr-2"></i>
+                    Reload Playlist
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryDropdown = document.getElementById('category-dropdown');
+            const dropdownMenu = document.getElementById('dropdown-menu');
+            const selectedCategory = document.getElementById('selected-category');
+            const categoryOptions = document.querySelectorAll('.category-option');
+            const channelsGrid = document.getElementById('channels-grid');
+            const channelCards = document.querySelectorAll('.channel-card');
+            const emptyState = document.getElementById('empty-state');
+            const searchBtn = document.getElementById('search-btn');
+            const searchOverlay = document.getElementById('search-overlay');
+            const searchBack = document.getElementById('search-back');
+            const searchInput = document.getElementById('search-input');
+            const favoriteButtons = document.querySelectorAll('.favorite-btn');
+
+            categoryDropdown.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            categoryOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const category = this.dataset.category;
+                    selectedCategory.textContent = category;
+                    dropdownMenu.classList.add('hidden');
+                    filterChannels(category);
+                });
+            });
+
+            searchBtn.addEventListener('click', function() {
+                searchOverlay.classList.remove('hidden');
+                searchInput.focus();
+            });
+
+            searchBack.addEventListener('click', function() {
+                searchOverlay.classList.add('hidden');
+                searchInput.value = '';
+                showAllChannels();
+            });
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                filterChannelsBySearch(query);
+            });
+
+            favoriteButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const star = this.querySelector('i');
+                    if (star.classList.contains('fa-regular')) {
+                        star.classList.remove('fa-regular');
+                        star.classList.add('fa-solid', 'text-yellow-400');
+                    } else {
+                        star.classList.remove('fa-solid', 'text-yellow-400');
+                        star.classList.add('fa-regular', 'text-slate-400');
+                    }
+                });
+            });
+
+            channelCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    console.log('Opening channel:', this.querySelector('h3').textContent);
+                });
+            });
+
+            function filterChannels(category) {
+                let visibleCount = 0;
+                channelCards.forEach(card => {
+                    if (category === 'All' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                if (visibleCount === 0) {
+                    channelsGrid.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                } else {
+                    channelsGrid.classList.remove('hidden');
+                    emptyState.classList.add('hidden');
+                }
+            }
+
+            function filterChannelsBySearch(query) {
+                let visibleCount = 0;
+                channelCards.forEach(card => {
+                    const title = card.querySelector('h3').textContent.toLowerCase();
+                    if (title.includes(query)) {
+                        card.style.display = 'block';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                if (visibleCount === 0) {
+                    channelsGrid.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                } else {
+                    channelsGrid.classList.remove('hidden');
+                    emptyState.classList.add('hidden');
+                }
+            }
+
+            function showAllChannels() {
+                channelCards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                channelsGrid.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+
+            document.addEventListener('click', function(e) {
+                if (!categoryDropdown.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

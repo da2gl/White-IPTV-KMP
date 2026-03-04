@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> window.FontAwesomeConfig = { autoReplaceSvg: 'nest'};</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        ::-webkit-scrollbar { display: none;}
+        * { font-family: 'Inter', sans-serif; }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#14b8a6',
+                        dark: '#0f172a',
+                        darker: '#020617'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark text-white">
+    
+    <!-- Header -->
+    <header id="header" class="bg-darker border-b border-slate-700">
+        <div class="flex items-center justify-between px-4 py-4">
+            <button class="p-2 -ml-2">
+                <i class="fa-solid fa-arrow-left text-xl text-gray-300"></i>
+            </button>
+            <h1 class="text-lg font-semibold">Settings</h1>
+            <div class="w-10"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="pb-6">
+        
+        <!-- Appearance Section -->
+        <section id="appearance-section" class="px-4 py-6 border-b border-slate-700">
+            <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Appearance</h2>
+            
+            <div id="theme-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Theme</div>
+                    <div class="text-sm text-gray-400">Choose your preferred theme</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>System</option>
+                    <option>Light</option>
+                    <option>Dark</option>
+                </select>
+            </div>
+
+            <div id="accent-color-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Accent Color</div>
+                    <div class="text-sm text-gray-400">Customize app accent color</div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="w-8 h-8 bg-primary rounded-full ring-2 ring-white"></button>
+                    <button class="w-8 h-8 bg-blue-500 rounded-full"></button>
+                    <button class="w-8 h-8 bg-red-500 rounded-full"></button>
+                </div>
+            </div>
+
+            <div id="channel-view-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Channel View</div>
+                    <div class="text-sm text-gray-400">Default channel layout</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>List</option>
+                    <option>Grid</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Playback Section -->
+        <section id="playback-section" class="px-4 py-6 border-b border-slate-700">
+            <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Playback</h2>
+            
+            <div id="default-player-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Default Player</div>
+                    <div class="text-sm text-gray-400">Choose media player engine</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>ExoPlayer</option>
+                    <option>VLC</option>
+                    <option>System</option>
+                </select>
+            </div>
+
+            <div id="quality-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Preferred Quality</div>
+                    <div class="text-sm text-gray-400">Default streaming quality</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>Auto</option>
+                    <option>HD</option>
+                    <option>SD</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- App Behavior Section -->
+        <section id="app-behavior-section" class="px-4 py-6 border-b border-slate-700">
+            <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">App Behavior</h2>
+            
+            <div id="default-playlist-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Default Playlist</div>
+                    <div class="text-sm text-gray-400">Playlist to load on startup</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>Last Used</option>
+                    <option>Favorites</option>
+                    <option>All Channels</option>
+                </select>
+            </div>
+
+            <div id="language-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Language</div>
+                    <div class="text-sm text-gray-400">App interface language</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>English</option>
+                    <option>Spanish</option>
+                    <option>French</option>
+                    <option>German</option>
+                </select>
+            </div>
+
+            <div id="auto-update-setting" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">Auto Update Playlists</div>
+                    <div class="text-sm text-gray-400">Automatic playlist refresh</div>
+                </div>
+                <select class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary">
+                    <option>Daily</option>
+                    <option>Weekly</option>
+                    <option>Manual</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Data & Storage Section -->
+        <section id="data-storage-section" class="px-4 py-6 border-b border-slate-700">
+            <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Data & Storage</h2>
+            
+            <button id="clear-cache-btn" class="w-full flex items-center justify-between py-3 text-left">
+                <div>
+                    <div class="text-white font-medium">Clear Cache</div>
+                    <div class="text-sm text-gray-400">Free up storage space</div>
+                </div>
+                <div class="text-sm text-gray-500">128 MB</div>
+            </button>
+
+            <button id="clear-favorites-btn" class="w-full flex items-center justify-between py-3 text-left">
+                <div>
+                    <div class="text-white font-medium">Clear Favorites</div>
+                    <div class="text-sm text-gray-400">Remove all favorite channels</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-500"></i>
+            </button>
+
+            <button id="reset-defaults-btn" class="w-full flex items-center justify-between py-3 text-left">
+                <div>
+                    <div class="text-red-400 font-medium">Reset to Defaults</div>
+                    <div class="text-sm text-gray-400">Restore original settings</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-500"></i>
+            </button>
+        </section>
+
+        <!-- About Section -->
+        <section id="about-section" class="px-4 py-6">
+            <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">About</h2>
+            
+            <div id="app-version-info" class="flex items-center justify-between py-3">
+                <div>
+                    <div class="text-white font-medium">App Version</div>
+                    <div class="text-sm text-gray-400">Current version installed</div>
+                </div>
+                <div class="text-sm text-gray-400">v2.4.1</div>
+            </div>
+
+            <button id="support-contact-btn" class="w-full flex items-center justify-between py-3 text-left">
+                <div>
+                    <div class="text-white font-medium">Support & Contact</div>
+                    <div class="text-sm text-gray-400">Get help or report issues</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-500"></i>
+            </button>
+
+            <button id="privacy-policy-btn" class="w-full flex items-center justify-between py-3 text-left">
+                <div>
+                    <div class="text-white font-medium">Privacy Policy</div>
+                    <div class="text-sm text-gray-400">View our privacy policy</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-500"></i>
+            </button>
+
+            <button id="terms-service-btn" class="w-full flex items-center justify-between py-3 text-left">
+                <div>
+                    <div class="text-white font-medium">Terms of Service</div>
+                    <div class="text-sm text-gray-400">Read terms and conditions</div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-gray-500"></i>
+            </button>
+        </section>
+
+    </main>
+
+    <script>
+        // Handle accent color selection
+        const colorButtons = document.querySelectorAll('#accent-color-setting button');
+        colorButtons.forEach((button, index) => {
+            button.addEventListener('click', () => {
+                colorButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-white'));
+                button.classList.add('ring-2', 'ring-white');
+            });
+        });
+
+        // Handle clear cache confirmation
+        document.getElementById('clear-cache-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear the cache?')) {
+                alert('Cache cleared successfully');
+            }
+        });
+
+        // Handle clear favorites confirmation
+        document.getElementById('clear-favorites-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all favorites?')) {
+                alert('Favorites cleared successfully');
+            }
+        });
+
+        // Handle reset to defaults confirmation
+        document.getElementById('reset-defaults-btn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all settings to defaults?')) {
+                alert('Settings reset to defaults');
+            }
+        });
+    </script>
+
+</body>
+</html>
