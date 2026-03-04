@@ -5,16 +5,27 @@ import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
+import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerAction
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerState
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.time.Clock.System
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class PlayerViewModel(
     savedStateHandle: SavedStateHandle,
     private val getChannelById: GetChannelByIdUseCase,
     private val getAdjacentChannel: GetAdjacentChannelUseCase,
+    private val recordWatchEvent: RecordWatchEventUseCase,
 ) : BaseViewModel<PlayerState, PlayerAction, PlayerEvent>(
     initialState = PlayerState(),
 ) {
@@ -23,6 +34,8 @@ class PlayerViewModel(
     }
 
     private val channelIdFlow = MutableStateFlow(initialChannelId)
+    private var watchStartTime: Long = 0L
+    private var watchTimerJob: Job? = null
 
     init {
         observeChannel()
@@ -35,6 +48,7 @@ class PlayerViewModel(
             }
             .onEach { channel ->
                 viewState = if (channel != null) {
+                    recordInitialWatchEvent(channel.id, channel.playlistId)
                     viewState.copy(
                         channel = channel,
                         isLoading = false,
@@ -56,6 +70,44 @@ class PlayerViewModel(
             .launchIn(viewModelScope)
     }
 
+    private fun recordInitialWatchEvent(channelId: Long, playlistId: Long) {
+        watchTimerJob?.cancel()
+        watchStartTime = System.now().toEpochMilliseconds()
+        viewModelScope.launch {
+            recordWatchEvent(channelId, playlistId)
+        }
+    }
+
+    private fun handlePlaybackStateForWatchTracking(isPlaying: Boolean) {
+        if (isPlaying) {
+            startWatchTimer()
+        } else {
+            stopWatchTimer()
+        }
+    }
+
+    private fun startWatchTimer() {
+        watchTimerJob?.cancel()
+        watchTimerJob = viewModelScope.launch {
+            while (true) {
+                delay(WATCH_UPDATE_INTERVAL_MS)
+                val channel = viewState.channel ?: continue
+                val elapsed = System.now().toEpochMilliseconds() - watchStartTime
+                recordWatchEvent(channel.id, channel.playlistId, elapsed)
+            }
+        }
+    }
+
+    private fun stopWatchTimer() {
+        watchTimerJob?.cancel()
+        watchTimerJob = null
+        viewModelScope.launch {
+            val channel = viewState.channel ?: return@launch
+            val elapsed = System.now().toEpochMilliseconds() - watchStartTime
+            recordWatchEvent(channel.id, channel.playlistId, elapsed)
+        }
+    }
+
     override fun obtainEvent(viewEvent: PlayerEvent) {
         when (viewEvent) {
             is PlayerEvent.OnBackClick -> {
@@ -75,6 +127,7 @@ class PlayerViewModel(
                     isPlaying = viewEvent.isPlaying,
                     isBuffering = viewEvent.isBuffering,
                 )
+                handlePlaybackStateForWatchTracking(viewEvent.isPlaying)
             }
 
             is PlayerEvent.OnPlayerError -> {
@@ -109,6 +162,7 @@ class PlayerViewModel(
 
     private fun navigateToChannel(next: Boolean) {
         val currentChannel = viewState.channel ?: return
+        stopWatchTimer()
 
         viewModelScope.launch {
             val adjacentChannel = if (next) {
@@ -122,5 +176,14 @@ class PlayerViewModel(
                 channelIdFlow.value = it.id
             }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        watchTimerJob?.cancel()
+    }
+
+    companion object {
+        private const val WATCH_UPDATE_INTERVAL_MS = 30_000L
     }
 }

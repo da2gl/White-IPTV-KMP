@@ -2,19 +2,46 @@ package com.simplevideo.whiteiptv.feature.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +52,7 @@ import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
+import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
 import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
@@ -36,10 +64,12 @@ fun HomeScreen(
     onNavigateToFavorites: () -> Unit,
     onNavigateToChannels: (String?) -> Unit,
     onNavigateToPlayer: (Long) -> Unit,
+    onNavigateToOnboarding: () -> Unit,
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.viewStates().collectAsState()
     val action by viewModel.viewActions().collectAsState(initial = null)
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(action) {
         when (val currentAction = action) {
@@ -58,7 +88,25 @@ fun HomeScreen(
                 viewModel.clearAction()
             }
 
+            is HomeAction.NavigateToOnboarding -> {
+                onNavigateToOnboarding()
+                viewModel.clearAction()
+            }
+
             else -> Unit
+        }
+    }
+
+    LaunchedEffect(state.playlistManagementError) {
+        state.playlistManagementError?.let { error ->
+            snackbarHostState.showSnackbar(error)
+            viewModel.obtainEvent(HomeEvent.OnPlaylistManagementErrorDismiss)
+        }
+    }
+
+    val selectedPlaylist = remember(state.selection, state.playlists) {
+        (state.selection as? PlaylistSelection.Selected)?.let { sel ->
+            state.playlists.find { it.id == sel.id }
         }
     }
 
@@ -70,31 +118,81 @@ fun HomeScreen(
                 onPlaylistSelect = { selection ->
                     viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
                 },
+                onPlaylistSettingsClick = {
+                    viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
+                },
+                isPlaylistSettingsEnabled = state.selection is PlaylistSelection.Selected,
             )
         },
-    ) { paddingValues ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { data ->
+                Snackbar(snackbarData = data)
             }
-        } else {
-            HomeContent(
-                state = state,
-                onFavoritesViewAllClick = {
-                    viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
-                },
-                onGroupViewAllClick = { groupId ->
-                    viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
-                },
-                onChannelClick = { channelId ->
-                    viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
-                },
-                modifier = Modifier.padding(paddingValues),
-            )
+        },
+    ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            } else {
+                HomeContent(
+                    state = state,
+                    onFavoritesViewAllClick = {
+                        viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
+                    },
+                    onGroupViewAllClick = { groupId ->
+                        viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
+                    },
+                    onChannelClick = { channelId ->
+                        viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
+                    },
+                )
+            }
+
+            if (state.isUpdatingPlaylist) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
         }
+    }
+
+    if (state.showPlaylistSettings && selectedPlaylist != null) {
+        PlaylistSettingsBottomSheet(
+            playlist = selectedPlaylist!!,
+            onDismiss = { viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsDismiss) },
+            onRename = { viewModel.obtainEvent(HomeEvent.OnRenameClick) },
+            onUpdate = { viewModel.obtainEvent(HomeEvent.OnUpdatePlaylistClick) },
+            onDelete = { viewModel.obtainEvent(HomeEvent.OnDeleteClick) },
+            onViewUrl = { viewModel.obtainEvent(HomeEvent.OnViewUrlClick) },
+        )
+    }
+
+    if (state.showRenameDialog && selectedPlaylist != null) {
+        RenameDialog(
+            currentName = selectedPlaylist!!.name,
+            onDismiss = { viewModel.obtainEvent(HomeEvent.OnRenameDialogDismiss) },
+            onConfirm = { newName -> viewModel.obtainEvent(HomeEvent.OnRenameConfirm(newName)) },
+        )
+    }
+
+    if (state.showDeleteConfirmation && selectedPlaylist != null) {
+        DeleteConfirmationDialog(
+            playlistName = selectedPlaylist!!.name,
+            onDismiss = { viewModel.obtainEvent(HomeEvent.OnDeleteDialogDismiss) },
+            onConfirm = { viewModel.obtainEvent(HomeEvent.OnDeleteConfirm) },
+        )
+    }
+
+    if (state.showViewUrlDialog && selectedPlaylist != null) {
+        ViewUrlDialog(
+            url = selectedPlaylist!!.url,
+            onDismiss = { viewModel.obtainEvent(HomeEvent.OnViewUrlDialogDismiss) },
+        )
     }
 }
 
@@ -104,6 +202,8 @@ private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
     onPlaylistSelect: (PlaylistSelection) -> Unit,
+    onPlaylistSettingsClick: () -> Unit,
+    isPlaylistSettingsEnabled: Boolean,
 ) {
     TopAppBar(
         title = {
@@ -117,8 +217,92 @@ private fun HomeTopAppBar(
             IconButton(onClick = { /* TODO */ }) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             }
-            IconButton(onClick = { /* TODO */ }) {
-                Icon(Icons.Default.Settings, contentDescription = "Settings")
+            IconButton(
+                onClick = onPlaylistSettingsClick,
+                enabled = isPlaylistSettingsEnabled,
+            ) {
+                Icon(Icons.Default.Settings, contentDescription = "Playlist Settings")
+            }
+        },
+    )
+}
+
+@Composable
+private fun RenameDialog(
+    currentName: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+) {
+    var name by remember { mutableStateOf(currentName) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rename Playlist") },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Playlist name") },
+                singleLine = true,
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(name) },
+                enabled = name.isNotBlank(),
+            ) {
+                Text("Rename")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+    )
+}
+
+@Composable
+private fun DeleteConfirmationDialog(
+    playlistName: String,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Delete Playlist") },
+        text = {
+            Text("Delete '$playlistName'? All channels and groups will be removed.")
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Delete", color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+    )
+}
+
+@Composable
+private fun ViewUrlDialog(
+    url: String,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Playlist URL") },
+        text = {
+            SelectionContainer {
+                Text(url)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
             }
         },
     )
@@ -158,7 +342,10 @@ private fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(state.continueWatchingItems) { item ->
-                        ContinueWatchingItem(item)
+                        ContinueWatchingItem(
+                            item = item,
+                            onClick = { onChannelClick(item.channel.id) },
+                        )
                     }
                 }
             }
@@ -240,8 +427,15 @@ private fun Section(
 }
 
 @Composable
-private fun ContinueWatchingItem(item: ContinueWatchingItem) {
-    Card(modifier = Modifier.width(200.dp)) {
+private fun ContinueWatchingItem(
+    item: ContinueWatchingItem,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .width(200.dp)
+            .clickable(onClick = onClick),
+    ) {
         Column {
             AsyncImage(
                 model = item.channel.logoUrl,
@@ -251,8 +445,6 @@ private fun ContinueWatchingItem(item: ContinueWatchingItem) {
             )
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(item.channel.name, style = MaterialTheme.typography.bodyMedium)
-                LinearProgressIndicator(progress = { item.progress })
-                Text(item.timeLeft, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
