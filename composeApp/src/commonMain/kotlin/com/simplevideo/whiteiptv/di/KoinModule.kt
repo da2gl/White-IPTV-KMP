@@ -1,15 +1,21 @@
 package com.simplevideo.whiteiptv.di
 
+import com.russhwolf.settings.Settings
 import com.simplevideo.whiteiptv.data.local.AppDatabase
+import com.simplevideo.whiteiptv.data.local.ThemePreferences
 import com.simplevideo.whiteiptv.data.mapper.ChannelGroupMapper
 import com.simplevideo.whiteiptv.data.mapper.ChannelMapper
 import com.simplevideo.whiteiptv.data.mapper.PlaylistMapper
 import com.simplevideo.whiteiptv.data.network.HttpClientFactory
 import com.simplevideo.whiteiptv.data.repository.ChannelRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
+import com.simplevideo.whiteiptv.data.repository.ThemeRepositoryImpl
+import com.simplevideo.whiteiptv.data.repository.WatchHistoryRepositoryImpl
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
+import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
+import com.simplevideo.whiteiptv.domain.repository.WatchHistoryRepository
 import com.simplevideo.whiteiptv.domain.usecase.*
 import com.simplevideo.whiteiptv.feature.channels.ChannelsViewModel
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesViewModel
@@ -37,6 +43,7 @@ val repositoryModule = module {
     singleOf(::PlaylistRepositoryImpl) bind PlaylistRepository::class
     singleOf(::ChannelRepositoryImpl) bind ChannelRepository::class
     singleOf(::CurrentPlaylistRepository)
+    singleOf(::WatchHistoryRepositoryImpl) bind WatchHistoryRepository::class
 }
 
 val mapperModule = module {
@@ -57,6 +64,9 @@ val useCaseModule = module {
     factoryOf(::ToggleFavoriteUseCase)
     factoryOf(::GetChannelByIdUseCase)
     factoryOf(::GetAdjacentChannelUseCase)
+    factoryOf(::RecordWatchEventUseCase)
+    factoryOf(::RenamePlaylistUseCase)
+    factoryOf(::DeletePlaylistUseCase)
 }
 
 val networkModule = module {
@@ -65,6 +75,13 @@ val networkModule = module {
 
 val databaseModule = module {
     single { get<AppDatabase>().playlistDao() }
+    single { get<AppDatabase>().watchHistoryDao() }
+}
+
+val settingsModule = module {
+    single { Settings() }
+    singleOf(::ThemePreferences)
+    singleOf(::ThemeRepositoryImpl) bind ThemeRepository::class
 }
 
 /**
@@ -83,4 +100,5 @@ val appModules: List<Module> = listOf(
     useCaseModule,
     networkModule,
     databaseModule,
+    settingsModule,
 )
