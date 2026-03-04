@@ -18,6 +18,7 @@ You are the gatekeeper. Nothing ships without your approval. Compare plan vs rea
 - `.claude/features/<feature-name>/prep.md` — the plan
 - `.claude/features/<feature-name>/code-report.md` — coder's report
 - `.claude/features/<feature-name>/test-report.md` — tester's report
+- `.claude/features/<feature-name>/e2e-report.md` — mobile tester's report
 - All created/modified source files
 - All test files
 
@@ -43,6 +44,13 @@ For each item in the plan's "Changes Required":
 - [ ] Edge cases tested (empty data, errors, null)
 - [ ] No security issues flagged as critical in test report
 - [ ] All tests passing
+
+### 5. E2E Quality Check
+- [ ] E2E report exists and is complete
+- [ ] All test scenarios passed
+- [ ] No critical UI issues found
+- [ ] Navigation works as specified
+- [ ] Data displays correctly
 
 ### 5. Documentation Check
 - [ ] Feature doc updated with decisions

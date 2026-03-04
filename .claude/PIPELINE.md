@@ -13,7 +13,8 @@ Each feature goes through a sequential pipeline of specialized agents. Agents co
 | 3 | **coder** | opus | yes | `prep.md` | code + `code-report.md` |
 | 4 | **tester** | opus | yes | `prep.md`, code | tests + `test-report.md` |
 | 5 | **linter** | sonnet | yes | code + tests | formatted code |
-| 6 | **validator** | sonnet | no | all artifacts | ✅ approved / 🔄 rework |
+| 6 | **mobile-tester** | opus | yes | spec, app APK | `e2e-report.md` |
+| 7 | **validator** | sonnet | no | all artifacts | ✅ approved / 🔄 rework |
 
 ## File Structure
 
@@ -23,7 +24,8 @@ Each feature goes through a sequential pipeline of specialized agents. Agents co
     ├── prep.md          # Step 1: implementation plan
     ├── code-report.md   # Step 3: what was coded
     ├── test-report.md   # Step 4: test results + security
-    └── validation.md    # Step 6: final verdict
+    ├── validation.md    # Step 6: final verdict
+    └── e2e-report.md    # Step 7: mobile E2E test results
 ```
 
 ## Flow
@@ -52,10 +54,15 @@ START
   │          runs in same worktree branch
   │
   ▼
-[validator] ── reads everything, compares plan vs result
+[mobile-tester] ── builds APK, installs, tests on emulator
+  │                 uses claude-in-mobile MCP (screenshot, tap, swipe, etc.)
+  │                 requires running Android emulator
+  │
+  ▼
+[validator] ── reads everything (incl. e2e-report), compares plan vs result
   │
   ├── REWORK → back to failing step with instructions
-  │            validator specifies: who (coder/tester/linter), what, why
+  │            validator specifies: who (coder/tester/linter/mobile-tester), what, why
   │
   ▼ APPROVED
 DONE ── ready to merge into master
@@ -149,6 +156,16 @@ Plan: .claude/features/<name>/prep.md
 Code report: .claude/features/<name>/code-report.md
 Test report: .claude/features/<name>/test-report.md
 Write verdict to: .claude/features/<name>/validation.md
+```
+
+### Mobile Tester
+```
+E2E test feature: <name>
+Spec: docs/features/<name>.md
+Build: ./gradlew :composeApp:assembleDebug
+Package: com.simplevideo.whiteiptv
+Write report to: .claude/features/<name>/e2e-report.md
+Requires: running Android emulator + claude-in-mobile MCP
 ```
 
 ## Feature Priority Order
