@@ -445,6 +445,25 @@ The iOS app uses `UIViewControllerRepresentable` to bridge SwiftUI to Compose:
 - Xcode automatically invokes Gradle to build the Kotlin framework
 - Run iOS app from Xcode (open `iosApp/` directory)
 
+## Product Documentation
+
+Product specification lives in `docs/` using a modular structure (rendered via Docsify):
+
+- `docs/domain/` — business entities (Playlist, Channel, ChannelGroup)
+- `docs/features/` — screen specs (Home, Favorites, Channels, Search, Player, EPG, Settings, Playlist Settings)
+- `docs/flows/` — user flows (Import Playlist, Watch Channel)
+- `docs/constraints/` — platform info, current limitations, open questions
+
+**Read before implementing features.** Each feature doc is the source of truth for behavior. `docs/constraints/current-limitations.md` is the backlog of unimplemented features.
+
+## Agent Pipeline
+
+The project uses a multi-agent pipeline for feature development (`.claude/PIPELINE.md`):
+
+Custom agents in `.claude/agents/`: preparer, doc-validator, coder, tester, linter, validator.
+
+Feature state is tracked in `.claude/features/<feature-name>/` with artifacts from each pipeline step (prep.md, code-report.md, test-report.md, validation.md).
+
 ## Common Tasks
 
 **Add new MVI screen:**
