@@ -3,6 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:M3uParser.kt$M3uParser$key != null &amp;&amp; value != null &amp;&amp; key.isNotEmpty() &amp;&amp; value.isNotEmpty()</ID>
+    <ID>ComposableParamOrder:SettingsComponents.kt$SettingsSwitchItem</ID>
     <ID>CyclomaticComplexMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
@@ -20,9 +21,12 @@
     <ID>LongMethod:OnboardingScreen.kt$@Composable private fun OnboardingContent( state: OnboardingState, onEvent: (OnboardingEvent) -&gt; Unit, )</ID>
     <ID>LongMethod:PlayerControls.kt$@Composable fun PlayerControlsOverlay( channelName: String, isVisible: Boolean, isBuffering: Boolean, tracksInfo: TracksInfo, onBackClick: () -&gt; Unit, onShowAudioTracks: () -&gt; Unit, onShowSubtitles: () -&gt; Unit, onShowQuality: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen()</ID>
     <ID>LongMethod:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>LongParameterList:HomeViewModel.kt$HomeViewModel$( getPlaylists: GetPlaylistsUseCase, getContinueWatching: GetContinueWatchingUseCase, getFavorites: GetFavoritesUseCase, getHomeCategories: GetHomeCategoriesUseCase, private val getChannels: GetChannelsUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val renamePlaylistUseCase: RenamePlaylistUseCase, private val deletePlaylistUseCase: DeletePlaylistUseCase, private val importPlaylistUseCase: ImportPlaylistUseCase, )</ID>
     <ID>LoopWithTooManyJumpStatements:M3uParser.kt$M3uParser$for</ID>
+    <ID>MaxLineLength:SettingsScreen.kt$message = "This will reset all settings to their default values. Your playlists and channels will not be affected."</ID>
+    <ID>MaximumLineLength:SettingsScreen.kt$ </ID>
     <ID>NestedBlockDepth:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>ReturnCount:ChannelMapper.kt$ChannelMapper$private fun buildExtendedMetadata(channel: Channel): String?</ID>
     <ID>ReturnCount:ExoVideoPlayer.kt$ExoVideoPlayer$override fun selectSubtitleTrack(trackId: String?)</ID>
@@ -95,6 +99,7 @@
     <ID>UnstableCollections:PlayerControls.kt$List&lt;SubtitleTrackInfo&gt;</ID>
     <ID>UnstableCollections:PlayerControls.kt$List&lt;VideoQualityInfo&gt;</ID>
     <ID>UnstableCollections:PlaylistDropdown.kt$List&lt;PlaylistEntity&gt;</ID>
+    <ID>UnstableCollections:SettingsComponents.kt$List&lt;T&gt;</ID>
     <ID>UnusedPrivateMember:MainActivity.kt$@Preview @Composable private fun AppAndroidPreview()</ID>
     <ID>UnusedPrivateMember:OnboardingScreen.kt$@Preview(showBackground = true) @Composable private fun OnboardingScreenDarkPreview()</ID>
     <ID>UnusedPrivateMember:OnboardingScreen.kt$@Preview(showBackground = true) @Composable private fun OnboardingScreenErrorDarkPreview()</ID>

@@ -2,7 +2,6 @@ package com.simplevideo.whiteiptv.domain.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class AccentColorTest {
 
