@@ -1,0 +1,353 @@
+package com.simplevideo.whiteiptv.feature.settings
+
+import com.russhwolf.settings.MapSettings
+import com.simplevideo.whiteiptv.data.local.SettingsPreferences
+import com.simplevideo.whiteiptv.data.local.ThemePreferences
+import com.simplevideo.whiteiptv.data.repository.FakeChannelRepository
+import com.simplevideo.whiteiptv.data.repository.ThemeRepositoryImpl
+import com.simplevideo.whiteiptv.domain.model.AccentColor
+import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
+import com.simplevideo.whiteiptv.domain.model.ThemeMode
+import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
+import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsAction
+import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertTrue
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class SettingsViewModelTest {
+
+    private val testDispatcher = StandardTestDispatcher()
+
+    private lateinit var settings: MapSettings
+    private lateinit var themePreferences: ThemePreferences
+    private lateinit var themeRepository: ThemeRepositoryImpl
+    private lateinit var settingsPreferences: SettingsPreferences
+    private lateinit var fakeChannelRepository: FakeChannelRepository
+    private lateinit var clearFavoritesUseCase: ClearFavoritesUseCase
+
+    @BeforeTest
+    fun setUp() {
+        Dispatchers.setMain(testDispatcher)
+        settings = MapSettings()
+        themePreferences = ThemePreferences(settings)
+        themeRepository = ThemeRepositoryImpl(themePreferences)
+        settingsPreferences = SettingsPreferences(settings)
+        fakeChannelRepository = FakeChannelRepository()
+        clearFavoritesUseCase = ClearFavoritesUseCase(fakeChannelRepository)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    private fun createViewModel(): SettingsViewModel {
+        return SettingsViewModel(
+            themeRepository = themeRepository,
+            settingsPreferences = settingsPreferences,
+            clearFavoritesUseCase = clearFavoritesUseCase,
+        )
+    }
+
+    // --- Init ---
+
+    @Test
+    fun `init loads default state when no preferences stored`() = runTest {
+        val viewModel = createViewModel()
+
+        val state = viewModel.viewStates().value
+        assertEquals(ThemeMode.System, state.themeMode)
+        assertEquals(AccentColor.Teal, state.accentColor)
+        assertEquals(ChannelViewMode.List, state.channelViewMode)
+        assertFalse(state.autoUpdateEnabled)
+        assertEquals("1.0", state.appVersion)
+        assertFalse(state.showClearFavoritesDialog)
+        assertFalse(state.showResetDialog)
+    }
+
+    @Test
+    fun `init loads previously stored preferences`() = runTest {
+        themeRepository.setThemeMode(ThemeMode.Dark)
+        settingsPreferences.setAccentColor(AccentColor.Red)
+        settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
+        settingsPreferences.setAutoUpdateEnabled(true)
+
+        val viewModel = createViewModel()
+
+        val state = viewModel.viewStates().value
+        assertEquals(ThemeMode.Dark, state.themeMode)
+        assertEquals(AccentColor.Red, state.accentColor)
+        assertEquals(ChannelViewMode.Grid, state.channelViewMode)
+        assertTrue(state.autoUpdateEnabled)
+    }
+
+    // --- Theme Mode ---
+
+    @Test
+    fun `OnThemeModeChanged updates state and persists`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+
+        assertEquals(ThemeMode.Dark, viewModel.viewStates().value.themeMode)
+        assertEquals(ThemeMode.Dark, themeRepository.themeMode.value)
+    }
+
+    @Test
+    fun `OnThemeModeChanged to Light updates state`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Light))
+
+        assertEquals(ThemeMode.Light, viewModel.viewStates().value.themeMode)
+        assertEquals(ThemeMode.Light, themeRepository.themeMode.value)
+    }
+
+    @Test
+    fun `OnThemeModeChanged to System updates state`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.System))
+
+        assertEquals(ThemeMode.System, viewModel.viewStates().value.themeMode)
+        assertEquals(ThemeMode.System, themeRepository.themeMode.value)
+    }
+
+    // --- Accent Color ---
+
+    @Test
+    fun `OnAccentColorChanged updates state and persists`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Blue))
+
+        assertEquals(AccentColor.Blue, viewModel.viewStates().value.accentColor)
+        assertEquals(AccentColor.Blue, settingsPreferences.getAccentColor())
+    }
+
+    @Test
+    fun `OnAccentColorChanged to Red updates state`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Red))
+
+        assertEquals(AccentColor.Red, viewModel.viewStates().value.accentColor)
+        assertEquals(AccentColor.Red, settingsPreferences.getAccentColor())
+    }
+
+    // --- Channel View Mode ---
+
+    @Test
+    fun `OnChannelViewModeChanged updates state and persists`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
+
+        assertEquals(ChannelViewMode.Grid, viewModel.viewStates().value.channelViewMode)
+        assertEquals(ChannelViewMode.Grid, settingsPreferences.getChannelViewMode())
+    }
+
+    @Test
+    fun `OnChannelViewModeChanged back to List updates state`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
+
+        viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.List))
+
+        assertEquals(ChannelViewMode.List, viewModel.viewStates().value.channelViewMode)
+        assertEquals(ChannelViewMode.List, settingsPreferences.getChannelViewMode())
+    }
+
+    // --- Auto Update ---
+
+    @Test
+    fun `OnAutoUpdateChanged true updates state and persists`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
+
+        assertTrue(viewModel.viewStates().value.autoUpdateEnabled)
+        assertTrue(settingsPreferences.getAutoUpdateEnabled())
+    }
+
+    @Test
+    fun `OnAutoUpdateChanged false after true updates state`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
+
+        viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(false))
+
+        assertFalse(viewModel.viewStates().value.autoUpdateEnabled)
+        assertFalse(settingsPreferences.getAutoUpdateEnabled())
+    }
+
+    // --- Clear Cache ---
+
+    @Test
+    fun `OnClearCacheClick emits ShowCacheCleared action`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnClearCacheClick)
+
+        val action = viewModel.viewActions().first()
+        assertIs<SettingsAction.ShowCacheCleared>(action)
+    }
+
+    // --- Clear Favorites ---
+
+    @Test
+    fun `OnClearFavoritesClick shows confirmation dialog`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnClearFavoritesClick)
+
+        assertTrue(viewModel.viewStates().value.showClearFavoritesDialog)
+    }
+
+    @Test
+    fun `OnClearFavoritesConfirm closes dialog and clears favorites`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnClearFavoritesClick)
+
+        viewModel.obtainEvent(SettingsEvent.OnClearFavoritesConfirm)
+        advanceUntilIdle()
+
+        assertFalse(viewModel.viewStates().value.showClearFavoritesDialog)
+        assertTrue(fakeChannelRepository.methodCalls.contains("clearAllFavorites"))
+        val action = viewModel.viewActions().first()
+        assertIs<SettingsAction.ShowFavoritesCleared>(action)
+    }
+
+    // --- Reset ---
+
+    @Test
+    fun `OnResetClick shows confirmation dialog`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnResetClick)
+
+        assertTrue(viewModel.viewStates().value.showResetDialog)
+    }
+
+    @Test
+    fun `OnResetConfirm closes dialog and resets all settings`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+        viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Red))
+        viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
+        viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
+        viewModel.obtainEvent(SettingsEvent.OnResetClick)
+
+        viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
+
+        val state = viewModel.viewStates().value
+        assertFalse(state.showResetDialog)
+        assertEquals(ThemeMode.System, state.themeMode)
+        assertEquals(AccentColor.Teal, state.accentColor)
+        assertEquals(ChannelViewMode.List, state.channelViewMode)
+        assertFalse(state.autoUpdateEnabled)
+        assertEquals(ThemeMode.System, themeRepository.themeMode.value)
+    }
+
+    @Test
+    fun `OnResetConfirm emits ShowSettingsReset action`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnResetClick)
+
+        viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
+
+        val action = viewModel.viewActions().first()
+        assertIs<SettingsAction.ShowSettingsReset>(action)
+    }
+
+    // --- Dismiss Dialog ---
+
+    @Test
+    fun `OnDismissDialog closes clear favorites dialog`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnClearFavoritesClick)
+        assertTrue(viewModel.viewStates().value.showClearFavoritesDialog)
+
+        viewModel.obtainEvent(SettingsEvent.OnDismissDialog)
+
+        assertFalse(viewModel.viewStates().value.showClearFavoritesDialog)
+    }
+
+    @Test
+    fun `OnDismissDialog closes reset dialog`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnResetClick)
+        assertTrue(viewModel.viewStates().value.showResetDialog)
+
+        viewModel.obtainEvent(SettingsEvent.OnDismissDialog)
+
+        assertFalse(viewModel.viewStates().value.showResetDialog)
+    }
+
+    // --- Contact Support ---
+
+    @Test
+    fun `OnContactSupportClick emits OpenEmail action`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnContactSupportClick)
+
+        val action = viewModel.viewActions().first()
+        assertIs<SettingsAction.OpenEmail>(action)
+        assertEquals("mailto:support@simplevideo.com", (action as SettingsAction.OpenEmail).email)
+    }
+
+    // --- Privacy Policy ---
+
+    @Test
+    fun `OnPrivacyPolicyClick emits OpenUrl action`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnPrivacyPolicyClick)
+
+        val action = viewModel.viewActions().first()
+        assertIs<SettingsAction.OpenUrl>(action)
+        assertEquals("https://simplevideo.com/privacy", (action as SettingsAction.OpenUrl).url)
+    }
+
+    // --- Edge Cases ---
+
+    @Test
+    fun `reset from Dark theme reverts to System`() = runTest {
+        val viewModel = createViewModel()
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+        assertEquals(ThemeMode.Dark, viewModel.viewStates().value.themeMode)
+
+        viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
+
+        assertEquals(ThemeMode.System, viewModel.viewStates().value.themeMode)
+        assertEquals(ThemeMode.System, themeRepository.themeMode.value)
+    }
+
+    @Test
+    fun `multiple rapid theme switches preserve last value`() = runTest {
+        val viewModel = createViewModel()
+
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Light))
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Light))
+
+        assertEquals(ThemeMode.Light, viewModel.viewStates().value.themeMode)
+        assertEquals(ThemeMode.Light, themeRepository.themeMode.value)
+    }
+}
