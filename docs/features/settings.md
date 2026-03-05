@@ -46,3 +46,11 @@ Settings is a tab in the bottom navigation bar. It does not have a back button â
 ## Persistence
 
 Settings are stored locally using a key-value preferences store. They persist across app restarts.
+
+## Implementation Notes
+
+- **Language**: Shows "System" only for MVP. No locale override until translated string resources are added.
+- **Clear Cache**: Shows "0 MB" placeholder. Actual cache clearing requires platform-specific implementation.
+- **Accent Color**: Preference is persisted but does not yet alter the Material theme color scheme. Visual application is a separate task.
+- **Auto Update**: Toggle is persisted. Actual playlist auto-refresh job is wired in the Playlist Auto-Refresh feature.
+- **Reset to Defaults**: Resets all settings preferences to defaults. Does NOT delete playlists, channels, or watch history.

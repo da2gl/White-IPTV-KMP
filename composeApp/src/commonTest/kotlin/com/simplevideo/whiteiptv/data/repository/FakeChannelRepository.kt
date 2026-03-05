@@ -84,6 +84,11 @@ class FakeChannelRepository : ChannelRepository {
         }
     }
 
+    override suspend fun clearAllFavorites() {
+        methodCalls.add("clearAllFavorites")
+        channels.value = channels.value.map { it.copy(isFavorite = false) }
+    }
+
     // Search
     override fun searchChannels(query: String): Flow<List<ChannelEntity>> {
         methodCalls.add("searchChannels($query)")

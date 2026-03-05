@@ -48,6 +48,10 @@ class ChannelRepositoryImpl(
         playlistDao.toggleFavoriteStatus(channelId)
     }
 
+    override suspend fun clearAllFavorites() {
+        playlistDao.clearAllFavorites()
+    }
+
     // Search
     override fun searchChannels(query: String): Flow<List<ChannelEntity>> =
         playlistDao.searchChannels(query)

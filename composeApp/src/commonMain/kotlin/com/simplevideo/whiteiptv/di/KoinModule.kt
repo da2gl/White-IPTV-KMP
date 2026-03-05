@@ -2,6 +2,7 @@ package com.simplevideo.whiteiptv.di
 
 import com.russhwolf.settings.Settings
 import com.simplevideo.whiteiptv.data.local.AppDatabase
+import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences
 import com.simplevideo.whiteiptv.data.mapper.ChannelGroupMapper
 import com.simplevideo.whiteiptv.data.mapper.ChannelMapper
@@ -16,6 +17,7 @@ import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
 import com.simplevideo.whiteiptv.domain.repository.WatchHistoryRepository
+import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.DeletePlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
@@ -35,6 +37,7 @@ import com.simplevideo.whiteiptv.feature.favorites.FavoritesViewModel
 import com.simplevideo.whiteiptv.feature.home.HomeViewModel
 import com.simplevideo.whiteiptv.feature.onboarding.OnboardingViewModel
 import com.simplevideo.whiteiptv.feature.player.PlayerViewModel
+import com.simplevideo.whiteiptv.feature.settings.SettingsViewModel
 import com.simplevideo.whiteiptv.feature.splash.SplashViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
@@ -50,6 +53,7 @@ val viewModelModule = module {
     viewModelOf(::FavoritesViewModel)
     viewModelOf(::ChannelsViewModel)
     viewModelOf(::PlayerViewModel)
+    viewModelOf(::SettingsViewModel)
 }
 
 val repositoryModule = module {
@@ -80,6 +84,7 @@ val useCaseModule = module {
     factoryOf(::RecordWatchEventUseCase)
     factoryOf(::RenamePlaylistUseCase)
     factoryOf(::DeletePlaylistUseCase)
+    factoryOf(::ClearFavoritesUseCase)
 }
 
 val networkModule = module {
@@ -95,6 +100,7 @@ val settingsModule = module {
     single { Settings() }
     singleOf(::ThemePreferences)
     singleOf(::ThemeRepositoryImpl) bind ThemeRepository::class
+    singleOf(::SettingsPreferences)
 }
 
 /**

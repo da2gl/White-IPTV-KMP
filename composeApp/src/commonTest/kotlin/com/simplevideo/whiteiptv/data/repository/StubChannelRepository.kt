@@ -17,6 +17,7 @@ class StubChannelRepository : ChannelRepository {
     override fun getFavoriteChannels(): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override suspend fun toggleFavoriteStatus(channelId: Long) {}
+    override suspend fun clearAllFavorites() {}
     override fun searchChannels(query: String): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
         flowOf(emptyList())

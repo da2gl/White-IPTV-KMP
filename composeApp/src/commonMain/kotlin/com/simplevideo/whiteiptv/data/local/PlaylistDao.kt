@@ -129,6 +129,9 @@ interface PlaylistDao {
     )
     suspend fun toggleFavoriteStatus(channelId: Long)
 
+    @Query("UPDATE channels SET isFavorite = 0 WHERE isFavorite = 1")
+    suspend fun clearAllFavorites()
+
     @Query("DELETE FROM channels WHERE playlistId = :playlistId")
     suspend fun deleteChannelsByPlaylistId(playlistId: Long)
 
