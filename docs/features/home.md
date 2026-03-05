@@ -19,7 +19,7 @@ Give the user a quick overview of their channels — what they were watching, wh
 Horizontal scrollable row of recently watched channels. Each card shows:
 - Channel logo/thumbnail
 - Channel name
-- Time indicator (e.g., "24m left", "1h 15m left")
+- Group name
 
 Hidden when no watch history exists.
 

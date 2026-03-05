@@ -20,22 +20,6 @@ The iOS player (`IOSVideoPlayerFactory`) is a stub returning a non-functional du
 
 ---
 
-## Continue Watching returns empty
-
-`GetContinueWatchingUseCase` returns an empty Flow. No watch history tracking, no database table for watch events.
-
-**Target behavior**: Record channel plays with timestamps, display recent channels on Home. See [Home](../features/home.md#continue-watching).
-
----
-
-## Search not implemented
-
-Search icons exist on Home, Channels, and Favorites screens but are non-functional (TODO placeholders). Favorites has inline in-memory filtering that will be replaced.
-
-**Target behavior**: Full-screen context-aware search using database LIKE queries across all screens. See [Search](../features/search.md).
-
----
-
 ## Playlist auto-refresh not implemented
 
 `PlaylistEntity` has a `refreshInterval` field parsed from M3U, but no background job or periodic update logic exists.
@@ -58,18 +42,3 @@ Player features exist only in the specification. No code for picture-in-picture,
 
 **Target behavior**: See [Player](../features/player.md#planned-features).
 
----
-
-## Playlist management actions not implemented
-
-No UI for renaming, deleting, or manually updating existing playlists. The gear icon on Home and playlist management flows do not exist.
-
-**Target behavior**: See [Playlist Settings](../features/playlist-settings.md).
-
----
-
-## Light theme not implemented
-
-The app uses a dark-only theme. `Theme.kt` does not define light color scheme variants.
-
-**Target behavior**: Dark + Light + System theme support, selectable in Settings.
