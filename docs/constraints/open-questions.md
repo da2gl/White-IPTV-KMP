@@ -28,24 +28,6 @@ EPG data comes from XMLTV via `url-tvg`, but implementation details are undefine
 
 ---
 
-## Search Scope
-
-Search matches channel name as case-insensitive substring. But:
-
-- Should search also match group names, tvg-id, or language?
-- For playlists with 5000+ channels, is in-memory filtering sufficient or should it use database queries (LIKE)?
-
----
-
-## Playlist Settings UI
-
-The gear icon opens playlist-specific settings, but the presentation format is undefined:
-
-- Bottom sheet, dialog, or separate screen?
-- Should per-playlist auto-update interval be configurable here?
-
----
-
 ## Cloud Backup
 
 Mentioned in the roadmap but not specified:

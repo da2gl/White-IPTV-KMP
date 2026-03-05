@@ -2,19 +2,12 @@ package com.simplevideo.whiteiptv.feature.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,6 +15,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -44,11 +38,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
+import com.simplevideo.whiteiptv.common.components.SearchEmptyState
+import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
@@ -110,19 +109,38 @@ fun HomeScreen(
         }
     }
 
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(state.isSearchActive) {
+        if (state.isSearchActive) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Scaffold(
         topBar = {
-            HomeTopAppBar(
-                playlists = state.playlists,
-                selection = state.selection,
-                onPlaylistSelect = { selection ->
-                    viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
-                },
-                onPlaylistSettingsClick = {
-                    viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
-                },
-                isPlaylistSettingsEnabled = state.selection is PlaylistSelection.Selected,
-            )
+            if (state.isSearchActive) {
+                SearchTopBar(
+                    query = state.searchQuery,
+                    onQueryChange = { viewModel.obtainEvent(HomeEvent.OnSearchQueryChanged(it)) },
+                    onClose = { viewModel.obtainEvent(HomeEvent.OnToggleSearch) },
+                    placeholder = "Search channels...",
+                    focusRequester = focusRequester,
+                )
+            } else {
+                HomeTopAppBar(
+                    playlists = state.playlists,
+                    selection = state.selection,
+                    onPlaylistSelect = { selection ->
+                        viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
+                    },
+                    onSearchClick = { viewModel.obtainEvent(HomeEvent.OnToggleSearch) },
+                    onPlaylistSettingsClick = {
+                        viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
+                    },
+                    isPlaylistSettingsEnabled = state.selection is PlaylistSelection.Selected,
+                )
+            }
         },
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
@@ -131,7 +149,15 @@ fun HomeScreen(
         },
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            if (state.isLoading) {
+            if (state.isSearchActive) {
+                HomeSearchResults(
+                    searchResults = state.searchResults,
+                    searchQuery = state.searchQuery,
+                    onChannelClick = { channelId ->
+                        viewModel.obtainEvent(HomeEvent.OnSearchResultClick(channelId))
+                    },
+                )
+            } else if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
                 )
@@ -202,6 +228,7 @@ private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
     onPlaylistSelect: (PlaylistSelection) -> Unit,
+    onSearchClick: () -> Unit,
     onPlaylistSettingsClick: () -> Unit,
     isPlaylistSettingsEnabled: Boolean,
 ) {
@@ -214,7 +241,7 @@ private fun HomeTopAppBar(
             )
         },
         actions = {
-            IconButton(onClick = { /* TODO */ }) {
+            IconButton(onClick = onSearchClick) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             }
             IconButton(
@@ -470,6 +497,73 @@ private fun ChannelItem(
             Column(modifier = Modifier.padding(8.dp)) {
                 Text(channel.name, style = MaterialTheme.typography.bodyMedium)
             }
+        }
+    }
+}
+
+@Composable
+private fun HomeSearchResults(
+    searchResults: List<ChannelEntity>,
+    searchQuery: String,
+    onChannelClick: (Long) -> Unit,
+) {
+    if (searchResults.isEmpty() && searchQuery.isNotEmpty()) {
+        SearchEmptyState(query = searchQuery)
+    } else {
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(searchResults, key = { it.id }) { channel ->
+                SearchResultItem(
+                    channel = channel,
+                    onClick = { onChannelClick(channel.id) },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SearchResultItem(
+    channel: ChannelEntity,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surface),
+                contentAlignment = Alignment.Center,
+            ) {
+                AsyncImage(
+                    model = channel.logoUrl,
+                    contentDescription = channel.name,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = channel.name,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }

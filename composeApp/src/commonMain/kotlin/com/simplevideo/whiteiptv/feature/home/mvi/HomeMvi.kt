@@ -11,8 +11,17 @@ data class HomeState(
     val continueWatchingItems: List<ContinueWatchingItem> = emptyList(),
     val favoriteChannels: List<ChannelEntity> = emptyList(),
     val categories: List<Pair<ChannelGroup, List<ChannelEntity>>> = emptyList(),
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false,
+    val searchResults: List<ChannelEntity> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
+    val showPlaylistSettings: Boolean = false,
+    val showRenameDialog: Boolean = false,
+    val showDeleteConfirmation: Boolean = false,
+    val showViewUrlDialog: Boolean = false,
+    val isUpdatingPlaylist: Boolean = false,
+    val playlistManagementError: String? = null,
 )
 
 sealed interface HomeEvent {
@@ -20,10 +29,26 @@ sealed interface HomeEvent {
     data object OnFavoritesViewAllClick : HomeEvent
     data class OnGroupViewAllClick(val groupId: String) : HomeEvent
     data class OnChannelClick(val channelId: Long) : HomeEvent
+    data object OnPlaylistSettingsClick : HomeEvent
+    data object OnPlaylistSettingsDismiss : HomeEvent
+    data object OnRenameClick : HomeEvent
+    data object OnRenameDialogDismiss : HomeEvent
+    data class OnRenameConfirm(val newName: String) : HomeEvent
+    data object OnUpdatePlaylistClick : HomeEvent
+    data object OnDeleteClick : HomeEvent
+    data object OnDeleteDialogDismiss : HomeEvent
+    data object OnDeleteConfirm : HomeEvent
+    data object OnViewUrlClick : HomeEvent
+    data object OnViewUrlDialogDismiss : HomeEvent
+    data object OnPlaylistManagementErrorDismiss : HomeEvent
+    data class OnSearchQueryChanged(val query: String) : HomeEvent
+    data object OnToggleSearch : HomeEvent
+    data class OnSearchResultClick(val channelId: Long) : HomeEvent
 }
 
 sealed interface HomeAction {
     data object NavigateToFavorites : HomeAction
     data class NavigateToChannels(val groupId: String?) : HomeAction
     data class NavigateToPlayer(val channelId: Long) : HomeAction
+    data object NavigateToOnboarding : HomeAction
 }

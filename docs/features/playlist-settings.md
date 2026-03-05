@@ -19,13 +19,17 @@ Gear icon (⚙) in the Home screen header, next to the search icon. Always opera
 | Delete | Remove the playlist and all its channels, groups, and data. Confirmation required. |
 | View URL | Show the source URL (read-only) for URL-based playlists |
 
+## Presentation
+
+Uses a **Material3 ModalBottomSheet** overlay on the Home screen. The bottom sheet shows the playlist name as title and lists available actions as tappable rows with icons.
+
+- Rename and Delete show confirmation dialogs (AlertDialog) before executing.
+- View URL shows a read-only dialog with the source URL.
+
 ## Behavior
 
 - For local-file playlists, "Update" is not available (no source URL to re-download from).
 - Deleting the last playlist navigates to [Onboarding](../flows/import-playlist.md).
 - After a successful update, the channel list refreshes with the new data.
-
-> [!NOTE]
-> **Undefined — requires clarification:**
-> - Whether this should be a bottom sheet, dialog, or a separate screen.
-> - Whether auto-update interval can be configured per-playlist here.
+- The gear icon is disabled when "All Playlists" is selected (no single playlist to manage).
+- Per-playlist auto-update interval is not configurable here; that belongs in global [Settings](./settings.md).
