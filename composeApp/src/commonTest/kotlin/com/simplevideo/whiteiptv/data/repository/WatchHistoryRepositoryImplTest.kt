@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.data.repository
 
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+import com.simplevideo.whiteiptv.data.local.model.WatchHistoryEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
@@ -10,6 +11,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 class WatchHistoryRepositoryImplTest {
 
     private lateinit var fakeDao: FakeWatchHistoryDao
@@ -76,9 +78,16 @@ class WatchHistoryRepositoryImplTest {
         fakeDao.addChannel(channel2)
         fakeDao.addChannel(channel3)
 
-        repository.recordWatchEvent(channelId = 1L, playlistId = 10L, durationMs = 0L)
-        repository.recordWatchEvent(channelId = 2L, playlistId = 10L, durationMs = 0L)
-        repository.recordWatchEvent(channelId = 3L, playlistId = 10L, durationMs = 0L)
+        // Use DAO directly with controlled timestamps to avoid same-millisecond non-determinism
+        fakeDao.upsertWatchHistory(
+            WatchHistoryEntity(channelId = 1L, playlistId = 10L, lastWatchedAt = 100L),
+        )
+        fakeDao.upsertWatchHistory(
+            WatchHistoryEntity(channelId = 2L, playlistId = 10L, lastWatchedAt = 200L),
+        )
+        fakeDao.upsertWatchHistory(
+            WatchHistoryEntity(channelId = 3L, playlistId = 10L, lastWatchedAt = 300L),
+        )
 
         val result = repository.getRecentlyWatchedChannels(limit = 10).first()
         assertEquals(3, result.size)
