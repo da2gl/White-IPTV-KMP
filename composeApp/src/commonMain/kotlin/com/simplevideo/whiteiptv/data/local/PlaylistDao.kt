@@ -1,7 +1,18 @@
 package com.simplevideo.whiteiptv.data.local
 
-import androidx.room.*
-import com.simplevideo.whiteiptv.data.local.model.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Update
+import androidx.room.Upsert
+import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
+import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
+import com.simplevideo.whiteiptv.data.local.model.ChannelWithGroups
+import com.simplevideo.whiteiptv.data.local.model.GroupWithChannels
+import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

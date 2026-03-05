@@ -1,8 +1,25 @@
 package com.simplevideo.whiteiptv.feature.onboarding
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,7 +39,18 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import white_iptv_kmp.composeapp.generated.resources.*
+import white_iptv_kmp.composeapp.generated.resources.Res
+import white_iptv_kmp.composeapp.generated.resources.app_name
+import white_iptv_kmp.composeapp.generated.resources.choose_file_button
+import white_iptv_kmp.composeapp.generated.resources.demo_playlist_link
+import white_iptv_kmp.composeapp.generated.resources.ic_play_circle
+import white_iptv_kmp.composeapp.generated.resources.import_playlist_button
+import white_iptv_kmp.composeapp.generated.resources.importing_message
+import white_iptv_kmp.composeapp.generated.resources.onboarding_subtitle
+import white_iptv_kmp.composeapp.generated.resources.onboarding_title
+import white_iptv_kmp.composeapp.generated.resources.or_separator
+import white_iptv_kmp.composeapp.generated.resources.playlist_url_label
+import white_iptv_kmp.composeapp.generated.resources.playlist_url_placeholder
 
 @Composable
 fun OnboardingScreen(

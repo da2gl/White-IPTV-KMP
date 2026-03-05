@@ -26,7 +26,10 @@ class GetChannelsUseCase(
         }
         return when (filter) {
             is ChannelsFilter.All -> channelRepository.searchChannels(trimmedQuery)
-            is ChannelsFilter.ByPlaylist -> channelRepository.searchChannelsByPlaylistId(trimmedQuery, filter.playlistId)
+            is ChannelsFilter.ByPlaylist -> channelRepository.searchChannelsByPlaylistId(
+                trimmedQuery,
+                filter.playlistId
+            )
             is ChannelsFilter.ByGroup -> channelRepository.searchChannelsByGroupId(trimmedQuery, filter.groupId)
         }
     }
