@@ -15,6 +15,7 @@ interface PlaylistRepository {
     suspend fun getPlaylistById(id: Long): PlaylistEntity?
     suspend fun getPlaylistByUrl(url: String): PlaylistEntity?
     fun getPlaylists(): Flow<List<PlaylistEntity>>
+    suspend fun getPlaylistsList(): List<PlaylistEntity>
     suspend fun insertPlaylist(playlist: PlaylistEntity): Long
     suspend fun updatePlaylist(playlist: PlaylistEntity)
     suspend fun deletePlaylist(id: Long)

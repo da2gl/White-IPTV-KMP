@@ -33,6 +33,10 @@ class PlaylistRepositoryImpl(
         return playlistDao.getPlaylists()
     }
 
+    override suspend fun getPlaylistsList(): List<PlaylistEntity> {
+        return playlistDao.getPlaylistsList()
+    }
+
     override suspend fun insertPlaylist(playlist: PlaylistEntity): Long {
         return playlistDao.insertPlaylist(playlist)
     }

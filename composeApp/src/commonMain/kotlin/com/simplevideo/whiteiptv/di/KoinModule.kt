@@ -12,6 +12,7 @@ import com.simplevideo.whiteiptv.data.repository.ChannelRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.ThemeRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.WatchHistoryRepositoryImpl
+import com.simplevideo.whiteiptv.data.scheduler.PlaylistAutoRefreshScheduler
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
@@ -101,6 +102,7 @@ val settingsModule = module {
     singleOf(::ThemePreferences)
     singleOf(::ThemeRepositoryImpl) bind ThemeRepository::class
     singleOf(::SettingsPreferences)
+    singleOf(::PlaylistAutoRefreshScheduler)
 }
 
 /**

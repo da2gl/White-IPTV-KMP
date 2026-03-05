@@ -3,12 +3,18 @@ package com.simplevideo.whiteiptv.data.local
 import com.russhwolf.settings.Settings
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Manages non-theme settings persistence using multiplatform-settings.
  * Theme settings are handled by [ThemePreferences].
  */
 class SettingsPreferences(private val settings: Settings) {
+
+    private val _autoUpdateEnabledFlow = MutableStateFlow(getAutoUpdateEnabled())
+    val autoUpdateEnabledFlow: StateFlow<Boolean> = _autoUpdateEnabledFlow.asStateFlow()
 
     fun getAccentColor(): AccentColor {
         val name = settings.getString(KEY_ACCENT_COLOR, AccentColor.Teal.name)
@@ -34,10 +40,12 @@ class SettingsPreferences(private val settings: Settings) {
 
     fun setAutoUpdateEnabled(enabled: Boolean) {
         settings.putBoolean(KEY_AUTO_UPDATE, enabled)
+        _autoUpdateEnabledFlow.value = enabled
     }
 
     fun resetAll() {
         settings.clear()
+        _autoUpdateEnabledFlow.value = false
     }
 
     companion object {

@@ -8,7 +8,7 @@ A collection of IPTV channels imported by the user. Playlist is the top-level co
 - **Source URL** — original URL for URL-based playlists. Used for updates. Unique constraint — no duplicate URLs.
 - **Icon** — optional icon URL from M3U header.
 - **Channel count** — number of channels in the playlist.
-- **Refresh interval** — auto-update period parsed from M3U `url-refresh` attribute. Disabled by default.
+- **Refresh interval** — auto-update period parsed from M3U `refresh` attribute. Disabled by default.
 - **User-Agent** — custom HTTP User-Agent header from M3U metadata, passed to player for stream requests.
 - **Last update** — timestamp of the most recent import or refresh.
 - **Created at** — timestamp of the initial import.

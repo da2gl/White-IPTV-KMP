@@ -17,5 +17,6 @@ object AppLogger {
         const val DATABASE = "$BASE_TAG:Database"
         const val HOME = "$BASE_TAG:Home"
         const val ONBOARDING = "$BASE_TAG:Onboarding"
+        const val AUTO_REFRESH = "$BASE_TAG:AutoRefresh"
     }
 }

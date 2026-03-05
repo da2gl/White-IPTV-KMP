@@ -41,6 +41,9 @@ class FakePlaylistRepository : PlaylistRepository {
     override fun getPlaylists(): Flow<List<PlaylistEntity>> =
         _flow.map { playlists.values.toList() }
 
+    override suspend fun getPlaylistsList(): List<PlaylistEntity> =
+        playlists.values.toList()
+
     override suspend fun insertPlaylist(playlist: PlaylistEntity): Long {
         val entity = playlist.copy(id = nextId++)
         playlists[entity.id] = entity
