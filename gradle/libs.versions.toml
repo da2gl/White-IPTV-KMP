@@ -68,6 +68,8 @@ media3-ui-compose = { module = "androidx.media3:media3-ui-compose", version.ref 
 media3-common = { module = "androidx.media3:media3-common", version.ref = "media3" }
 media3-datasource-cronet = { module = "androidx.media3:media3-datasource-cronet", version.ref = "media3" }
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
+multiplatform-settings-test = { module = "com.russhwolf:multiplatform-settings-test", version.ref = "multiplatformSettings" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

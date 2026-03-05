@@ -68,6 +68,8 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.multiplatform.settings.test)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }
