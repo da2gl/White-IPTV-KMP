@@ -15,10 +15,11 @@ import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class ChannelsViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getPlaylists: GetPlaylistsUseCase,
@@ -38,6 +39,8 @@ class ChannelsViewModel(
         initialValue = savedStateHandle[GROUP_ID_KEY],
     )
 
+    private val searchQuery = MutableStateFlow("")
+
     init {
         loadData()
     }
@@ -51,14 +54,15 @@ class ChannelsViewModel(
             getPlaylists(),
             currentPlaylistRepository.selection,
             selectedGroupIdFlow,
-        ) { playlists, selection, selectedGroupId ->
-            Triple(playlists, selection, selectedGroupId)
-        }.flatMapLatest { (playlists, selection, selectedGroupId) ->
-            getGroups(selection).map { groups ->
-                val selectedGroup = selectedGroupId?.let { id ->
+            searchQuery.debounce(300),
+        ) { playlists, selection, selectedGroupId, query ->
+            LoadParams(playlists, selection, selectedGroupId, query)
+        }.flatMapLatest { params ->
+            getGroups(params.selection).map { groups ->
+                val selectedGroup = params.selectedGroupId?.let { id ->
                     groups.find { it.id == id }
                 }
-                DataState(playlists, selection, groups, selectedGroup)
+                DataState(params.playlists, params.selection, groups, selectedGroup, params.query)
             }
         }.flatMapLatest { data ->
             val filter = when {
@@ -77,24 +81,33 @@ class ChannelsViewModel(
 
                 else -> ChannelsFilter.All
             }
-            getChannels(filter).onEach { channels ->
+            getChannels(filter, data.query).onEach { channels ->
                 viewState = ChannelsState(
                     channels = channels,
                     playlists = data.playlists,
                     selection = data.selection,
                     groups = data.groups,
                     selectedGroup = data.selectedGroup,
+                    searchQuery = data.query,
                     isLoading = false,
                 )
             }
         }.launchIn(viewModelScope)
     }
 
+    private data class LoadParams(
+        val playlists: List<com.simplevideo.whiteiptv.data.local.model.PlaylistEntity>,
+        val selection: PlaylistSelection,
+        val selectedGroupId: String?,
+        val query: String,
+    )
+
     private data class DataState(
         val playlists: List<com.simplevideo.whiteiptv.data.local.model.PlaylistEntity>,
         val selection: PlaylistSelection,
         val groups: List<ChannelGroup>,
         val selectedGroup: ChannelGroup?,
+        val query: String,
     )
 
     override fun obtainEvent(viewEvent: ChannelsEvent) {
@@ -104,6 +117,18 @@ class ChannelsViewModel(
             is ChannelsEvent.OnToggleFavorite -> toggleFavoriteChannel(viewEvent.channelId)
             is ChannelsEvent.OnChannelClick -> {
                 viewAction = ChannelsAction.NavigateToPlayer(viewEvent.channelId)
+            }
+            is ChannelsEvent.OnSearchQueryChanged -> {
+                searchQuery.value = viewEvent.query
+                viewState = viewState.copy(searchQuery = viewEvent.query)
+            }
+            is ChannelsEvent.OnToggleSearch -> {
+                val newIsActive = !viewState.isSearchActive
+                if (!newIsActive) searchQuery.value = ""
+                viewState = viewState.copy(
+                    isSearchActive = newIsActive,
+                    searchQuery = if (!newIsActive) "" else viewState.searchQuery,
+                )
             }
         }
     }

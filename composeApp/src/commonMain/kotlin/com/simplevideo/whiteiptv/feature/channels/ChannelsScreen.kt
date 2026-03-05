@@ -10,12 +10,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.components.GroupDropdown
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
+import com.simplevideo.whiteiptv.common.components.SearchEmptyState
+import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
@@ -50,9 +50,29 @@ fun ChannelsScreen(
         }
     }
 
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(state.isSearchActive) {
+        if (state.isSearchActive) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Scaffold(
         topBar = {
-            ChannelsTopAppBar()
+            if (state.isSearchActive) {
+                SearchTopBar(
+                    query = state.searchQuery,
+                    onQueryChange = { viewModel.obtainEvent(ChannelsEvent.OnSearchQueryChanged(it)) },
+                    onClose = { viewModel.obtainEvent(ChannelsEvent.OnToggleSearch) },
+                    placeholder = "Search channels...",
+                    focusRequester = focusRequester,
+                )
+            } else {
+                ChannelsTopAppBar(
+                    onSearchClick = { viewModel.obtainEvent(ChannelsEvent.OnToggleSearch) },
+                )
+            }
         },
     ) { paddingValues ->
         ChannelsContent(
@@ -76,11 +96,11 @@ fun ChannelsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ChannelsTopAppBar() {
+private fun ChannelsTopAppBar(onSearchClick: () -> Unit) {
     TopAppBar(
         title = { Text("All Channels") },
         actions = {
-            IconButton(onClick = { /* TODO: Search */ }) {
+            IconButton(onClick = onSearchClick) {
                 Icon(Icons.Default.Search, contentDescription = "Search")
             }
         },
@@ -119,15 +139,19 @@ private fun ChannelsContent(
                 CircularProgressIndicator()
             }
         } else if (state.channels.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "No channels found",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+            if (state.isSearchActive && state.searchQuery.isNotEmpty()) {
+                SearchEmptyState(query = state.searchQuery)
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "No channels found",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         } else {
             LazyVerticalGrid(

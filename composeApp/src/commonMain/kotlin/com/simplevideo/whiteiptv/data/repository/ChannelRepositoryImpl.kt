@@ -48,6 +48,22 @@ class ChannelRepositoryImpl(
         playlistDao.toggleFavoriteStatus(channelId)
     }
 
+    // Search
+    override fun searchChannels(query: String): Flow<List<ChannelEntity>> =
+        playlistDao.searchChannels(query)
+
+    override fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
+        playlistDao.searchChannelsByPlaylistId(query, playlistId)
+
+    override fun searchChannelsByGroupId(query: String, groupId: Long): Flow<List<ChannelEntity>> =
+        playlistDao.searchChannelsByGroupId(query, groupId)
+
+    override fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>> =
+        playlistDao.searchFavoriteChannels(query)
+
+    override fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
+        playlistDao.searchFavoriteChannelsByPlaylist(query, playlistId)
+
     // Groups
     override fun getAllGroups(): Flow<List<ChannelGroupEntity>> =
         playlistDao.getAllGroups()

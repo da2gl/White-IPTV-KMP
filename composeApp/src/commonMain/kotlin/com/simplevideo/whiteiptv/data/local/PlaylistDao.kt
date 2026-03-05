@@ -68,6 +68,47 @@ interface PlaylistDao {
     @Query("SELECT * FROM channels WHERE isFavorite = 1 AND playlistId = :playlistId")
     fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>>
 
+    // Search
+    @Query("SELECT * FROM channels WHERE name LIKE '%' || :query || '%' COLLATE NOCASE ORDER BY name ASC")
+    fun searchChannels(query: String): Flow<List<ChannelEntity>>
+
+    @Query(
+        """
+        SELECT * FROM channels
+        WHERE name LIKE '%' || :query || '%' COLLATE NOCASE AND playlistId = :playlistId
+        ORDER BY name ASC
+        """,
+    )
+    fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>>
+
+    @Query(
+        """
+        SELECT c.* FROM channels c
+        INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
+        WHERE cgr.groupId = :groupId AND c.name LIKE '%' || :query || '%' COLLATE NOCASE
+        ORDER BY c.name ASC
+        """,
+    )
+    fun searchChannelsByGroupId(query: String, groupId: Long): Flow<List<ChannelEntity>>
+
+    @Query(
+        """
+        SELECT * FROM channels
+        WHERE isFavorite = 1 AND name LIKE '%' || :query || '%' COLLATE NOCASE
+        ORDER BY name ASC
+        """,
+    )
+    fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>>
+
+    @Query(
+        """
+        SELECT * FROM channels
+        WHERE isFavorite = 1 AND playlistId = :playlistId AND name LIKE '%' || :query || '%' COLLATE NOCASE
+        ORDER BY name ASC
+        """,
+    )
+    fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>>
+
     @Query(
         """
         UPDATE channels

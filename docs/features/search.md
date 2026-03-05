@@ -29,11 +29,7 @@ Search is **contextual** — it respects the active filters on the screen where 
 
 ## Search Logic
 
-- Matches channel name (case-insensitive substring match).
+- Matches channel **name only** (case-insensitive substring match via database `LIKE` query).
 - No search history or suggestions.
 - Empty query shows all channels in the current scope.
-
-> [!NOTE]
-> **Undefined — requires clarification:**
-> - Whether search should also match group names or other metadata (tvg-id, language).
-> - Whether database-driven search (LIKE query) is needed for large playlists, or in-memory filtering is sufficient.
+- Database-driven: uses Room `LIKE '%query%' COLLATE NOCASE` queries, not in-memory filtering. Handles playlists with 10k+ channels efficiently.

@@ -23,6 +23,13 @@ interface ChannelRepository {
     fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>>
     suspend fun toggleFavoriteStatus(channelId: Long)
 
+    // Search
+    fun searchChannels(query: String): Flow<List<ChannelEntity>>
+    fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>>
+    fun searchChannelsByGroupId(query: String, groupId: Long): Flow<List<ChannelEntity>>
+    fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>>
+    fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>>
+
     // Groups
     fun getAllGroups(): Flow<List<ChannelGroupEntity>>
     fun getTopGroups(limit: Int): Flow<List<ChannelGroupEntity>>

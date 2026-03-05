@@ -2,7 +2,6 @@ package com.simplevideo.whiteiptv.feature.favorites
 
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
@@ -36,12 +35,11 @@ class FavoritesViewModel(
         }.flatMapLatest { (selection, query) ->
             combine(
                 getPlaylists(),
-                getFavorites(selection),
+                getFavorites(selection, query),
             ) { playlists, channels ->
-                val filteredChannels = filterChannels(channels, query)
                 viewState.copy(
                     playlists = playlists,
-                    channels = filteredChannels,
+                    channels = channels,
                     selection = selection,
                     searchQuery = query,
                     isLoading = false,
@@ -53,14 +51,6 @@ class FavoritesViewModel(
         }.onEach { state ->
             viewState = state
         }.launchIn(viewModelScope)
-    }
-
-    private fun filterChannels(channels: List<ChannelEntity>, query: String): List<ChannelEntity> {
-        val normalizedQuery = query.trim()
-        if (normalizedQuery.isEmpty()) return channels
-        return channels.filter { channel ->
-            channel.name.contains(normalizedQuery, ignoreCase = true)
-        }
     }
 
     override fun obtainEvent(viewEvent: FavoritesEvent) {

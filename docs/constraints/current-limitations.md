@@ -28,11 +28,11 @@ The iOS player (`IOSVideoPlayerFactory`) is a stub returning a non-functional du
 
 ---
 
-## Search not database-driven
+## Search not implemented
 
-Favorites screen implements search as in-memory filtering. Channels screen has a search icon with a TODO comment but no implementation.
+Search icons exist on Home, Channels, and Favorites screens but are non-functional (TODO placeholders). Favorites has inline in-memory filtering that will be replaced.
 
-**Target behavior**: Context-aware search across all screens, potentially database-driven for large playlists. See [Search](../features/search.md).
+**Target behavior**: Full-screen context-aware search using database LIKE queries across all screens. See [Search](../features/search.md).
 
 ---
 

@@ -28,6 +28,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun MainScreen(
     onNavigateToPlayer: (Long) -> Unit,
+    onNavigateToOnboarding: () -> Unit,
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -76,6 +77,7 @@ fun MainScreen(
                         }
                     },
                     onNavigateToPlayer = onNavigateToPlayer,
+                    onNavigateToOnboarding = onNavigateToOnboarding,
                 )
             }
             composable<MainTab.Favorites> {

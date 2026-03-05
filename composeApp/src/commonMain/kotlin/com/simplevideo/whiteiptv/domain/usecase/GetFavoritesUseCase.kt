@@ -12,9 +12,21 @@ import kotlinx.coroutines.flow.Flow
 class GetFavoritesUseCase(
     private val channelRepository: ChannelRepository,
 ) {
-    operator fun invoke(selection: PlaylistSelection = PlaylistSelection.All): Flow<List<ChannelEntity>> =
-        when (selection) {
-            is PlaylistSelection.Selected -> channelRepository.getFavoriteChannelsByPlaylist(selection.id)
-            is PlaylistSelection.All -> channelRepository.getFavoriteChannels()
+    operator fun invoke(
+        selection: PlaylistSelection = PlaylistSelection.All,
+        query: String = "",
+    ): Flow<List<ChannelEntity>> {
+        val trimmedQuery = query.trim()
+        if (trimmedQuery.isEmpty()) {
+            return when (selection) {
+                is PlaylistSelection.Selected -> channelRepository.getFavoriteChannelsByPlaylist(selection.id)
+                is PlaylistSelection.All -> channelRepository.getFavoriteChannels()
+            }
         }
+        return when (selection) {
+            is PlaylistSelection.Selected ->
+                channelRepository.searchFavoriteChannelsByPlaylist(trimmedQuery, selection.id)
+            is PlaylistSelection.All -> channelRepository.searchFavoriteChannels(trimmedQuery)
+        }
+    }
 }

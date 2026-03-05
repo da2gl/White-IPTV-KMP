@@ -11,6 +11,8 @@ data class ChannelsState(
     val selection: PlaylistSelection = PlaylistSelection.All,
     val groups: List<ChannelGroup> = emptyList(),
     val selectedGroup: ChannelGroup? = null,
+    val searchQuery: String = "",
+    val isSearchActive: Boolean = false,
     val isLoading: Boolean = true,
     val error: String? = null,
 )
@@ -20,6 +22,8 @@ sealed interface ChannelsEvent {
     data class OnGroupSelected(val group: ChannelGroup?) : ChannelsEvent
     data class OnToggleFavorite(val channelId: Long) : ChannelsEvent
     data class OnChannelClick(val channelId: Long) : ChannelsEvent
+    data class OnSearchQueryChanged(val query: String) : ChannelsEvent
+    data object OnToggleSearch : ChannelsEvent
 }
 
 sealed interface ChannelsAction {
