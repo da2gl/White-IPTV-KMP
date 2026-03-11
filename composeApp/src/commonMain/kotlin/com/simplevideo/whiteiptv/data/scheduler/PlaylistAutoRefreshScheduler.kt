@@ -5,7 +5,7 @@ import com.simplevideo.whiteiptv.common.AppLogger
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.domain.model.PlaylistSource
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
-import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
  *
  * Observes the auto-update toggle from [SettingsPreferences] and starts/stops
  * a refresh loop accordingly. Each cycle re-downloads all URL-based playlists
- * via [ImportPlaylistUseCase]. Local file playlists are skipped.
+ * via [refreshPlaylist]. Local file playlists are skipped.
  *
  * Runs in foreground only — the coroutine scope is cancelled when the app
  * leaves composition.
@@ -27,10 +27,11 @@ import kotlinx.coroutines.launch
 class PlaylistAutoRefreshScheduler(
     private val settingsPreferences: SettingsPreferences,
     private val playlistRepository: PlaylistRepository,
-    private val importPlaylistUseCase: ImportPlaylistUseCase,
+    private val refreshPlaylist: suspend (PlaylistSource) -> Unit,
+    coroutineContext: CoroutineContext = Dispatchers.Default,
 ) {
     private val log = Logger.withTag(AppLogger.Tags.AUTO_REFRESH)
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(SupervisorJob() + coroutineContext)
     private var refreshJob: Job? = null
 
     fun start() {
@@ -80,7 +81,7 @@ class PlaylistAutoRefreshScheduler(
         log.i { "Refreshing ${urlPlaylists.size} playlist(s)" }
         urlPlaylists.forEach { playlist ->
             runCatching {
-                importPlaylistUseCase(PlaylistSource.Url(playlist.url))
+                refreshPlaylist(PlaylistSource.Url(playlist.url))
             }.onFailure { e ->
                 log.e(e) { "Failed to refresh playlist: ${playlist.name} (id=${playlist.id})" }
             }.onSuccess {

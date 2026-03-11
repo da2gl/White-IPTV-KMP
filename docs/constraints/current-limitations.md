@@ -36,14 +36,6 @@ The iOS player (`IOSVideoPlayerFactory`) is a stub returning a non-functional du
 
 ---
 
-## Playlist auto-refresh not implemented
-
-`PlaylistEntity` has a `refreshInterval` field parsed from M3U, but no background job or periodic update logic exists.
-
-**Target behavior**: When auto-update is enabled in Settings, playlists refresh automatically based on their interval. See [Settings](../features/settings.md).
-
----
-
 ## EPG not implemented
 
 No XMLTV parser, no EPG data model, no program guide UI. The `urlTvg` field is stored in `PlaylistEntity` but unused.

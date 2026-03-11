@@ -102,7 +102,13 @@ val settingsModule = module {
     singleOf(::ThemePreferences)
     singleOf(::ThemeRepositoryImpl) bind ThemeRepository::class
     singleOf(::SettingsPreferences)
-    singleOf(::PlaylistAutoRefreshScheduler)
+    single {
+        PlaylistAutoRefreshScheduler(
+            settingsPreferences = get(),
+            playlistRepository = get(),
+            refreshPlaylist = { source -> get<ImportPlaylistUseCase>().invoke(source) },
+        )
+    }
 }
 
 /**
