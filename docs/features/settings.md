@@ -11,7 +11,7 @@ Let users customize the app appearance, manage data, and configure playlist beha
 ### Appearance
 
 | Setting | Options | Default |
-|---------|---------|---------|
+| --- | --- | --- |
 | Theme | System / Light / Dark | System |
 | Accent Color | Teal, Blue, Red (color picker) | Teal |
 | Channel View | List / Grid | List |
@@ -19,14 +19,14 @@ Let users customize the app appearance, manage data, and configure playlist beha
 ### App Behavior
 
 | Setting | Options | Default |
-|---------|---------|---------|
+| --- | --- | --- |
 | Language | English, Spanish, French, German, etc. | System language |
-| Auto Update Playlists | On / Off | Off (uses `refresh` interval from M3U when enabled) |
+| Auto Update Playlists | On / Off | Off (uses refresh interval from M3U when enabled) |
 
 ### Data & Storage
 
 | Action | Description |
-|--------|-------------|
+| --- | --- |
 | Clear Cache | Free up storage space. Shows current cache size. |
 | Clear Favorites | Remove all favorite channels. Confirmation dialog required. |
 | Reset to Defaults | Restore all settings to defaults. Confirmation dialog required. Destructive action shown in red. |
@@ -34,7 +34,7 @@ Let users customize the app appearance, manage data, and configure playlist beha
 ### About
 
 | Item | Description |
-|------|-------------|
+| --- | --- |
 | App Version | Current version number |
 | Contact Support | Opens email/support channel |
 | Privacy Policy | Opens privacy policy page |
