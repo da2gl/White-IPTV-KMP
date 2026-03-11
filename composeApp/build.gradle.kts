@@ -117,3 +117,9 @@ dependencies {
 room {
     schemaDirectory("$projectDir/schemas")
 }
+
+tasks.withType<Test> {
+    maxHeapSize = "4g"
+    forkEvery = 50
+    jvmArgs("-XX:+UseG1GC")
+}
