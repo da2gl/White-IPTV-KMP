@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.simplevideo.whiteiptv.domain.model.EpgProgram
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
 import com.simplevideo.whiteiptv.platform.AudioTrackInfo
 import com.simplevideo.whiteiptv.platform.SubtitleTrackInfo
@@ -50,6 +51,8 @@ fun PlayerControlsOverlay(
     isVisible: Boolean,
     isBuffering: Boolean,
     tracksInfo: TracksInfo,
+    currentProgram: EpgProgram?,
+    nextProgram: EpgProgram?,
     onBackClick: () -> Unit,
     onShowAudioTracks: () -> Unit,
     onShowSubtitles: () -> Unit,
@@ -57,7 +60,6 @@ fun PlayerControlsOverlay(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
-        // Buffering indicator (always visible when buffering)
         if (isBuffering) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
@@ -71,93 +73,129 @@ fun PlayerControlsOverlay(
             exit = fadeOut(),
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                // Top gradient with back button and channel name
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Black.copy(alpha = 0.7f),
-                                    Color.Transparent,
-                                ),
-                            ),
-                        )
-                        .padding(8.dp),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White,
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = channelName,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium,
+                PlayerTopBar(
+                    channelName = channelName,
+                    currentProgram = currentProgram,
+                    nextProgram = nextProgram,
+                    onBackClick = onBackClick,
+                )
+                PlayerBottomBar(
+                    tracksInfo = tracksInfo,
+                    onShowAudioTracks = onShowAudioTracks,
+                    onShowSubtitles = onShowSubtitles,
+                    onShowQuality = onShowQuality,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayerTopBar(
+    channelName: String,
+    currentProgram: EpgProgram?,
+    nextProgram: EpgProgram?,
+    onBackClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Black.copy(alpha = 0.7f),
+                        Color.Transparent,
+                    ),
+                ),
+            )
+            .padding(8.dp),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White,
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = channelName,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+            if (currentProgram != null) {
+                EpgProgramInfo(
+                    currentProgram = currentProgram,
+                    nextProgram = nextProgram,
+                    modifier = Modifier.padding(start = 56.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayerBottomBar(
+    tracksInfo: TracksInfo,
+    onShowAudioTracks: () -> Unit,
+    onShowSubtitles: () -> Unit,
+    onShowQuality: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.Black.copy(alpha = 0.7f),
+                    ),
+                ),
+            )
+            .padding(16.dp),
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (tracksInfo.audioTracks.size > 1) {
+                    IconButton(onClick = onShowAudioTracks) {
+                        Icon(
+                            imageVector = Icons.Default.Audiotrack,
+                            contentDescription = "Audio tracks",
+                            tint = Color.White,
                         )
                     }
                 }
-
-                // Bottom gradient with controls
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.7f),
-                                ),
-                            ),
+                if (tracksInfo.subtitleTracks.isNotEmpty()) {
+                    IconButton(onClick = onShowSubtitles) {
+                        Icon(
+                            imageVector = Icons.Default.Subtitles,
+                            contentDescription = "Subtitles",
+                            tint = Color.White,
                         )
-                        .padding(16.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        // Track selection buttons
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            if (tracksInfo.audioTracks.size > 1) {
-                                IconButton(onClick = onShowAudioTracks) {
-                                    Icon(
-                                        imageVector = Icons.Default.Audiotrack,
-                                        contentDescription = "Audio tracks",
-                                        tint = Color.White,
-                                    )
-                                }
-                            }
-                            if (tracksInfo.subtitleTracks.isNotEmpty()) {
-                                IconButton(onClick = onShowSubtitles) {
-                                    Icon(
-                                        imageVector = Icons.Default.Subtitles,
-                                        contentDescription = "Subtitles",
-                                        tint = Color.White,
-                                    )
-                                }
-                            }
-                            if (tracksInfo.videoQualities.size > 1) {
-                                IconButton(onClick = onShowQuality) {
-                                    Icon(
-                                        imageVector = Icons.Default.HighQuality,
-                                        contentDescription = "Quality",
-                                        tint = Color.White,
-                                    )
-                                }
-                            }
-                        }
+                    }
+                }
+                if (tracksInfo.videoQualities.size > 1) {
+                    IconButton(onClick = onShowQuality) {
+                        Icon(
+                            imageVector = Icons.Default.HighQuality,
+                            contentDescription = "Quality",
+                            tint = Color.White,
+                        )
                     }
                 }
             }

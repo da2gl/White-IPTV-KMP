@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetCurrentProgramUseCase
+import com.simplevideo.whiteiptv.domain.usecase.LoadEpgUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerAction
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
@@ -21,11 +23,14 @@ import kotlin.time.Clock.System
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
+@Suppress("TooManyFunctions")
 class PlayerViewModel(
     savedStateHandle: SavedStateHandle,
     private val getChannelById: GetChannelByIdUseCase,
     private val getAdjacentChannel: GetAdjacentChannelUseCase,
     private val recordWatchEvent: RecordWatchEventUseCase,
+    private val loadEpg: LoadEpgUseCase,
+    private val getCurrentProgram: GetCurrentProgramUseCase,
 ) : BaseViewModel<PlayerState, PlayerAction, PlayerEvent>(
     initialState = PlayerState(),
 ) {
@@ -36,6 +41,7 @@ class PlayerViewModel(
     private val channelIdFlow = MutableStateFlow(initialChannelId)
     private var watchStartTime: Long = 0L
     private var watchTimerJob: Job? = null
+    private var epgRefreshJob: Job? = null
 
     init {
         observeChannel()
@@ -49,6 +55,7 @@ class PlayerViewModel(
             .onEach { channel ->
                 viewState = if (channel != null) {
                     recordInitialWatchEvent(channel.id, channel.playlistId)
+                    loadEpgAndFetchProgram(channel.playlistId, channel.tvgId)
                     viewState.copy(
                         channel = channel,
                         isLoading = false,
@@ -108,6 +115,33 @@ class PlayerViewModel(
         }
     }
 
+    private fun loadEpgAndFetchProgram(playlistId: Long, tvgId: String?) {
+        viewModelScope.launch {
+            loadEpg(playlistId)
+            fetchCurrentProgram(tvgId)
+            startEpgRefreshTimer(tvgId)
+        }
+    }
+
+    private suspend fun fetchCurrentProgram(tvgId: String?) {
+        val (current, next) = getCurrentProgram(tvgId)
+        viewState = viewState.copy(
+            currentProgram = current,
+            nextProgram = next,
+        )
+    }
+
+    private fun startEpgRefreshTimer(tvgId: String?) {
+        epgRefreshJob?.cancel()
+        if (tvgId.isNullOrBlank()) return
+        epgRefreshJob = viewModelScope.launch {
+            while (true) {
+                delay(EPG_REFRESH_INTERVAL_MS)
+                fetchCurrentProgram(tvgId)
+            }
+        }
+    }
+
     override fun obtainEvent(viewEvent: PlayerEvent) {
         when (viewEvent) {
             is PlayerEvent.OnBackClick -> {
@@ -163,6 +197,8 @@ class PlayerViewModel(
     private fun navigateToChannel(next: Boolean) {
         val currentChannel = viewState.channel ?: return
         stopWatchTimer()
+        epgRefreshJob?.cancel()
+        viewState = viewState.copy(currentProgram = null, nextProgram = null)
 
         viewModelScope.launch {
             val adjacentChannel = if (next) {
@@ -181,9 +217,11 @@ class PlayerViewModel(
     override fun onCleared() {
         super.onCleared()
         watchTimerJob?.cancel()
+        epgRefreshJob?.cancel()
     }
 
     companion object {
         private const val WATCH_UPDATE_INTERVAL_MS = 30_000L
+        private const val EPG_REFRESH_INTERVAL_MS = 60_000L
     }
 }
