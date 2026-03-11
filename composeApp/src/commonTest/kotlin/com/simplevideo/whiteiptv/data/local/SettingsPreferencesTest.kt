@@ -106,6 +106,43 @@ class SettingsPreferencesTest {
         assertFalse(settingsPreferences.getAutoUpdateEnabled())
     }
 
+    // --- Auto Update Flow ---
+
+    @Test
+    fun `autoUpdateEnabledFlow initial value is false by default`() {
+        assertFalse(settingsPreferences.autoUpdateEnabledFlow.value)
+    }
+
+    @Test
+    fun `autoUpdateEnabledFlow emits true when setAutoUpdateEnabled true`() {
+        settingsPreferences.setAutoUpdateEnabled(true)
+        assertTrue(settingsPreferences.autoUpdateEnabledFlow.value)
+    }
+
+    @Test
+    fun `autoUpdateEnabledFlow emits false when toggled off`() {
+        settingsPreferences.setAutoUpdateEnabled(true)
+        settingsPreferences.setAutoUpdateEnabled(false)
+        assertFalse(settingsPreferences.autoUpdateEnabledFlow.value)
+    }
+
+    @Test
+    fun `autoUpdateEnabledFlow resets to false on resetAll`() {
+        settingsPreferences.setAutoUpdateEnabled(true)
+        assertTrue(settingsPreferences.autoUpdateEnabledFlow.value)
+
+        settingsPreferences.resetAll()
+        assertFalse(settingsPreferences.autoUpdateEnabledFlow.value)
+    }
+
+    @Test
+    fun `autoUpdateEnabledFlow initializes with persisted value`() {
+        settingsPreferences.setAutoUpdateEnabled(true)
+
+        val newPreferences = SettingsPreferences(settings)
+        assertTrue(newPreferences.autoUpdateEnabledFlow.value)
+    }
+
     // --- Persistence across instances ---
 
     @Test
