@@ -20,7 +20,7 @@ Before anything else, run:
 grep 'include' settings.gradle.kts
 ls shared/src/ androidApp/src/main/ 2>/dev/null
 ```
-This tells you the actual module names and structure. **NEVER hardcode `composeApp/`** — the project uses `shared/` for the KMP library and `androidApp/` for the Android app.
+This tells you the actual module names and structure.
 
 ### 2. Understand the Feature
 - Read the feature spec from `docs/features/` or `docs/flows/`
@@ -129,5 +129,4 @@ Numbered steps in dependency order:
 - **MVI pattern is mandatory** for new screens (State/Event/Action + ViewModel + Screen).
 - **Keep it simple.** Don't over-engineer. Minimum viable implementation.
 - **KMP compatible.** Use `Dispatchers.Default`, not `Dispatchers.IO`. No JVM-only APIs in commonMain.
-- **Use `shared/` paths.** Never reference `composeApp/` — the project was restructured.
 - **All new files must be listed.** If the feature needs 5 new files, list all 5. Incomplete file lists lead to incomplete implementations.

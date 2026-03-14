@@ -20,7 +20,7 @@ Before anything else, run:
 ls -la settings.gradle.kts
 grep 'include' settings.gradle.kts
 ```
-This tells you the actual module names. **NEVER assume `composeApp`** — the project uses `shared/` for the KMP library and `androidApp/` for the Android app. If the plan references `composeApp/`, mentally substitute `shared/`.
+This tells you the actual module names. If the plan references `composeApp/`, substitute with `shared/`.
 
 ### 2. Read the Plan
 - Read `docs/features-claude/<feature-name>/prep.md` thoroughly
@@ -119,20 +119,3 @@ When writing or modifying code that involves DataStore, coroutines, or async pat
 - ViewModel tests should create a `SupervisorJob()` per test in setUp, cancel in tearDown
 - Never use `Dispatchers.IO` in production code — breaks test dispatcher control
 
-## Module Structure Reference
-
-```
-shared/                  # KMP library (androidMultiplatformLibrary plugin)
-  src/commonMain/        # Shared code
-  src/androidMain/       # Android actual implementations
-  src/iosMain/           # iOS actual implementations
-  src/commonTest/        # Shared tests
-  src/androidHostTest/   # Android-specific tests
-  build.gradle.kts       # KMP dependencies
-
-androidApp/              # Android app entry point
-  src/main/              # MainActivity, Application, manifest, res
-  build.gradle.kts       # App dependencies + implementation(projects.shared)
-
-iosApp/                  # iOS app (Xcode project)
-```
