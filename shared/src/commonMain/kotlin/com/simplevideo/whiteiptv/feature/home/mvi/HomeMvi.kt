@@ -44,6 +44,7 @@ sealed interface HomeEvent {
     data class OnSearchQueryChanged(val query: String) : HomeEvent
     data object OnToggleSearch : HomeEvent
     data class OnSearchResultClick(val channelId: Long) : HomeEvent
+    data object OnAddPlaylistClick : HomeEvent
 }
 
 sealed interface HomeAction {

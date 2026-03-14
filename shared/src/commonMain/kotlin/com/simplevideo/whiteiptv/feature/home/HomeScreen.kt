@@ -145,6 +145,7 @@ fun HomeScreen(
                     onPlaylistSelect = { selection ->
                         viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
                     },
+                    onAddPlaylistClick = { viewModel.obtainEvent(HomeEvent.OnAddPlaylistClick) },
                     onSearchClick = { viewModel.obtainEvent(HomeEvent.OnToggleSearch) },
                     onPlaylistSettingsClick = {
                         viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
@@ -239,6 +240,7 @@ private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
     onPlaylistSelect: (PlaylistSelection) -> Unit,
+    onAddPlaylistClick: () -> Unit,
     onSearchClick: () -> Unit,
     onPlaylistSettingsClick: () -> Unit,
     isPlaylistSettingsEnabled: Boolean,
@@ -249,6 +251,7 @@ private fun HomeTopAppBar(
                 playlists = playlists,
                 selection = selection,
                 onPlaylistSelect = onPlaylistSelect,
+                onAddPlaylistClick = onAddPlaylistClick,
             )
         },
         actions = {
@@ -351,11 +354,13 @@ private fun HomeTopAppBarTitle(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
     onPlaylistSelect: (PlaylistSelection) -> Unit,
+    onAddPlaylistClick: () -> Unit,
 ) {
     PlaylistDropdown(
         playlists = playlists,
         selection = selection,
         onPlaylistSelect = onPlaylistSelect,
+        onAddPlaylistClick = onAddPlaylistClick,
     )
 }
 

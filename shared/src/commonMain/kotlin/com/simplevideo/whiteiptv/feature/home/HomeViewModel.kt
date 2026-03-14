@@ -168,6 +168,10 @@ class HomeViewModel(
             is HomeEvent.OnSearchResultClick -> {
                 viewAction = HomeAction.NavigateToPlayer(viewEvent.channelId)
             }
+
+            is HomeEvent.OnAddPlaylistClick -> {
+                viewAction = HomeAction.NavigateToOnboarding
+            }
         }
     }
 
