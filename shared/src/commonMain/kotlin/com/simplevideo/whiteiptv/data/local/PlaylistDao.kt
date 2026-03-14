@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+import com.simplevideo.whiteiptv.data.local.model.ChannelFtsEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelWithGroups
@@ -82,15 +83,23 @@ interface PlaylistDao {
     @Query("SELECT * FROM channels WHERE isFavorite = 1 AND playlistId = :playlistId")
     fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>>
 
-    // Search
-    @Query("SELECT * FROM channels WHERE name LIKE '%' || :query || '%' COLLATE NOCASE ORDER BY name ASC")
+    // Search (FTS4 full-text search with phrase-prefix matching)
+    @Query(
+        """
+        SELECT c.* FROM channels c
+        INNER JOIN channels_fts fts ON c.id = fts.rowid
+        WHERE channels_fts MATCH '"' || :query || '*'
+        ORDER BY c.name ASC
+        """,
+    )
     fun searchChannels(query: String): Flow<List<ChannelEntity>>
 
     @Query(
         """
-        SELECT * FROM channels
-        WHERE name LIKE '%' || :query || '%' COLLATE NOCASE AND playlistId = :playlistId
-        ORDER BY name ASC
+        SELECT c.* FROM channels c
+        INNER JOIN channels_fts fts ON c.id = fts.rowid
+        WHERE channels_fts MATCH '"' || :query || '*' AND c.playlistId = :playlistId
+        ORDER BY c.name ASC
         """,
     )
     fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>>
@@ -98,8 +107,9 @@ interface PlaylistDao {
     @Query(
         """
         SELECT c.* FROM channels c
+        INNER JOIN channels_fts fts ON c.id = fts.rowid
         INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
-        WHERE cgr.groupId = :groupId AND c.name LIKE '%' || :query || '%' COLLATE NOCASE
+        WHERE channels_fts MATCH '"' || :query || '*' AND cgr.groupId = :groupId
         ORDER BY c.name ASC
         """,
     )
@@ -107,18 +117,20 @@ interface PlaylistDao {
 
     @Query(
         """
-        SELECT * FROM channels
-        WHERE isFavorite = 1 AND name LIKE '%' || :query || '%' COLLATE NOCASE
-        ORDER BY name ASC
+        SELECT c.* FROM channels c
+        INNER JOIN channels_fts fts ON c.id = fts.rowid
+        WHERE channels_fts MATCH '"' || :query || '*' AND c.isFavorite = 1
+        ORDER BY c.name ASC
         """,
     )
     fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>>
 
     @Query(
         """
-        SELECT * FROM channels
-        WHERE isFavorite = 1 AND playlistId = :playlistId AND name LIKE '%' || :query || '%' COLLATE NOCASE
-        ORDER BY name ASC
+        SELECT c.* FROM channels c
+        INNER JOIN channels_fts fts ON c.id = fts.rowid
+        WHERE channels_fts MATCH '"' || :query || '*' AND c.isFavorite = 1 AND c.playlistId = :playlistId
+        ORDER BY c.name ASC
         """,
     )
     fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>>
@@ -146,6 +158,21 @@ interface PlaylistDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>)
+
+    @Insert
+    suspend fun insertChannelFts(ftsEntities: List<ChannelFtsEntity>)
+
+    @Query("DELETE FROM channels_fts")
+    suspend fun deleteAllChannelFts()
+
+    @Query(
+        """
+        DELETE FROM channels_fts WHERE rowid IN (
+            SELECT id FROM channels WHERE playlistId = :playlistId
+        )
+        """,
+    )
+    suspend fun deleteChannelFtsByPlaylistId(playlistId: Long)
 
     @Query("SELECT * FROM channel_groups WHERE playlistId = :playlistId ORDER BY displayOrder ASC")
     fun getGroupsByPlaylist(playlistId: Long): Flow<List<ChannelGroupEntity>>
@@ -223,6 +250,13 @@ interface PlaylistDao {
 
         insertChannels(channels)
 
+        val ftsEntities = channels.map { channel ->
+            ChannelFtsEntity(name = channel.name)
+        }
+        if (ftsEntities.isNotEmpty()) {
+            insertChannelFts(ftsEntities)
+        }
+
         if (crossRefs.isNotEmpty()) {
             insertChannelGroupCrossRefs(crossRefs)
         }
@@ -241,6 +275,8 @@ interface PlaylistDao {
         crossRefs: List<ChannelGroupCrossRef>,
     ) {
         updatePlaylist(playlist)
+
+        deleteChannelFtsByPlaylistId(playlist.id)
         deleteChannelsByPlaylistId(playlist.id)
 
         if (groups.isNotEmpty()) {
@@ -248,6 +284,13 @@ interface PlaylistDao {
         }
 
         insertChannels(channels)
+
+        val ftsEntities = channels.map { channel ->
+            ChannelFtsEntity(name = channel.name)
+        }
+        if (ftsEntities.isNotEmpty()) {
+            insertChannelFts(ftsEntities)
+        }
 
         if (crossRefs.isNotEmpty()) {
             insertChannelGroupCrossRefs(crossRefs)

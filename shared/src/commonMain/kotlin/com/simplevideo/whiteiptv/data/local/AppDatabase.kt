@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+import com.simplevideo.whiteiptv.data.local.model.ChannelFtsEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.data.local.model.EpgProgramEntity
@@ -15,12 +16,13 @@ import com.simplevideo.whiteiptv.data.local.model.WatchHistoryEntity
     entities = [
         PlaylistEntity::class,
         ChannelEntity::class,
+        ChannelFtsEntity::class,
         ChannelGroupEntity::class,
         ChannelGroupCrossRef::class,
         WatchHistoryEntity::class,
         EpgProgramEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 @ConstructedBy(AppDatabaseConstructor::class)

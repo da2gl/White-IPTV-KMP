@@ -62,6 +62,23 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
 }
 
 /**
+ * Migration from v4 to v5: add FTS4 virtual table for full-text search on channel names
+ */
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            """
+            CREATE VIRTUAL TABLE IF NOT EXISTS `channels_fts`
+            USING FTS4(`name`, content=`channels`, tokenize=unicode61)
+            """.trimIndent(),
+        )
+        connection.execSQL(
+            "INSERT INTO `channels_fts`(rowid, name) SELECT id, name FROM channels",
+        )
+    }
+}
+
+/**
  * Creates Room database with proper configuration for all platforms
  * Sets bundled SQLite driver and IO coroutine context
  */
@@ -69,6 +86,6 @@ fun getRoomDatabase(builder: Builder<AppDatabase>): AppDatabase {
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+        .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
         .build()
 }
