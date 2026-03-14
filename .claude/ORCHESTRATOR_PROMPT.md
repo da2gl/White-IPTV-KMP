@@ -13,7 +13,7 @@ Before doing anything, read these files:
 1. `CLAUDE.md` — project architecture, build commands, patterns
 2. `.claude/PIPELINE.md` — agent pipeline definition, concurrency rules, build commands
 3. `docs/constraints/current-limitations.md` — the backlog
-4. Check `.claude/features/` for in-progress work from previous sessions
+4. Check `docs/features-claude/` for in-progress work from previous sessions
 
 **CRITICAL**: The project uses `shared/` (not `composeApp/`). Build commands:
 ```bash

@@ -48,7 +48,7 @@ For any ambiguity or open question related to your feature:
 - Prefer the simplest approach that works
 
 ### 6. Write Implementation Plan
-Create a file at `.claude/features/<feature-name>/prep.md` with this structure:
+Create a file at `docs/features-claude/<feature-name>/prep.md` with this structure:
 
 ```markdown
 # <Feature Name> — Implementation Plan

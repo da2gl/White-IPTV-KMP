@@ -15,10 +15,10 @@ You are the gatekeeper. Nothing ships without your approval. Compare plan vs rea
 ## Process
 
 ### 1. Read All Artifacts
-- `.claude/features/<feature-name>/prep.md` — the plan
-- `.claude/features/<feature-name>/code-report.md` — coder's report
-- `.claude/features/<feature-name>/test-report.md` — tester's report
-- `.claude/features/<feature-name>/e2e-report.md` — mobile tester's report
+- `docs/features-claude/<feature-name>/prep.md` — the plan
+- `docs/features-claude/<feature-name>/code-report.md` — coder's report
+- `docs/features-claude/<feature-name>/test-report.md` — tester's report
+- `docs/features-claude/<feature-name>/e2e-report.md` — mobile tester's report
 - All created/modified source files
 - All test files
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Each feature goes through a sequential pipeline of specialized agents. Agents communicate through files in `.claude/features/<feature-name>/`. All decisions are made autonomously — no user input required during the pipeline.
+Each feature goes through a sequential pipeline of specialized agents. Agents communicate through files in `docs/features-claude/<feature-name>/`. All decisions are made autonomously — no user input required during the pipeline.
 
 ## Module Structure
 
@@ -28,7 +28,7 @@ All build commands use `:shared:` and `:androidApp:` prefixes. **Never use `:com
 ## File Structure
 
 ```
-.claude/features/
+docs/features-claude/
 └── <feature-name>/
     ├── prep.md          # Step 1: implementation plan
     ├── code-report.md   # Step 3: what was coded
@@ -37,7 +37,7 @@ All build commands use `:shared:` and `:androidApp:` prefixes. **Never use `:com
     └── validation.md    # Step 7: final verdict
 ```
 
-Documentation updates go to `docs/` (never to `.claude/features/`).
+Documentation updates go to `docs/` (never to `docs/features-claude/`).
 
 ## Flow
 
@@ -178,30 +178,30 @@ The orchestrator (main Claude session) manages:
 ```
 Feature: <name>
 Spec: docs/features/<name>.md
-Create plan at: .claude/features/<name>/prep.md
+Create plan at: docs/features-claude/<name>/prep.md
 ```
 
 ### Doc-Validator
 ```
 Validate docs for feature: <name>
-Plan: .claude/features/<name>/prep.md
+Plan: docs/features-claude/<name>/prep.md
 Report issues or confirm pass.
 ```
 
 ### Coder (with worktree isolation)
 ```
 Implement feature: <name>
-Plan: .claude/features/<name>/prep.md
-Write report to: .claude/features/<name>/code-report.md
+Plan: docs/features-claude/<name>/prep.md
+Write report to: docs/features-claude/<name>/code-report.md
 Build with: ./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug
 ```
 
 ### Tester
 ```
 Test feature: <name>
-Plan: .claude/features/<name>/prep.md
-Code report: .claude/features/<name>/code-report.md
-Write report to: .claude/features/<name>/test-report.md
+Plan: docs/features-claude/<name>/prep.md
+Code report: docs/features-claude/<name>/code-report.md
+Write report to: docs/features-claude/<name>/test-report.md
 Run tests: ./gradlew :shared:testAndroidHostTest
 ```
 
@@ -219,15 +219,15 @@ E2E test feature: <name>
 Spec: docs/features/<name>.md
 Build: ./gradlew :androidApp:assembleDebug
 Package: com.simplevideo.whiteiptv
-Write report to: .claude/features/<name>/e2e-report.md
+Write report to: docs/features-claude/<name>/e2e-report.md
 Requires: running Android emulator + claude-in-mobile MCP
 ```
 
 ### Validator
 ```
 Validate feature: <name>
-Plan: .claude/features/<name>/prep.md
-Code report: .claude/features/<name>/code-report.md
-Test report: .claude/features/<name>/test-report.md
-Write verdict to: .claude/features/<name>/validation.md
+Plan: docs/features-claude/<name>/prep.md
+Code report: docs/features-claude/<name>/code-report.md
+Test report: docs/features-claude/<name>/test-report.md
+Write verdict to: docs/features-claude/<name>/validation.md
 ```

@@ -15,8 +15,8 @@ After the coder finishes, you write tests and check for security issues. You mak
 ## Process
 
 ### 1. Understand What Was Built
-- Read `.claude/features/<feature-name>/prep.md` — the plan
-- Read `.claude/features/<feature-name>/code-report.md` — what was actually built
+- Read `docs/features-claude/<feature-name>/prep.md` — the plan
+- Read `docs/features-claude/<feature-name>/code-report.md` — what was actually built
 - Read all created/modified files from the code report
 
 ### 2. Write Unit Tests
@@ -91,7 +91,7 @@ Check for:
 - **Path traversal**: File operations use safe paths?
 
 ### 6. Write Report
-Create `.claude/features/<feature-name>/test-report.md`:
+Create `docs/features-claude/<feature-name>/test-report.md`:
 
 ```markdown
 # Test Report: <Feature Name>

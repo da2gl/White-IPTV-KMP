@@ -1,6 +1,6 @@
 ---
 name: coder
-description: Implements features based on implementation plans from the preparer. Reads the plan from .claude/features/<name>/prep.md, writes production code following project conventions, builds and verifies compilation. Works in a worktree branch.
+description: Implements features-claude based on implementation plans from the preparer. Reads the plan from .claude/features-claude/<name>/prep.md, writes production code following project conventions, builds and verifies compilation. Works in a worktree branch.
 tools: Read, Glob, Grep, Write, Edit, Bash
 model: opus
 color: blue
@@ -23,7 +23,7 @@ grep 'include' settings.gradle.kts
 This tells you the actual module names. **NEVER assume `composeApp`** — the project uses `shared/` for the KMP library and `androidApp/` for the Android app. If the plan references `composeApp/`, mentally substitute `shared/`.
 
 ### 2. Read the Plan
-- Read `.claude/features/<feature-name>/prep.md` thoroughly
+- Read `docs/features-claude/<feature-name>/prep.md` thoroughly
 - Read CLAUDE.md for project conventions
 - Understand every file to create/modify
 - **Translate all paths**: if plan says `composeApp/src/`, use `shared/src/`
@@ -61,7 +61,7 @@ Before committing, verify:
 - [ ] No leftover TODO/FIXME from implementation
 
 ### 7. Write Report
-Create `.claude/features/<feature-name>/code-report.md`:
+Create `docs/features-claude/<feature-name>/code-report.md`:
 
 ```markdown
 # Code Report: <Feature Name>

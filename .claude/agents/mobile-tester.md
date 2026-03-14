@@ -20,13 +20,13 @@ After unit tests and lint pass, you verify that the feature works correctly on a
 ## Process
 
 ### 1. Read the Feature Spec
-- Read `.claude/features/<feature-name>/prep.md` — what was planned
+- Read `docs/features-claude/<feature-name>/prep.md` — what was planned
 - Read `docs/features/<feature>.md` — expected behavior
-- Read `.claude/features/<feature-name>/code-report.md` — what was built
+- Read `docs/features-claude/<feature-name>/code-report.md` — what was built
 
 ### 2. Build and Install
 ```bash
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 ```
 Then use `install_app` or:
 ```bash
@@ -65,7 +65,7 @@ For features requiring data, import the demo playlist:
 - Wait for import to complete (~10k channels)
 
 ### 7. Write Report
-Create `.claude/features/<feature-name>/e2e-report.md`:
+Create `docs/features-claude/<feature-name>/e2e-report.md`:
 
 ```markdown
 # E2E Test Report: <Feature Name>

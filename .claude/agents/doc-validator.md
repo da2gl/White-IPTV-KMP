@@ -15,7 +15,7 @@ After a preparer or coder finishes work, you verify that all documentation is co
 ## Process
 
 ### 1. Read the Implementation Plan
-- Read `.claude/features/<feature-name>/prep.md`
+- Read `docs/features-claude/<feature-name>/prep.md`
 - Note all decisions made and doc updates listed
 
 ### 2. Verify Feature Documentation
