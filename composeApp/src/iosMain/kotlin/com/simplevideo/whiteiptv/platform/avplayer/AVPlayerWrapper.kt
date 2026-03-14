@@ -27,7 +27,7 @@ import platform.UIKit.UIView
 @OptIn(ExperimentalForeignApi::class)
 class AVPlayerWrapper : VideoPlayer {
 
-    private val avPlayer = AVPlayer()
+    internal val avPlayer = AVPlayer()
     private val listeners = mutableListOf<PlayerListener>()
     private val tracksMapper = AVPlayerTracksMapper()
     private var currentPlayerItem: AVPlayerItem? = null
