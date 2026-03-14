@@ -69,3 +69,4 @@ compose-desktop.jar
 *.bak
 *.swp
 *~
+*.preferences_pb

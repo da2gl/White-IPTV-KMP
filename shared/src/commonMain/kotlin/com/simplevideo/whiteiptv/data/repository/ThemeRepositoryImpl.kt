@@ -13,9 +13,8 @@ import kotlinx.coroutines.launch
 
 class ThemeRepositoryImpl(
     private val themePreferences: ThemePreferences,
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 ) : ThemeRepository {
-
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val _themeMode = MutableStateFlow<ThemeMode>(ThemeMode.System)
     override val themeMode: StateFlow<ThemeMode> = _themeMode.asStateFlow()
 

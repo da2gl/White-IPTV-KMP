@@ -18,7 +18,6 @@ class ThemeRepositoryImplTest {
 
     private lateinit var dataStore: DataStore<Preferences>
     private lateinit var themePreferences: ThemePreferences
-    private lateinit var repository: ThemeRepositoryImpl
 
     @BeforeTest
     fun setUp() {
@@ -30,27 +29,27 @@ class ThemeRepositoryImplTest {
 
     @Test
     fun `initial themeMode is System when no preference stored`() = runTest {
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         assertEquals(ThemeMode.System, repository.themeMode.value)
     }
 
     @Test
     fun `setThemeMode updates StateFlow value`() = runTest {
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         repository.setThemeMode(ThemeMode.Light)
         assertEquals(ThemeMode.Light, repository.themeMode.value)
     }
 
     @Test
     fun `setThemeMode persists to preferences`() = runTest {
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         repository.setThemeMode(ThemeMode.Dark)
         assertEquals(ThemeMode.Dark, themePreferences.getThemeMode())
     }
 
     @Test
     fun `setThemeMode updates both StateFlow and preferences`() = runTest {
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         repository.setThemeMode(ThemeMode.Light)
 
         assertEquals(ThemeMode.Light, repository.themeMode.value)
@@ -59,7 +58,7 @@ class ThemeRepositoryImplTest {
 
     @Test
     fun `multiple setThemeMode calls update to latest value`() = runTest {
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         repository.setThemeMode(ThemeMode.Light)
         repository.setThemeMode(ThemeMode.Dark)
         repository.setThemeMode(ThemeMode.System)
@@ -70,7 +69,7 @@ class ThemeRepositoryImplTest {
 
     @Test
     fun `setThemeMode to same value is idempotent`() = runTest {
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         repository.setThemeMode(ThemeMode.Dark)
         repository.setThemeMode(ThemeMode.Dark)
 
@@ -81,7 +80,7 @@ class ThemeRepositoryImplTest {
     @Test
     fun `initial themeMode reflects previously stored preference`() = runTest {
         themePreferences.setThemeMode(ThemeMode.Dark)
-        repository = ThemeRepositoryImpl(themePreferences)
+        val repository = ThemeRepositoryImpl(themePreferences, scope = this)
         advanceUntilIdle()
         assertEquals(ThemeMode.Dark, repository.themeMode.value)
     }
