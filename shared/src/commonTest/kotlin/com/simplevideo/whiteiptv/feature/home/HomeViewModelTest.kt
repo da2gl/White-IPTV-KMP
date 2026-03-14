@@ -324,4 +324,94 @@ class HomeViewModelTest {
         assertEquals("Test", state.playlists[0].name)
         assertFalse(state.isLoading)
     }
+
+    // --- Add Playlist ---
+
+    @Test
+    fun `OnAddPlaylistClick emits NavigateToOnboarding action`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnAddPlaylistClick)
+
+        val action = viewModel.viewActions().first()
+        assertIs<HomeAction.NavigateToOnboarding>(action)
+    }
+
+    // --- Navigation Events ---
+
+    @Test
+    fun `OnChannelClick emits NavigateToPlayer action`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnChannelClick(42L))
+
+        val action = viewModel.viewActions().first()
+        assertIs<HomeAction.NavigateToPlayer>(action)
+        assertEquals(42L, (action as HomeAction.NavigateToPlayer).channelId)
+    }
+
+    @Test
+    fun `OnFavoritesViewAllClick emits NavigateToFavorites action`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
+
+        val action = viewModel.viewActions().first()
+        assertIs<HomeAction.NavigateToFavorites>(action)
+    }
+
+    @Test
+    fun `OnGroupViewAllClick emits NavigateToChannels action`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick("group-1"))
+
+        val action = viewModel.viewActions().first()
+        assertIs<HomeAction.NavigateToChannels>(action)
+        assertEquals("group-1", (action as HomeAction.NavigateToChannels).groupId)
+    }
+
+    // --- Search ---
+
+    @Test
+    fun `OnToggleSearch activates search mode`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnToggleSearch)
+
+        assertTrue(viewModel.viewStates().value.isSearchActive)
+    }
+
+    @Test
+    fun `OnToggleSearch twice deactivates search and clears query`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnToggleSearch)
+        viewModel.obtainEvent(HomeEvent.OnSearchQueryChanged("test"))
+        viewModel.obtainEvent(HomeEvent.OnToggleSearch)
+
+        val state = viewModel.viewStates().value
+        assertFalse(state.isSearchActive)
+        assertEquals("", state.searchQuery)
+    }
+
+    // --- Playlist Selection ---
+
+    @Test
+    fun `OnPlaylistSelected updates selection in repository`() = runTest {
+        val playlist = PlaylistEntity(id = 1, name = "Test", url = "https://example.com/p.m3u")
+        val viewModel = createViewModel(playlists = listOf(playlist))
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(PlaylistSelection.Selected(1)))
+        advanceUntilIdle()
+
+        assertEquals(PlaylistSelection.Selected(1), currentPlaylistRepository.selection.value)
+    }
 }

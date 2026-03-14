@@ -1,6 +1,6 @@
 ---
 name: coder
-description: Implements features-claude based on implementation plans from the preparer. Reads the plan from .claude/features-claude/<name>/prep.md, writes production code following project conventions, builds and verifies compilation. Works in a worktree branch.
+description: Implements features-claude based on implementation plans from the preparer. Reads the plan from .claude/features-claude/<name>/prep.md, writes production code following project conventions, builds and verifies compilation. IMPORTANT - orchestrator MUST launch with isolation worktree when running multiple coders in parallel.
 tools: Read, Glob, Grep, Write, Edit, Bash
 model: opus
 color: blue

@@ -158,6 +158,35 @@ class SettingsPreferencesTest {
         assertEquals(AccentColor.Teal, settingsPreferences.accentColorFlow.first())
     }
 
+    // --- Channel View Mode Flow ---
+
+    @Test
+    fun `channelViewModeFlow initial value is List by default`() = runTest {
+        assertEquals(ChannelViewMode.List, settingsPreferences.channelViewModeFlow.first())
+    }
+
+    @Test
+    fun `channelViewModeFlow emits Grid when setChannelViewMode Grid`() = runTest {
+        settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
+        assertEquals(ChannelViewMode.Grid, settingsPreferences.channelViewModeFlow.first())
+    }
+
+    @Test
+    fun `channelViewModeFlow emits List when toggled back to List`() = runTest {
+        settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
+        settingsPreferences.setChannelViewMode(ChannelViewMode.List)
+        assertEquals(ChannelViewMode.List, settingsPreferences.channelViewModeFlow.first())
+    }
+
+    @Test
+    fun `channelViewModeFlow resets to List on resetAll`() = runTest {
+        settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
+        assertEquals(ChannelViewMode.Grid, settingsPreferences.channelViewModeFlow.first())
+
+        settingsPreferences.resetAll()
+        assertEquals(ChannelViewMode.List, settingsPreferences.channelViewModeFlow.first())
+    }
+
     // --- Persistence across instances ---
 
     @Test

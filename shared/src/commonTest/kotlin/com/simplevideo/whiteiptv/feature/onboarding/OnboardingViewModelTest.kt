@@ -166,6 +166,54 @@ class OnboardingViewModelTest {
     }
 
     @Test
+    fun `NotFound maps to ImportError StorageError`() = runTest {
+        useCaseException = PlaylistException.NotFound(99L)
+        val viewModel = createViewModel()
+
+        triggerFileImport(viewModel)
+        advanceUntilIdle()
+
+        assertIs<ImportError.StorageError>(viewModel.viewStates().value.error)
+    }
+
+    @Test
+    fun `HTTP error with no valid code maps to NoConnection`() = runTest {
+        useCaseException = PlaylistException.NetworkError("HTTP error without code")
+        val viewModel = createViewModel()
+
+        triggerFileImport(viewModel)
+        advanceUntilIdle()
+
+        assertIs<ImportError.NoConnection>(viewModel.viewStates().value.error)
+    }
+
+    @Test
+    fun `HTTP 500 maps to ImportError HttpError with code 500`() = runTest {
+        useCaseException = PlaylistException.NetworkError("Failed to download playlist: HTTP 500")
+        val viewModel = createViewModel()
+
+        triggerFileImport(viewModel)
+        advanceUntilIdle()
+
+        val error = viewModel.viewStates().value.error
+        assertIs<ImportError.HttpError>(error)
+        assertEquals(500, error.statusCode)
+    }
+
+    @Test
+    fun `Unknown PlaylistException maps to ImportError Unknown with detail`() = runTest {
+        useCaseException = PlaylistException.Unknown("something unexpected")
+        val viewModel = createViewModel()
+
+        triggerFileImport(viewModel)
+        advanceUntilIdle()
+
+        val error = viewModel.viewStates().value.error
+        assertIs<ImportError.Unknown>(error)
+        assertEquals("something unexpected", error.detail)
+    }
+
+    @Test
     fun `entering new URL clears error`() = runTest {
         useCaseException = PlaylistException.ParseError()
         val viewModel = createViewModel()
