@@ -5,6 +5,7 @@ import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.domain.exception.PlaylistException
 import com.simplevideo.whiteiptv.domain.model.PlaylistSource
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.ImportError
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
@@ -64,12 +65,34 @@ class OnboardingViewModel(
                 viewState = viewState.copy(isLoading = false)
                 viewAction = OnboardingAction.NavigateToMain
             }.onFailure { e ->
-                val errorMessage = when (e) {
-                    is PlaylistException -> e.message ?: "Unknown error occurred"
-                    else -> "Unexpected error: ${e.message ?: "Unknown error"}"
-                }
-                viewState = viewState.copy(isLoading = false, error = errorMessage)
+                val importError = mapToImportError(e)
+                viewState = viewState.copy(isLoading = false, error = importError)
             }
+        }
+    }
+
+    private fun mapToImportError(e: Throwable): ImportError {
+        return when (e) {
+            is PlaylistException.InvalidUrl -> ImportError.InvalidUrl
+            is PlaylistException.ParseError -> ImportError.InvalidFormat
+            is PlaylistException.EmptyPlaylist -> ImportError.EmptyPlaylist
+            is PlaylistException.DatabaseError -> ImportError.StorageError
+            is PlaylistException.NotFound -> ImportError.StorageError
+            is PlaylistException.NetworkError -> mapNetworkError(e)
+            is PlaylistException.Unknown -> ImportError.Unknown(e.message)
+            else -> ImportError.Unknown(e.message)
+        }
+    }
+
+    private fun mapNetworkError(e: PlaylistException.NetworkError): ImportError {
+        val message = e.message ?: ""
+        return when {
+            message.contains("timeout", ignoreCase = true) -> ImportError.Timeout
+            message.contains("HTTP") -> {
+                val code = Regex("HTTP (\\d{3})").find(message)?.groupValues?.get(1)?.toIntOrNull()
+                if (code != null) ImportError.HttpError(code) else ImportError.NoConnection
+            }
+            else -> ImportError.NoConnection
         }
     }
 

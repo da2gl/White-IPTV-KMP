@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.simplevideo.whiteiptv.designsystem.AppTheme
 import com.simplevideo.whiteiptv.designsystem.AppTypography
+import com.simplevideo.whiteiptv.feature.onboarding.mvi.ImportError
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingState
@@ -49,6 +50,18 @@ import white_iptv_kmp.shared.generated.resources.importing_message
 import white_iptv_kmp.shared.generated.resources.onboarding_subtitle
 import white_iptv_kmp.shared.generated.resources.onboarding_title
 import white_iptv_kmp.shared.generated.resources.or_separator
+import white_iptv_kmp.shared.generated.resources.error_empty_playlist
+import white_iptv_kmp.shared.generated.resources.error_http_403
+import white_iptv_kmp.shared.generated.resources.error_http_404
+import white_iptv_kmp.shared.generated.resources.error_http_500
+import white_iptv_kmp.shared.generated.resources.error_http_generic
+import white_iptv_kmp.shared.generated.resources.error_invalid_format
+import white_iptv_kmp.shared.generated.resources.error_invalid_url
+import white_iptv_kmp.shared.generated.resources.error_no_connection
+import white_iptv_kmp.shared.generated.resources.error_server_not_found
+import white_iptv_kmp.shared.generated.resources.error_storage
+import white_iptv_kmp.shared.generated.resources.error_timeout
+import white_iptv_kmp.shared.generated.resources.error_unknown
 import white_iptv_kmp.shared.generated.resources.playlist_url_label
 import white_iptv_kmp.shared.generated.resources.playlist_url_placeholder
 
@@ -221,7 +234,7 @@ private fun OnboardingContent(
                     )
                 } else if (state.error != null) {
                     Text(
-                        text = state.error,
+                        text = resolveErrorMessage(state.error),
                         color = MaterialTheme.colorScheme.error,
                     )
                 }
@@ -235,6 +248,26 @@ private fun OnboardingContent(
 
             Spacer(modifier = Modifier.height(8.dp))
         }
+    }
+}
+
+@Composable
+private fun resolveErrorMessage(error: ImportError): String {
+    return when (error) {
+        is ImportError.NoConnection -> stringResource(Res.string.error_no_connection)
+        is ImportError.ServerNotFound -> stringResource(Res.string.error_server_not_found)
+        is ImportError.Timeout -> stringResource(Res.string.error_timeout)
+        is ImportError.HttpError -> when (error.statusCode) {
+            403 -> stringResource(Res.string.error_http_403)
+            404 -> stringResource(Res.string.error_http_404)
+            in 500..599 -> stringResource(Res.string.error_http_500)
+            else -> stringResource(Res.string.error_http_generic, error.statusCode)
+        }
+        is ImportError.InvalidUrl -> stringResource(Res.string.error_invalid_url)
+        is ImportError.InvalidFormat -> stringResource(Res.string.error_invalid_format)
+        is ImportError.EmptyPlaylist -> stringResource(Res.string.error_empty_playlist)
+        is ImportError.StorageError -> stringResource(Res.string.error_storage)
+        is ImportError.Unknown -> stringResource(Res.string.error_unknown)
     }
 }
 
@@ -265,7 +298,7 @@ private fun OnboardingScreenLoadingPreview() {
 private fun OnboardingScreenErrorPreview() {
     AppTheme {
         OnboardingContent(
-            state = OnboardingState(error = "Invalid playlist format"),
+            state = OnboardingState(error = ImportError.InvalidFormat),
             onEvent = {},
         )
     }
@@ -298,7 +331,7 @@ private fun OnboardingScreenLoadingDarkPreview() {
 private fun OnboardingScreenErrorDarkPreview() {
     AppTheme(darkTheme = true) {
         OnboardingContent(
-            state = OnboardingState(error = "Invalid playlist format"),
+            state = OnboardingState(error = ImportError.InvalidFormat),
             onEvent = {},
         )
     }

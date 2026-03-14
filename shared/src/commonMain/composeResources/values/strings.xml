@@ -9,5 +9,17 @@
     <string name="import_playlist_button">Import playlist</string>
     <string name="importing_message">Importing...</string>
     <string name="invalid_playlist_error">Invalid playlist format</string>
+    <string name="error_no_connection">No internet connection. Check your network settings and try again.</string>
+    <string name="error_server_not_found">Server not found. Check the playlist URL and try again.</string>
+    <string name="error_timeout">Connection timed out. The server took too long to respond.</string>
+    <string name="error_http_404">Playlist not found. The URL may be incorrect or the playlist was removed.</string>
+    <string name="error_http_403">Access denied. The server rejected the request.</string>
+    <string name="error_http_500">Server error. Try again later.</string>
+    <string name="error_http_generic">Server returned error %d. Try again later.</string>
+    <string name="error_invalid_url">Invalid URL. Enter a valid playlist link starting with http:// or https://</string>
+    <string name="error_invalid_format">Invalid playlist format. The file is not a valid M3U playlist.</string>
+    <string name="error_empty_playlist">The playlist contains no channels.</string>
+    <string name="error_storage">Failed to save playlist. Please try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
     <string name="demo_playlist_link">Use demo playlist</string>
 </resources>
