@@ -12,6 +12,8 @@ import com.simplevideo.whiteiptv.platform.AndroidFilePickerFactory
 import com.simplevideo.whiteiptv.platform.AndroidFileReader
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
+import com.simplevideo.whiteiptv.platform.AndroidBackgroundScheduler
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.exoplayer.ExoPlayerFactory
 import org.koin.core.module.Module
@@ -40,6 +42,10 @@ actual fun platformModule(): Module = module {
 
     single<FilePickerFactory> {
         AndroidFilePickerFactory(get())
+    }
+
+    single<BackgroundScheduler> {
+        AndroidBackgroundScheduler(get())
     }
 
     single<DataStore<Preferences>> {

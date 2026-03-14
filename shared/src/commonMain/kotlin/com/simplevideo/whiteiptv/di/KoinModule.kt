@@ -14,7 +14,7 @@ import com.simplevideo.whiteiptv.data.repository.EpgRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.ThemeRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.WatchHistoryRepositoryImpl
-import com.simplevideo.whiteiptv.data.scheduler.PlaylistAutoRefreshScheduler
+import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.EpgRepository
@@ -115,8 +115,7 @@ val settingsModule = module {
     singleOf(::ThemeRepositoryImpl) bind ThemeRepository::class
     singleOf(::SettingsPreferences)
     single {
-        PlaylistAutoRefreshScheduler(
-            settingsPreferences = get(),
+        BackgroundRefreshCoordinator(
             playlistRepository = get(),
             refreshPlaylist = { source -> get<ImportPlaylistUseCase>().invoke(source) },
         )

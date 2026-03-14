@@ -48,6 +48,7 @@ kotlin {
             implementation(libs.media3.cast)
             implementation(libs.play.services.cast.framework)
             implementation(libs.androidx.mediarouter)
+            implementation(libs.androidx.work.runtime)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

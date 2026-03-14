@@ -3,6 +3,8 @@ package com.simplevideo.whiteiptv.feature.settings
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
+import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
 import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
@@ -15,6 +17,8 @@ class SettingsViewModel(
     private val themeRepository: ThemeRepository,
     private val settingsPreferences: SettingsPreferences,
     private val clearFavoritesUseCase: ClearFavoritesUseCase,
+    private val backgroundScheduler: BackgroundScheduler,
+    private val refreshCoordinator: BackgroundRefreshCoordinator,
 ) : BaseViewModel<SettingsState, SettingsAction, SettingsEvent>(
     initialState = SettingsState(),
 ) {
@@ -59,6 +63,14 @@ class SettingsViewModel(
                     settingsPreferences.setAutoUpdateEnabled(viewEvent.enabled)
                 }
                 viewState = viewState.copy(autoUpdateEnabled = viewEvent.enabled)
+                if (viewEvent.enabled) {
+                    viewModelScope.launch {
+                        val interval = refreshCoordinator.calculateIntervalSeconds()
+                        backgroundScheduler.schedule(interval)
+                    }
+                } else {
+                    backgroundScheduler.cancel()
+                }
             }
 
             is SettingsEvent.OnClearCacheClick -> {

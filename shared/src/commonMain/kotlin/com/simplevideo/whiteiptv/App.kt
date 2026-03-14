@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.simplevideo.whiteiptv.data.scheduler.PlaylistAutoRefreshScheduler
+import com.simplevideo.whiteiptv.data.local.SettingsPreferences
+import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.designsystem.AppTheme
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
@@ -17,11 +19,16 @@ import org.koin.compose.koinInject
 @Preview
 fun App() {
     val themeRepository: ThemeRepository = koinInject()
-    val autoRefreshScheduler: PlaylistAutoRefreshScheduler = koinInject()
+    val backgroundScheduler: BackgroundScheduler = koinInject()
+    val settingsPreferences: SettingsPreferences = koinInject()
+    val refreshCoordinator: BackgroundRefreshCoordinator = koinInject()
     val themeMode by themeRepository.themeMode.collectAsState()
 
     LaunchedEffect(Unit) {
-        autoRefreshScheduler.start()
+        if (settingsPreferences.getAutoUpdateEnabled() && !backgroundScheduler.isScheduled()) {
+            val interval = refreshCoordinator.calculateIntervalSeconds()
+            backgroundScheduler.schedule(interval)
+        }
     }
 
     val darkTheme = when (themeMode) {

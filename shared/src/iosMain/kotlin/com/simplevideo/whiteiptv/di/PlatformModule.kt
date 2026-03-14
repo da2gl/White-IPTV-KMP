@@ -7,8 +7,10 @@ import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
 import com.simplevideo.whiteiptv.data.local.createDataStore
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
+import com.simplevideo.whiteiptv.platform.IOSBackgroundScheduler
 import com.simplevideo.whiteiptv.platform.IOSFilePickerFactory
 import com.simplevideo.whiteiptv.platform.IOSFileReader
 import com.simplevideo.whiteiptv.platform.IOSVideoPlayerFactory
@@ -41,6 +43,10 @@ actual fun platformModule(): Module = module {
 
     single<FilePickerFactory> {
         IOSFilePickerFactory()
+    }
+
+    single<BackgroundScheduler> {
+        IOSBackgroundScheduler(get())
     }
 
     single<DataStore<Preferences>> {

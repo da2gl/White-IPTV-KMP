@@ -6,15 +6,20 @@ import androidx.datastore.preferences.core.Preferences
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences
 import com.simplevideo.whiteiptv.data.repository.FakeChannelRepository
+import com.simplevideo.whiteiptv.data.repository.FakePlaylistRepository
 import com.simplevideo.whiteiptv.data.repository.ThemeRepositoryImpl
+import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
 import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsAction
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsEvent
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -41,6 +46,8 @@ class SettingsViewModelTest {
     private lateinit var settingsPreferences: SettingsPreferences
     private lateinit var fakeChannelRepository: FakeChannelRepository
     private lateinit var clearFavoritesUseCase: ClearFavoritesUseCase
+    private lateinit var fakeBackgroundScheduler: FakeBackgroundScheduler
+    private lateinit var refreshCoordinator: BackgroundRefreshCoordinator
 
     @BeforeTest
     fun setUp() {
@@ -51,10 +58,18 @@ class SettingsViewModelTest {
             },
         )
         themePreferences = ThemePreferences(dataStore)
-        themeRepository = ThemeRepositoryImpl(themePreferences)
+        themeRepository = ThemeRepositoryImpl(
+            themePreferences,
+            scope = CoroutineScope(SupervisorJob() + testDispatcher),
+        )
         settingsPreferences = SettingsPreferences(dataStore)
         fakeChannelRepository = FakeChannelRepository()
         clearFavoritesUseCase = ClearFavoritesUseCase(fakeChannelRepository)
+        fakeBackgroundScheduler = FakeBackgroundScheduler()
+        refreshCoordinator = BackgroundRefreshCoordinator(
+            playlistRepository = FakePlaylistRepository(),
+            refreshPlaylist = {},
+        )
     }
 
     @AfterTest
@@ -67,7 +82,25 @@ class SettingsViewModelTest {
             themeRepository = themeRepository,
             settingsPreferences = settingsPreferences,
             clearFavoritesUseCase = clearFavoritesUseCase,
+            backgroundScheduler = fakeBackgroundScheduler,
+            refreshCoordinator = refreshCoordinator,
         )
+    }
+
+    private class FakeBackgroundScheduler : BackgroundScheduler {
+        var scheduled = false
+        var lastInterval: Long? = null
+
+        override fun schedule(intervalSeconds: Long) {
+            scheduled = true
+            lastInterval = intervalSeconds
+        }
+
+        override fun cancel() {
+            scheduled = false
+        }
+
+        override fun isScheduled(): Boolean = scheduled
     }
 
     // --- Init ---
