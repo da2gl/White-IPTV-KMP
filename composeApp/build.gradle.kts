@@ -37,6 +37,9 @@ kotlin {
             implementation(libs.media3.ui.compose)
             implementation(libs.media3.common)
             implementation(libs.media3.datasource.cronet)
+            implementation(libs.media3.cast)
+            implementation(libs.play.services.cast.framework)
+            implementation(libs.androidx.mediarouter)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

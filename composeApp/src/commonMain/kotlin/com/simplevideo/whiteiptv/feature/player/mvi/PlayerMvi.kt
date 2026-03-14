@@ -18,6 +18,7 @@ data class PlayerState(
     val sleepTimerRemainingMs: Long? = null,
     val showSleepTimerSheet: Boolean = false,
     val isInPipMode: Boolean = false,
+    val isCasting: Boolean = false,
 )
 
 sealed interface PlayerEvent {
