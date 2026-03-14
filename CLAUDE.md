@@ -11,10 +11,10 @@ platform-specific implementations while maintaining a common codebase.
 
 **Key Technologies:**
 
-- Kotlin 2.2.21
-- Compose Multiplatform 1.9.3
-- Gradle 9.2.1
-- Android Gradle Plugin 9.0.1
+- Kotlin 2.3.10
+- Compose Multiplatform 1.10.2
+- Gradle 9.3.1
+- Android Gradle Plugin 9.1.0
 
 **Target Platforms:**
 
@@ -28,21 +28,21 @@ platform-specific implementations while maintaining a common codebase.
 Build the Android app:
 
 ```bash
-./gradlew :composeApp:assembleDebug
-./gradlew :composeApp:assembleRelease
+./gradlew :androidApp:assembleDebug
+./gradlew :androidApp:assembleRelease
 ```
 
 Install and run on a connected device:
 
 ```bash
-./gradlew installDebug
+./gradlew :androidApp:installDebug
 ```
 
 Build and run tests:
 
 ```bash
-./gradlew :composeApp:testDebugUnitTest
-./gradlew :composeApp:connectedDebugAndroidTest  # Requires connected device/emulator
+./gradlew :shared:testAndroidHostTest
+./gradlew :shared:androidDeviceCheck  # Requires connected device/emulator
 ```
 
 ### iOS
@@ -50,14 +50,14 @@ Build and run tests:
 Build iOS framework:
 
 ```bash
-./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64    # For simulator
-./gradlew :composeApp:linkReleaseFrameworkIosArm64           # For device
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64    # For simulator
+./gradlew :shared:linkReleaseFrameworkIosArm64           # For device
 ```
 
 Run iOS tests:
 
 ```bash
-./gradlew :composeApp:iosSimulatorArm64Test
+./gradlew :shared:iosSimulatorArm64Test
 ```
 
 For running the iOS app, open the `iosApp` directory in Xcode and run from there.
@@ -87,10 +87,10 @@ Clean build artifacts:
 
 ### Lint Tools
 
-**ktlint** (1.7.1, Gradle plugin 14.0.1) - Kotlin code formatting per `.editorconfig`.
+**ktlint** (1.7.1, Gradle plugin 14.2.0) - Kotlin code formatting per `.editorconfig`.
 
 **Detekt** (1.23.8) - Static analysis with Compose-specific rules (io.nlopez.compose.rules
-0.4.27). Config: `config/detekt/detekt.yml`.
+0.5.6). Config: `config/detekt/detekt.yml`.
 
 ### Commands
 
@@ -123,54 +123,64 @@ git commit --no-verify                  # Bypass (not recommended)
 
 ## Project Structure
 
-Single-module KMM project with platform-specific source sets:
+Multi-module KMM project:
 
 ```
-composeApp/src/
-├── commonMain/kotlin/com/simplevideo/whiteiptv/
-│   ├── App.kt                     # Root composable
-│   ├── di/                        # Koin modules (KoinModule.kt, KoinInitializer.kt)
-│   ├── navigation/                # Type-safe routes (Route.kt, NavGraph.kt)
-│   ├── domain/
-│   │   ├── model/                 # Business objects (PlaylistSource, ChannelsFilter, ChannelGroup)
-│   │   ├── repository/            # Repository interfaces
-│   │   ├── usecase/               # Business logic (11 UseCases)
-│   │   └── exception/             # PlaylistException sealed class
-│   ├── data/
-│   │   ├── local/                 # Room database, entities, DAOs
-│   │   ├── repository/            # Repository implementations
-│   │   ├── mapper/                # Domain <-> Entity transformations
-│   │   ├── parser/playlist/       # M3U/M3U8 parser
-│   │   └── network/               # Ktor HTTP client
-│   ├── feature/                   # Presentation layer (MVI screens)
-│   │   ├── splash/                # Initial loading
-│   │   ├── onboarding/            # Playlist import
-│   │   ├── main/                  # Tab container
-│   │   ├── home/                  # Home tab
-│   │   ├── channels/              # Channel list tab
-│   │   ├── favorites/             # Favorites tab
-│   │   ├── player/                # Video player + components/
-│   │   └── settings/              # Settings tab
-│   ├── platform/                  # expect declarations (FileReader, FilePicker, VideoPlayerFactory)
-│   ├── designsystem/              # Material3 theme (Theme.kt, Color.kt, Typography.kt)
-│   └── common/                    # BaseViewModel, AppLogger, shared UI components
-├── androidMain/                   # Android actual implementations
-│   ├── MainActivity.kt
-│   ├── di/PlatformModule.kt
-│   └── platform/
-│       ├── AndroidFileReader.kt, AndroidFilePickerFactory.kt
-│       ├── AndroidSystemControls.kt, KeepScreenOn.android.kt
-│       └── exoplayer/             # ExoPlayer integration (5 files)
-└── iosMain/                       # iOS actual implementations
-    ├── MainViewController.kt
-    ├── di/PlatformModule.kt
-    └── platform/
-        ├── IOSFileReader.kt, IOSFilePickerFactory.kt
-        ├── IOSVideoPlayerFactory.kt, IOSSystemControls.kt
-        └── KeepScreenOn.ios.kt
-```
+shared/                          # KMP shared library (androidMultiplatformLibrary)
+├── src/
+│   ├── commonMain/kotlin/com/simplevideo/whiteiptv/
+│   │   ├── App.kt                     # Root composable
+│   │   ├── di/                        # Koin modules (KoinModule.kt, KoinInitializer.kt)
+│   │   ├── navigation/                # Type-safe routes (Route.kt, NavGraph.kt)
+│   │   ├── domain/
+│   │   │   ├── model/                 # Business objects (PlaylistSource, ChannelsFilter, ChannelGroup)
+│   │   │   ├── repository/            # Repository interfaces
+│   │   │   ├── usecase/               # Business logic (11 UseCases)
+│   │   │   └── exception/             # PlaylistException sealed class
+│   │   ├── data/
+│   │   │   ├── local/                 # Room database, entities, DAOs
+│   │   │   ├── repository/            # Repository implementations
+│   │   │   ├── mapper/                # Domain <-> Entity transformations
+│   │   │   ├── parser/playlist/       # M3U/M3U8 parser
+│   │   │   └── network/               # Ktor HTTP client
+│   │   ├── feature/                   # Presentation layer (MVI screens)
+│   │   │   ├── splash/                # Initial loading
+│   │   │   ├── onboarding/            # Playlist import
+│   │   │   ├── main/                  # Tab container
+│   │   │   ├── home/                  # Home tab
+│   │   │   ├── channels/              # Channel list tab
+│   │   │   ├── favorites/             # Favorites tab
+│   │   │   ├── player/                # Video player + components/
+│   │   │   └── settings/              # Settings tab
+│   │   ├── platform/                  # expect declarations (FileReader, FilePicker, VideoPlayerFactory)
+│   │   ├── designsystem/              # Material3 theme (Theme.kt, Color.kt, Typography.kt)
+│   │   └── common/                    # BaseViewModel, AppLogger, shared UI components
+│   ├── androidMain/                   # Android actual implementations
+│   │   ├── di/PlatformModule.kt
+│   │   └── platform/
+│   │       ├── AndroidFileReader.kt, AndroidFilePickerFactory.kt
+│   │       ├── AndroidSystemControls.kt, KeepScreenOn.android.kt
+│   │       └── exoplayer/             # ExoPlayer integration (5 files)
+│   ├── iosMain/                       # iOS actual implementations
+│   │   ├── MainViewController.kt
+│   │   ├── di/PlatformModule.kt
+│   │   └── platform/
+│   │       ├── IOSFileReader.kt, IOSFilePickerFactory.kt
+│   │       ├── IOSVideoPlayerFactory.kt, IOSSystemControls.kt
+│   │       └── KeepScreenOn.ios.kt
+│   ├── commonTest/                    # Shared tests
+│   └── androidHostTest/               # Android-specific tests
+└── build.gradle.kts
 
-`iosApp/` - Native iOS app shell (SwiftUI bridge to Compose via `UIViewControllerRepresentable`).
+androidApp/                      # Android application entry point
+├── src/main/
+│   ├── AndroidManifest.xml
+│   ├── kotlin/.../MainActivity.kt, WhiteIPTVApplication.kt
+│   └── res/                     # App resources (icons, strings)
+└── build.gradle.kts
+
+iosApp/                          # iOS application entry point (Xcode project)
+```
 
 ## Architecture Patterns
 
@@ -332,7 +342,7 @@ interface VideoPlayerFactory {
 - `DataSourceFactoryProvider` - HTTP datasources with custom User-Agent/Referer headers
 - `TracksInfoMapper` - converts ExoPlayer tracks to unified TrackInfo format
 
-**iOS:** AVPlayer implementation placeholder in `iosMain/platform/IOSVideoPlayerFactory.kt`.
+**iOS:** AVPlayer implementation in `iosMain/platform/avplayer/`.
 
 **PlayerConfig** (`commonMain/platform/PlayerConfig.kt`) provides IPTV-optimized presets:
 
@@ -351,7 +361,7 @@ Room database (version 2) with bundled SQLite for cross-platform support.
 - `ChannelGroupEntity` - group metadata (id, name, displayOrder, channelCount)
 - `ChannelGroupCrossRef` - many-to-many junction table (channelId ↔ groupId)
 
-**Schema export:** `composeApp/schemas/` (for migration versioning)
+**Schema export:** `shared/schemas/` (for migration versioning)
 
 **Key DAO patterns:**
 
@@ -406,7 +416,7 @@ Koin DI with 7 modules defined in `di/KoinModule.kt`:
 
 1. Add version to `gradle/libs.versions.toml`
 2. Add library/plugin reference in the same file
-3. Use in `composeApp/build.gradle.kts`: `commonMain.dependencies`, `androidMain.dependencies`, or
+3. Use in `shared/build.gradle.kts`: `commonMain.dependencies`, `androidMain.dependencies`, or
    `iosMain.dependencies`
 
 ### Package Structure
@@ -414,6 +424,7 @@ Koin DI with 7 modules defined in `di/KoinModule.kt`:
 Package: `com.simplevideo.whiteiptv` (consistent across all source sets)
 
 - Android applicationId: `com.simplevideo.whiteiptv`
+- Shared library namespace: `com.simplevideo.whiteiptv.shared`
 - iOS bundle ID: `com.simplevideo.whiteiptv.WhiteIPTVKMP`
 
 ### Code Style

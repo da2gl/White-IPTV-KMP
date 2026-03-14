@@ -4,7 +4,7 @@ plugins {
     // this is necessary to avoid the plugins to be loaded multiple times
     // in each subproject's classloader
     alias(libs.plugins.androidApplication) apply false
-    alias(libs.plugins.androidLibrary) apply false
+    alias(libs.plugins.androidMultiplatformLibrary) apply false
     alias(libs.plugins.composeMultiplatform) apply false
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinMultiplatform) apply false
@@ -22,9 +22,10 @@ detekt {
     baseline = file("$rootDir/config/detekt/baseline.xml")
 
     source.setFrom(
-        "composeApp/src/commonMain/kotlin",
-        "composeApp/src/androidMain/kotlin",
-        "composeApp/src/iosMain/kotlin",
+        "shared/src/commonMain/kotlin",
+        "shared/src/androidMain/kotlin",
+        "shared/src/iosMain/kotlin",
+        "androidApp/src/main/kotlin",
     )
 }
 
@@ -53,7 +54,7 @@ ktlint {
 tasks.register<Detekt>("detektFormat") {
     description = "Auto-fix code issues (including unused imports)"
     jvmTarget = "11"
-    setSource(files("composeApp/src"))
+    setSource(files("shared/src", "androidApp/src"))
     config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     autoCorrect = true
