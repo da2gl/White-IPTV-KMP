@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import com.simplevideo.whiteiptv.common.AppLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.compression.ContentEncoding
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logging
@@ -43,6 +44,12 @@ object HttpClientFactory {
                     }
                 }
                 level = LogLevel.INFO
+            }
+
+            // Automatic gzip/deflate decompression for large responses (e.g. XMLTV EPG files)
+            install(ContentEncoding) {
+                gzip()
+                deflate()
             }
 
             // Timeout configuration

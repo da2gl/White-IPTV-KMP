@@ -16,15 +16,15 @@ Roadmap mentioned Premium themes, Cloud sync subscription, White-label licensing
 
 ---
 
-## EPG Details
+## EPG Details — Resolved
 
-EPG data comes from XMLTV via `url-tvg`, but implementation details are undefined.
+Resolved in EPG Data Layer implementation plan (`.claude/features/epg/prep.md`):
 
-- How to handle large XMLTV files (50MB+) — stream parsing or download-then-parse?
-- How long should EPG data be cached locally?
-- How to handle timezone differences between EPG data and user's locale?
-- UI for browsing past programs and triggering catchup playback.
-- Should EPG info appear in channel cards on browse screens?
+- **Large XMLTV files**: Custom streaming parser processes line-by-line with regex. No DOM tree. Batch-inserts every 500 programs.
+- **Cache duration**: Room DB storage, purge programs older than 24h on each load.
+- **Timezone handling**: Store as UTC epoch millis. Apply `tvg-shift` during parsing. Display layer converts to local time.
+- **Catchup UI**: Deferred to a future task.
+- **Channel card EPG**: Deferred to a future task.
 
 ---
 

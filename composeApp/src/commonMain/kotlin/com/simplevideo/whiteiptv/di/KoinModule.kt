@@ -6,15 +6,19 @@ import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences
 import com.simplevideo.whiteiptv.data.mapper.ChannelGroupMapper
 import com.simplevideo.whiteiptv.data.mapper.ChannelMapper
+import com.simplevideo.whiteiptv.data.mapper.EpgProgramMapper
 import com.simplevideo.whiteiptv.data.mapper.PlaylistMapper
 import com.simplevideo.whiteiptv.data.network.HttpClientFactory
+import com.simplevideo.whiteiptv.data.parser.epg.XmltvParser
 import com.simplevideo.whiteiptv.data.repository.ChannelRepositoryImpl
+import com.simplevideo.whiteiptv.data.repository.EpgRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.PlaylistRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.ThemeRepositoryImpl
 import com.simplevideo.whiteiptv.data.repository.WatchHistoryRepositoryImpl
 import com.simplevideo.whiteiptv.data.scheduler.PlaylistAutoRefreshScheduler
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
+import com.simplevideo.whiteiptv.domain.repository.EpgRepository
 import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
 import com.simplevideo.whiteiptv.domain.repository.WatchHistoryRepository
@@ -24,12 +28,14 @@ import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetCurrentProgramUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetGroupsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetHomeCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.HasPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
+import com.simplevideo.whiteiptv.domain.usecase.LoadEpgUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RenamePlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
@@ -62,12 +68,15 @@ val repositoryModule = module {
     singleOf(::ChannelRepositoryImpl) bind ChannelRepository::class
     singleOf(::CurrentPlaylistRepository)
     singleOf(::WatchHistoryRepositoryImpl) bind WatchHistoryRepository::class
+    singleOf(::EpgRepositoryImpl) bind EpgRepository::class
 }
 
 val mapperModule = module {
     factoryOf(::ChannelMapper)
     factoryOf(::ChannelGroupMapper)
     factoryOf(::PlaylistMapper)
+    factoryOf(::EpgProgramMapper)
+    factoryOf(::XmltvParser)
 }
 
 val useCaseModule = module {
@@ -86,6 +95,8 @@ val useCaseModule = module {
     factoryOf(::RenamePlaylistUseCase)
     factoryOf(::DeletePlaylistUseCase)
     factoryOf(::ClearFavoritesUseCase)
+    factoryOf(::LoadEpgUseCase)
+    factoryOf(::GetCurrentProgramUseCase)
 }
 
 val networkModule = module {
@@ -95,6 +106,7 @@ val networkModule = module {
 val databaseModule = module {
     single { get<AppDatabase>().playlistDao() }
     single { get<AppDatabase>().watchHistoryDao() }
+    single { get<AppDatabase>().epgDao() }
 }
 
 val settingsModule = module {

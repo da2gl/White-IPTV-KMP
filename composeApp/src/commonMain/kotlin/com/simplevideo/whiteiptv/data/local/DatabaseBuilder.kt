@@ -32,6 +32,36 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
 }
 
 /**
+ * Migration from v3 to v4: add epg_programs table for Electronic Program Guide
+ */
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS `epg_programs` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `channelTvgId` TEXT NOT NULL,
+                `title` TEXT NOT NULL,
+                `description` TEXT,
+                `startTime` INTEGER NOT NULL,
+                `endTime` INTEGER NOT NULL,
+                `category` TEXT,
+                `iconUrl` TEXT
+            )
+            """.trimIndent(),
+        )
+        connection.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_epg_programs_channelTvgId_startTime` " +
+                "ON `epg_programs` (`channelTvgId`, `startTime`)",
+        )
+        connection.execSQL(
+            "CREATE INDEX IF NOT EXISTS `index_epg_programs_channelTvgId_endTime` " +
+                "ON `epg_programs` (`channelTvgId`, `endTime`)",
+        )
+    }
+}
+
+/**
  * Creates Room database with proper configuration for all platforms
  * Sets bundled SQLite driver and IO coroutine context
  */
@@ -39,6 +69,6 @@ fun getRoomDatabase(builder: Builder<AppDatabase>): AppDatabase {
     return builder
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-        .addMigrations(MIGRATION_2_3)
+        .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
         .build()
 }

@@ -56,6 +56,7 @@ kotlin {
             implementation(libs.ktor.client.cio)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.encoding)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
@@ -119,7 +120,7 @@ room {
 }
 
 tasks.withType<Test> {
-    maxHeapSize = "4g"
+    maxHeapSize = "2g"
     forkEvery = 50
     jvmArgs("-XX:+UseG1GC")
 }

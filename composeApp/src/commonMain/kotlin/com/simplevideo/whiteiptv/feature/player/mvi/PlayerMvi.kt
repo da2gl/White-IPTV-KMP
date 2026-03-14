@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.feature.player.mvi
 
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+import com.simplevideo.whiteiptv.domain.model.EpgProgram
 import com.simplevideo.whiteiptv.platform.TracksInfo
 
 data class PlayerState(
@@ -12,6 +13,8 @@ data class PlayerState(
     val controlsVisible: Boolean = true,
     val tracksInfo: TracksInfo = TracksInfo(),
     val showTrackSelectionDialog: TrackSelectionType? = null,
+    val currentProgram: EpgProgram? = null,
+    val nextProgram: EpgProgram? = null,
 )
 
 sealed interface PlayerEvent {

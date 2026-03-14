@@ -36,11 +36,17 @@ The iOS player (`IOSVideoPlayerFactory`) is a stub returning a non-functional du
 
 ---
 
-## EPG not implemented
+## EPG partially implemented
 
-No XMLTV parser, no EPG data model, no program guide UI. The `urlTvg` field is stored in `PlaylistEntity` but unused.
+EPG data layer is implemented (XMLTV parser, Room entity, DAO, repository, use cases). Not yet implemented:
 
-**Target behavior**: Parse XMLTV, match programs to channels via tvg-id, show current/next program in player. See [EPG](../features/epg.md).
+- Player UI integration (current/next program overlay) — Wave 3b
+- Channel card EPG badges on browse screens
+- EPG grid/timeline view
+- Catchup/archive playback
+- EPG auto-refresh scheduling
+
+**Target behavior**: See [EPG](../features/epg.md).
 
 ---
 

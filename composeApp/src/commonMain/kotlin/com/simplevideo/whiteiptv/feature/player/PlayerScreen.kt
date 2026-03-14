@@ -202,6 +202,8 @@ private fun PlayerScreenContent(
                 isVisible = state.controlsVisible,
                 isBuffering = state.isBuffering,
                 tracksInfo = state.tracksInfo,
+                currentProgram = state.currentProgram,
+                nextProgram = state.nextProgram,
                 onBackClick = { onEvent(PlayerEvent.OnBackClick) },
                 onShowAudioTracks = {
                     onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.AUDIO))
