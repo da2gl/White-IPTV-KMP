@@ -1,7 +1,5 @@
 package com.simplevideo.whiteiptv.di
 
-import com.simplevideo.whiteiptv.data.cache.CacheManager
-import com.simplevideo.whiteiptv.data.cache.CoilCacheManager
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences

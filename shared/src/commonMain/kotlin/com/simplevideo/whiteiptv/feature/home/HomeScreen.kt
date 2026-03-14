@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,11 +50,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
+import com.simplevideo.whiteiptv.common.components.ContinueWatchingCard
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
@@ -63,7 +63,6 @@ import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
-import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
@@ -385,8 +384,9 @@ private fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(state.continueWatchingItems) { item ->
-                        ContinueWatchingItem(
-                            item = item,
+                        ContinueWatchingCard(
+                            name = item.channel.name,
+                            logoUrl = item.channel.logoUrl,
                             onClick = { onChannelClick(item.channel.id) },
                         )
                     }
@@ -405,9 +405,13 @@ private fun HomeContent(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(state.favoriteChannels) { channel ->
-                        ChannelItem(
-                            channel = channel,
+                        ChannelCardSquare(
+                            name = channel.name,
+                            logoUrl = channel.logoUrl,
+                            isFavorite = channel.isFavorite,
                             onClick = { onChannelClick(channel.id) },
+                            onToggleFavorite = {},
+                            modifier = Modifier.width(150.dp),
                         )
                     }
                 }
@@ -426,9 +430,13 @@ private fun HomeContent(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(channels) { channel ->
-                            ChannelItem(
-                                channel = channel,
+                            ChannelCardSquare(
+                                name = channel.name,
+                                logoUrl = channel.logoUrl,
+                                isFavorite = channel.isFavorite,
                                 onClick = { onChannelClick(channel.id) },
+                                onToggleFavorite = {},
+                                modifier = Modifier.width(150.dp),
                             )
                         }
                     }
@@ -466,54 +474,6 @@ private fun Section(
             }
         }
         content()
-    }
-}
-
-@Composable
-private fun ContinueWatchingItem(
-    item: ContinueWatchingItem,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .width(200.dp)
-            .clickable(onClick = onClick),
-    ) {
-        Column {
-            AsyncImage(
-                model = item.channel.logoUrl,
-                contentDescription = item.channel.name,
-                modifier = Modifier.height(100.dp).fillMaxWidth().background(Color.Gray),
-                contentScale = ContentScale.Crop,
-            )
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(item.channel.name, style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ChannelItem(
-    channel: ChannelEntity,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = Modifier
-            .width(150.dp)
-            .clickable(onClick = onClick),
-    ) {
-        Column {
-            AsyncImage(
-                model = channel.logoUrl,
-                contentDescription = channel.name,
-                modifier = Modifier.height(100.dp).fillMaxWidth().background(Color.Gray),
-                contentScale = ContentScale.Crop,
-            )
-            Column(modifier = Modifier.padding(8.dp)) {
-                Text(channel.name, style = MaterialTheme.typography.bodyMedium)
-            }
-        }
     }
 }
 

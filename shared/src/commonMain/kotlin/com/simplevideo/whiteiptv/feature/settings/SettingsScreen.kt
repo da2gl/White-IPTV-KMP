@@ -5,6 +5,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ViewList
+import androidx.compose.material.icons.outlined.Brush
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.HighQuality
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.Mail
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PlayCircle
+import androidx.compose.material.icons.outlined.Policy
+import androidx.compose.material.icons.outlined.RestartAlt
+import androidx.compose.material.icons.outlined.StarBorder
+import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -106,6 +120,8 @@ fun SettingsScreen() {
         ) {
             item { AppearanceSection(state, viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
+            item { PlaybackSection() }
+            item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
             item { AppBehaviorSection(state, viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
             item { DataStorageSection(state, viewModel::obtainEvent) }
@@ -122,10 +138,10 @@ private fun AppearanceSection(
     onEvent: (SettingsEvent) -> Unit,
 ) {
     SettingsSection(title = "Appearance") {
-        Text(
-            text = "Theme",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 8.dp),
+        SettingsItem(
+            title = "Theme",
+            onClick = {},
+            icon = Icons.Outlined.Palette,
         )
         SettingsSegmentedButton(
             options = listOf(ThemeMode.System, ThemeMode.Light, ThemeMode.Dark),
@@ -142,10 +158,10 @@ private fun AppearanceSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Accent Color",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 8.dp),
+        SettingsItem(
+            title = "Accent Color",
+            onClick = {},
+            icon = Icons.Outlined.Brush,
         )
         SettingsSegmentedButton(
             options = AccentColor.entries.toList(),
@@ -156,10 +172,10 @@ private fun AppearanceSection(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Channel View",
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(bottom = 8.dp),
+        SettingsItem(
+            title = "Channel View",
+            onClick = {},
+            icon = Icons.AutoMirrored.Outlined.ViewList,
         )
         SettingsSegmentedButton(
             options = ChannelViewMode.entries.toList(),
@@ -180,12 +196,14 @@ private fun AppBehaviorSection(
             title = "Language",
             subtitle = "System",
             onClick = {},
+            icon = Icons.Outlined.Language,
         )
         SettingsSwitchItem(
             title = "Auto-Update Playlists",
             subtitle = "Automatically refresh playlists on app start",
             checked = state.autoUpdateEnabled,
             onCheckedChange = { onEvent(SettingsEvent.OnAutoUpdateChanged(it)) },
+            icon = Icons.Outlined.Sync,
         )
     }
 }
@@ -200,16 +218,20 @@ private fun DataStorageSection(
             title = "Clear Cache",
             subtitle = state.cacheSize,
             onClick = { onEvent(SettingsEvent.OnClearCacheClick) },
+            icon = Icons.Outlined.Delete,
         )
         SettingsItem(
             title = "Clear Favorites",
             subtitle = "Remove all favorite channels",
             onClick = { onEvent(SettingsEvent.OnClearFavoritesClick) },
+            icon = Icons.Outlined.StarBorder,
         )
         SettingsItem(
             title = "Reset to Defaults",
             subtitle = "Restore all settings to default values",
             onClick = { onEvent(SettingsEvent.OnResetClick) },
+            icon = Icons.Outlined.RestartAlt,
+            titleColor = MaterialTheme.colorScheme.error,
         )
     }
 }
@@ -224,15 +246,36 @@ private fun AboutSection(
             title = "Version",
             subtitle = state.appVersion,
             onClick = {},
+            icon = Icons.Outlined.Info,
         )
         SettingsItem(
             title = "Contact Support",
             subtitle = "support@simplevideo.com",
             onClick = { onEvent(SettingsEvent.OnContactSupportClick) },
+            icon = Icons.Outlined.Mail,
         )
         SettingsItem(
             title = "Privacy Policy",
             onClick = { onEvent(SettingsEvent.OnPrivacyPolicyClick) },
+            icon = Icons.Outlined.Policy,
+        )
+    }
+}
+
+@Composable
+private fun PlaybackSection() {
+    SettingsSection(title = "Playback") {
+        SettingsItem(
+            title = "Default Player",
+            subtitle = "Built-in",
+            onClick = {},
+            icon = Icons.Outlined.PlayCircle,
+        )
+        SettingsItem(
+            title = "Preferred Quality",
+            subtitle = "Auto",
+            onClick = {},
+            icon = Icons.Outlined.HighQuality,
         )
     }
 }
