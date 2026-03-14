@@ -74,11 +74,9 @@ class FakePlaylistDao : PlaylistDao {
     override fun getGroupWithChannels(groupId: Long): Flow<GroupWithChannels?> = flowOf(null)
     override fun getChannelsByGroupId(groupId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override suspend fun getGroupsForChannel(channelId: Long): List<ChannelGroupEntity> = emptyList()
-<<<<<<< HEAD
     override suspend fun insertChannelFts(ftsEntities: List<ChannelFtsEntity>) {}
     override suspend fun deleteAllChannelFts() {}
     override suspend fun deleteChannelFtsByPlaylistId(playlistId: Long) {}
-=======
 
     // Paged channel stubs
     override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> = emptyList()
@@ -111,5 +109,4 @@ class FakePlaylistDao : PlaylistDao {
         offset: Int,
     ): List<ChannelEntity> = emptyList()
     override suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int = 0
->>>>>>> feat/channel-paging
 }
