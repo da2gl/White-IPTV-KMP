@@ -130,6 +130,34 @@ class SettingsPreferencesTest {
         assertFalse(settingsPreferences.autoUpdateEnabledFlow.first())
     }
 
+    // --- Accent Color Flow ---
+
+    @Test
+    fun `accentColorFlow initial value is Teal by default`() = runTest {
+        assertEquals(AccentColor.Teal, settingsPreferences.accentColorFlow.first())
+    }
+
+    @Test
+    fun `accentColorFlow emits Blue when setAccentColor Blue`() = runTest {
+        settingsPreferences.setAccentColor(AccentColor.Blue)
+        assertEquals(AccentColor.Blue, settingsPreferences.accentColorFlow.first())
+    }
+
+    @Test
+    fun `accentColorFlow emits Red when setAccentColor Red`() = runTest {
+        settingsPreferences.setAccentColor(AccentColor.Red)
+        assertEquals(AccentColor.Red, settingsPreferences.accentColorFlow.first())
+    }
+
+    @Test
+    fun `accentColorFlow resets to Teal on resetAll`() = runTest {
+        settingsPreferences.setAccentColor(AccentColor.Blue)
+        assertEquals(AccentColor.Blue, settingsPreferences.accentColorFlow.first())
+
+        settingsPreferences.resetAll()
+        assertEquals(AccentColor.Teal, settingsPreferences.accentColorFlow.first())
+    }
+
     // --- Persistence across instances ---
 
     @Test

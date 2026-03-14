@@ -1,8 +1,10 @@
 package com.simplevideo.whiteiptv.designsystem
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
+import com.simplevideo.whiteiptv.domain.model.AccentColor
 
 val Primary = Color(0xFF2badee)
 val BackgroundLight = Color(0xFFf6f7f8)
@@ -102,3 +104,244 @@ val AppDarkColorScheme = darkColorScheme(
     errorContainer = DarkErrorContainer,
     onErrorContainer = DarkOnErrorContainer,
 )
+
+// --- Teal accent (harmonized replacements for default secondary/tertiary) ---
+
+private val TealLightSecondary = Color(0xFF4a6267)
+private val TealLightOnSecondary = Color(0xFFFFFFFF)
+private val TealLightSecondaryContainer = Color(0xFFcde7ed)
+private val TealLightOnSecondaryContainer = Color(0xFF051f23)
+private val TealLightTertiary = Color(0xFF4d6357)
+private val TealLightOnTertiary = Color(0xFFFFFFFF)
+private val TealLightTertiaryContainer = Color(0xFFcfe8d9)
+private val TealLightOnTertiaryContainer = Color(0xFF0a2016)
+private val TealLightPrimaryContainer = Color(0xFFc5e7ff)
+private val TealLightOnPrimaryContainer = Color(0xFF001c38)
+
+private val TealDarkSecondary = Color(0xFF9ecbd2)
+private val TealDarkOnSecondary = Color(0xFF1b3438)
+private val TealDarkSecondaryContainer = Color(0xFF324b4f)
+private val TealDarkOnSecondaryContainer = Color(0xFFcde7ed)
+private val TealDarkTertiary = Color(0xFF9ecbab)
+private val TealDarkOnTertiary = Color(0xFF1f352a)
+private val TealDarkTertiaryContainer = Color(0xFF354b40)
+private val TealDarkOnTertiaryContainer = Color(0xFFcfe8d9)
+private val TealDarkPrimaryContainer = Color(0xFF004a77)
+private val TealDarkOnPrimaryContainer = Color(0xFFc5e7ff)
+
+// --- Blue accent ---
+
+private val BlueLightPrimary = Color(0xFF1a73e8)
+private val BlueLightOnPrimary = Color(0xFFFFFFFF)
+private val BlueLightPrimaryContainer = Color(0xFFd3e3fd)
+private val BlueLightOnPrimaryContainer = Color(0xFF001c3b)
+private val BlueLightSecondary = Color(0xFF535f70)
+private val BlueLightOnSecondary = Color(0xFFFFFFFF)
+private val BlueLightSecondaryContainer = Color(0xFFd7e3f7)
+private val BlueLightOnSecondaryContainer = Color(0xFF101c2b)
+private val BlueLightTertiary = Color(0xFF6b5778)
+private val BlueLightOnTertiary = Color(0xFFFFFFFF)
+private val BlueLightTertiaryContainer = Color(0xFFf2daff)
+private val BlueLightOnTertiaryContainer = Color(0xFF251431)
+
+private val BlueDarkPrimary = Color(0xFF8ab4f8)
+private val BlueDarkOnPrimary = Color(0xFF003062)
+private val BlueDarkPrimaryContainer = Color(0xFF00468a)
+private val BlueDarkOnPrimaryContainer = Color(0xFFd3e3fd)
+private val BlueDarkSecondary = Color(0xFFbbc7db)
+private val BlueDarkOnSecondary = Color(0xFF263141)
+private val BlueDarkSecondaryContainer = Color(0xFF3c4858)
+private val BlueDarkOnSecondaryContainer = Color(0xFFd7e3f7)
+private val BlueDarkTertiary = Color(0xFFd6bee4)
+private val BlueDarkOnTertiary = Color(0xFF3b2948)
+private val BlueDarkTertiaryContainer = Color(0xFF533f5f)
+private val BlueDarkOnTertiaryContainer = Color(0xFFf2daff)
+
+// --- Red accent ---
+
+private val RedLightPrimary = Color(0xFFc62828)
+private val RedLightOnPrimary = Color(0xFFFFFFFF)
+private val RedLightPrimaryContainer = Color(0xFFffdad4)
+private val RedLightOnPrimaryContainer = Color(0xFF410000)
+private val RedLightSecondary = Color(0xFF775651)
+private val RedLightOnSecondary = Color(0xFFFFFFFF)
+private val RedLightSecondaryContainer = Color(0xFFffdad4)
+private val RedLightOnSecondaryContainer = Color(0xFF2c1511)
+private val RedLightTertiary = Color(0xFF6f5b2e)
+private val RedLightOnTertiary = Color(0xFFFFFFFF)
+private val RedLightTertiaryContainer = Color(0xFFfbdfa6)
+private val RedLightOnTertiaryContainer = Color(0xFF261900)
+
+private val RedDarkPrimary = Color(0xFFef9a9a)
+private val RedDarkOnPrimary = Color(0xFF690005)
+private val RedDarkPrimaryContainer = Color(0xFF930006)
+private val RedDarkOnPrimaryContainer = Color(0xFFffdad4)
+private val RedDarkSecondary = Color(0xFFe7bdb6)
+private val RedDarkOnSecondary = Color(0xFF442925)
+private val RedDarkSecondaryContainer = Color(0xFF5d3f3a)
+private val RedDarkOnSecondaryContainer = Color(0xFFffdad4)
+private val RedDarkTertiary = Color(0xFFdbc06c)
+private val RedDarkOnTertiary = Color(0xFF3d2e00)
+private val RedDarkTertiaryContainer = Color(0xFF584417)
+private val RedDarkOnTertiaryContainer = Color(0xFFfbdfa6)
+
+/**
+ * Builds a full [ColorScheme] for the given [accentColor] and theme mode.
+ * Non-accent colors (background, surface, error, slate variants) remain unchanged.
+ */
+fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme = when {
+    darkTheme -> when (accentColor) {
+        AccentColor.Teal -> darkColorScheme(
+            primary = Primary,
+            onPrimary = OnPrimary,
+            primaryContainer = TealDarkPrimaryContainer,
+            onPrimaryContainer = TealDarkOnPrimaryContainer,
+            secondary = TealDarkSecondary,
+            onSecondary = TealDarkOnSecondary,
+            secondaryContainer = TealDarkSecondaryContainer,
+            onSecondaryContainer = TealDarkOnSecondaryContainer,
+            tertiary = TealDarkTertiary,
+            onTertiary = TealDarkOnTertiary,
+            tertiaryContainer = TealDarkTertiaryContainer,
+            onTertiaryContainer = TealDarkOnTertiaryContainer,
+            background = BackgroundDark,
+            surface = BackgroundDark,
+            onBackground = OnBackgroundDark,
+            onSurface = OnBackgroundDark,
+            onSurfaceVariant = Slate400,
+            outline = Slate700,
+            surfaceVariant = Slate800,
+            error = DarkError,
+            onError = DarkOnError,
+            errorContainer = DarkErrorContainer,
+            onErrorContainer = DarkOnErrorContainer,
+        )
+        AccentColor.Blue -> darkColorScheme(
+            primary = BlueDarkPrimary,
+            onPrimary = BlueDarkOnPrimary,
+            primaryContainer = BlueDarkPrimaryContainer,
+            onPrimaryContainer = BlueDarkOnPrimaryContainer,
+            secondary = BlueDarkSecondary,
+            onSecondary = BlueDarkOnSecondary,
+            secondaryContainer = BlueDarkSecondaryContainer,
+            onSecondaryContainer = BlueDarkOnSecondaryContainer,
+            tertiary = BlueDarkTertiary,
+            onTertiary = BlueDarkOnTertiary,
+            tertiaryContainer = BlueDarkTertiaryContainer,
+            onTertiaryContainer = BlueDarkOnTertiaryContainer,
+            background = BackgroundDark,
+            surface = BackgroundDark,
+            onBackground = OnBackgroundDark,
+            onSurface = OnBackgroundDark,
+            onSurfaceVariant = Slate400,
+            outline = Slate700,
+            surfaceVariant = Slate800,
+            error = DarkError,
+            onError = DarkOnError,
+            errorContainer = DarkErrorContainer,
+            onErrorContainer = DarkOnErrorContainer,
+        )
+        AccentColor.Red -> darkColorScheme(
+            primary = RedDarkPrimary,
+            onPrimary = RedDarkOnPrimary,
+            primaryContainer = RedDarkPrimaryContainer,
+            onPrimaryContainer = RedDarkOnPrimaryContainer,
+            secondary = RedDarkSecondary,
+            onSecondary = RedDarkOnSecondary,
+            secondaryContainer = RedDarkSecondaryContainer,
+            onSecondaryContainer = RedDarkOnSecondaryContainer,
+            tertiary = RedDarkTertiary,
+            onTertiary = RedDarkOnTertiary,
+            tertiaryContainer = RedDarkTertiaryContainer,
+            onTertiaryContainer = RedDarkOnTertiaryContainer,
+            background = BackgroundDark,
+            surface = BackgroundDark,
+            onBackground = OnBackgroundDark,
+            onSurface = OnBackgroundDark,
+            onSurfaceVariant = Slate400,
+            outline = Slate700,
+            surfaceVariant = Slate800,
+            error = DarkError,
+            onError = DarkOnError,
+            errorContainer = DarkErrorContainer,
+            onErrorContainer = DarkOnErrorContainer,
+        )
+    }
+    else -> when (accentColor) {
+        AccentColor.Teal -> lightColorScheme(
+            primary = Primary,
+            onPrimary = OnPrimary,
+            primaryContainer = TealLightPrimaryContainer,
+            onPrimaryContainer = TealLightOnPrimaryContainer,
+            secondary = TealLightSecondary,
+            onSecondary = TealLightOnSecondary,
+            secondaryContainer = TealLightSecondaryContainer,
+            onSecondaryContainer = TealLightOnSecondaryContainer,
+            tertiary = TealLightTertiary,
+            onTertiary = TealLightOnTertiary,
+            tertiaryContainer = TealLightTertiaryContainer,
+            onTertiaryContainer = TealLightOnTertiaryContainer,
+            background = BackgroundLight,
+            surface = BackgroundLight,
+            onBackground = OnBackgroundLight,
+            onSurface = OnBackgroundLight,
+            onSurfaceVariant = Slate600,
+            outline = Slate300,
+            surfaceVariant = Slate200,
+            error = LightError,
+            onError = LightOnError,
+            errorContainer = LightErrorContainer,
+            onErrorContainer = LightOnErrorContainer,
+        )
+        AccentColor.Blue -> lightColorScheme(
+            primary = BlueLightPrimary,
+            onPrimary = BlueLightOnPrimary,
+            primaryContainer = BlueLightPrimaryContainer,
+            onPrimaryContainer = BlueLightOnPrimaryContainer,
+            secondary = BlueLightSecondary,
+            onSecondary = BlueLightOnSecondary,
+            secondaryContainer = BlueLightSecondaryContainer,
+            onSecondaryContainer = BlueLightOnSecondaryContainer,
+            tertiary = BlueLightTertiary,
+            onTertiary = BlueLightOnTertiary,
+            tertiaryContainer = BlueLightTertiaryContainer,
+            onTertiaryContainer = BlueLightOnTertiaryContainer,
+            background = BackgroundLight,
+            surface = BackgroundLight,
+            onBackground = OnBackgroundLight,
+            onSurface = OnBackgroundLight,
+            onSurfaceVariant = Slate600,
+            outline = Slate300,
+            surfaceVariant = Slate200,
+            error = LightError,
+            onError = LightOnError,
+            errorContainer = LightErrorContainer,
+            onErrorContainer = LightOnErrorContainer,
+        )
+        AccentColor.Red -> lightColorScheme(
+            primary = RedLightPrimary,
+            onPrimary = RedLightOnPrimary,
+            primaryContainer = RedLightPrimaryContainer,
+            onPrimaryContainer = RedLightOnPrimaryContainer,
+            secondary = RedLightSecondary,
+            onSecondary = RedLightOnSecondary,
+            secondaryContainer = RedLightSecondaryContainer,
+            onSecondaryContainer = RedLightOnSecondaryContainer,
+            tertiary = RedLightTertiary,
+            onTertiary = RedLightOnTertiary,
+            tertiaryContainer = RedLightTertiaryContainer,
+            onTertiaryContainer = RedLightOnTertiaryContainer,
+            background = BackgroundLight,
+            surface = BackgroundLight,
+            onBackground = OnBackgroundLight,
+            onSurface = OnBackgroundLight,
+            onSurfaceVariant = Slate600,
+            outline = Slate300,
+            surfaceVariant = Slate200,
+            error = LightError,
+            onError = LightOnError,
+            errorContainer = LightErrorContainer,
+            onErrorContainer = LightOnErrorContainer,
+        )
+    }
+}
