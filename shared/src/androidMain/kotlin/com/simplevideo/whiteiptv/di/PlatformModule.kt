@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
-import coil3.PlatformContext
+import com.simplevideo.whiteiptv.data.cache.CacheManager
+import com.simplevideo.whiteiptv.data.cache.CoilCacheManager
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
 import com.simplevideo.whiteiptv.data.local.createDataStore
@@ -17,6 +18,7 @@ import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.exoplayer.ExoPlayerFactory
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -57,5 +59,5 @@ actual fun platformModule(): Module = module {
         )
     }
 
-    single<PlatformContext> { get<Context>().applicationContext }
+    single<CacheManager> { CoilCacheManager(androidContext()) }
 }

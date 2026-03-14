@@ -58,7 +58,9 @@ actual fun platformModule(): Module = module {
         )
     }
 
-    single<PlatformContext> { PlatformContext.INSTANCE }
+    single<com.simplevideo.whiteiptv.data.cache.CacheManager> {
+        com.simplevideo.whiteiptv.data.cache.CoilCacheManager(PlatformContext.INSTANCE)
+    }
 }
 
 @OptIn(ExperimentalForeignApi::class)

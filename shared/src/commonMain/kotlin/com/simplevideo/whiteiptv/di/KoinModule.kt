@@ -116,7 +116,6 @@ val settingsModule = module {
     singleOf(::ThemePreferences)
     single<ThemeRepository> { ThemeRepositoryImpl(get()) }
     singleOf(::SettingsPreferences)
-    single<CacheManager> { CoilCacheManager(get()) }
     single {
         BackgroundRefreshCoordinator(
             playlistRepository = get(),
