@@ -17,11 +17,13 @@ import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsAction
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsEvent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -39,6 +41,7 @@ import kotlin.test.assertTrue
 class SettingsViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
+    private lateinit var repositoryJob: kotlinx.coroutines.CompletableJob
 
     private lateinit var dataStore: DataStore<Preferences>
     private lateinit var themePreferences: ThemePreferences
@@ -53,14 +56,18 @@ class SettingsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         dataStore = PreferenceDataStoreFactory.createWithPath(
+            corruptionHandler = null,
+            migrations = emptyList(),
+            scope = CoroutineScope(testDispatcher + SupervisorJob()),
             produceFile = {
                 "test_settings_vm_${kotlin.random.Random.nextInt()}.preferences_pb".toPath()
             },
         )
         themePreferences = ThemePreferences(dataStore)
+        repositoryJob = SupervisorJob()
         themeRepository = ThemeRepositoryImpl(
             themePreferences,
-            scope = CoroutineScope(SupervisorJob() + testDispatcher),
+            scope = CoroutineScope(repositoryJob + testDispatcher),
         )
         settingsPreferences = SettingsPreferences(dataStore)
         fakeChannelRepository = FakeChannelRepository()
@@ -74,6 +81,7 @@ class SettingsViewModelTest {
 
     @AfterTest
     fun tearDown() {
+        repositoryJob.cancel()
         Dispatchers.resetMain()
     }
 
