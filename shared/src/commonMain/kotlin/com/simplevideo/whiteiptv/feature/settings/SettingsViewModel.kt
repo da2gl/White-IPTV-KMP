@@ -20,34 +20,44 @@ class SettingsViewModel(
 ) {
 
     init {
-        viewState = viewState.copy(
-            themeMode = themeRepository.themeMode.value,
-            accentColor = settingsPreferences.getAccentColor(),
-            channelViewMode = settingsPreferences.getChannelViewMode(),
-            autoUpdateEnabled = settingsPreferences.getAutoUpdateEnabled(),
-            appVersion = APP_VERSION,
-        )
+        viewModelScope.launch {
+            viewState = viewState.copy(
+                themeMode = themeRepository.themeMode.value,
+                accentColor = settingsPreferences.getAccentColor(),
+                channelViewMode = settingsPreferences.getChannelViewMode(),
+                autoUpdateEnabled = settingsPreferences.getAutoUpdateEnabled(),
+                appVersion = APP_VERSION,
+            )
+        }
     }
 
     override fun obtainEvent(viewEvent: SettingsEvent) {
         when (viewEvent) {
             is SettingsEvent.OnThemeModeChanged -> {
-                themeRepository.setThemeMode(viewEvent.mode)
+                viewModelScope.launch {
+                    themeRepository.setThemeMode(viewEvent.mode)
+                }
                 viewState = viewState.copy(themeMode = viewEvent.mode)
             }
 
             is SettingsEvent.OnAccentColorChanged -> {
-                settingsPreferences.setAccentColor(viewEvent.color)
+                viewModelScope.launch {
+                    settingsPreferences.setAccentColor(viewEvent.color)
+                }
                 viewState = viewState.copy(accentColor = viewEvent.color)
             }
 
             is SettingsEvent.OnChannelViewModeChanged -> {
-                settingsPreferences.setChannelViewMode(viewEvent.mode)
+                viewModelScope.launch {
+                    settingsPreferences.setChannelViewMode(viewEvent.mode)
+                }
                 viewState = viewState.copy(channelViewMode = viewEvent.mode)
             }
 
             is SettingsEvent.OnAutoUpdateChanged -> {
-                settingsPreferences.setAutoUpdateEnabled(viewEvent.enabled)
+                viewModelScope.launch {
+                    settingsPreferences.setAutoUpdateEnabled(viewEvent.enabled)
+                }
                 viewState = viewState.copy(autoUpdateEnabled = viewEvent.enabled)
             }
 
@@ -73,8 +83,10 @@ class SettingsViewModel(
 
             is SettingsEvent.OnResetConfirm -> {
                 viewState = viewState.copy(showResetDialog = false)
-                settingsPreferences.resetAll()
-                themeRepository.setThemeMode(ThemeMode.System)
+                viewModelScope.launch {
+                    settingsPreferences.resetAll()
+                    themeRepository.setThemeMode(ThemeMode.System)
+                }
                 viewState = SettingsState(
                     appVersion = APP_VERSION,
                 )

@@ -1,6 +1,5 @@
 package com.simplevideo.whiteiptv.di
 
-import com.russhwolf.settings.Settings
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences
@@ -112,7 +111,6 @@ val databaseModule = module {
 }
 
 val settingsModule = module {
-    single { Settings() }
     singleOf(::ThemePreferences)
     singleOf(::ThemeRepositoryImpl) bind ThemeRepository::class
     singleOf(::SettingsPreferences)

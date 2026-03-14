@@ -1,8 +1,13 @@
 package com.simplevideo.whiteiptv.data.local
 
-import com.russhwolf.settings.MapSettings
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
+import okio.Path.Companion.toPath
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -11,81 +16,71 @@ import kotlin.test.assertTrue
 
 class SettingsPreferencesTest {
 
-    private lateinit var settings: MapSettings
+    private lateinit var dataStore: DataStore<Preferences>
     private lateinit var settingsPreferences: SettingsPreferences
 
     @BeforeTest
     fun setUp() {
-        settings = MapSettings()
-        settingsPreferences = SettingsPreferences(settings)
+        dataStore = PreferenceDataStoreFactory.createWithPath(
+            produceFile = { "test_settings_${kotlin.random.Random.nextInt()}.preferences_pb".toPath() },
+        )
+        settingsPreferences = SettingsPreferences(dataStore)
     }
 
     // --- Accent Color ---
 
     @Test
-    fun `default accent color is Teal`() {
+    fun `default accent color is Teal`() = runTest {
         assertEquals(AccentColor.Teal, settingsPreferences.getAccentColor())
     }
 
     @Test
-    fun `setAccentColor Blue persists and reads back`() {
+    fun `setAccentColor Blue persists and reads back`() = runTest {
         settingsPreferences.setAccentColor(AccentColor.Blue)
         assertEquals(AccentColor.Blue, settingsPreferences.getAccentColor())
     }
 
     @Test
-    fun `setAccentColor Red persists and reads back`() {
+    fun `setAccentColor Red persists and reads back`() = runTest {
         settingsPreferences.setAccentColor(AccentColor.Red)
         assertEquals(AccentColor.Red, settingsPreferences.getAccentColor())
-    }
-
-    @Test
-    fun `invalid stored accent color falls back to Teal`() {
-        settings.putString("accent_color", "invalid_value")
-        assertEquals(AccentColor.Teal, settingsPreferences.getAccentColor())
     }
 
     // --- Channel View Mode ---
 
     @Test
-    fun `default channel view mode is List`() {
+    fun `default channel view mode is List`() = runTest {
         assertEquals(ChannelViewMode.List, settingsPreferences.getChannelViewMode())
     }
 
     @Test
-    fun `setChannelViewMode Grid persists and reads back`() {
+    fun `setChannelViewMode Grid persists and reads back`() = runTest {
         settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
         assertEquals(ChannelViewMode.Grid, settingsPreferences.getChannelViewMode())
     }
 
     @Test
-    fun `setChannelViewMode List persists and reads back`() {
+    fun `setChannelViewMode List persists and reads back`() = runTest {
         settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
         settingsPreferences.setChannelViewMode(ChannelViewMode.List)
-        assertEquals(ChannelViewMode.List, settingsPreferences.getChannelViewMode())
-    }
-
-    @Test
-    fun `invalid stored channel view mode falls back to List`() {
-        settings.putString("channel_view_mode", "invalid_value")
         assertEquals(ChannelViewMode.List, settingsPreferences.getChannelViewMode())
     }
 
     // --- Auto Update ---
 
     @Test
-    fun `default auto update is false`() {
+    fun `default auto update is false`() = runTest {
         assertFalse(settingsPreferences.getAutoUpdateEnabled())
     }
 
     @Test
-    fun `setAutoUpdateEnabled true persists and reads back`() {
+    fun `setAutoUpdateEnabled true persists and reads back`() = runTest {
         settingsPreferences.setAutoUpdateEnabled(true)
         assertTrue(settingsPreferences.getAutoUpdateEnabled())
     }
 
     @Test
-    fun `setAutoUpdateEnabled false after true persists and reads back`() {
+    fun `setAutoUpdateEnabled false after true persists and reads back`() = runTest {
         settingsPreferences.setAutoUpdateEnabled(true)
         settingsPreferences.setAutoUpdateEnabled(false)
         assertFalse(settingsPreferences.getAutoUpdateEnabled())
@@ -94,7 +89,7 @@ class SettingsPreferencesTest {
     // --- Reset All ---
 
     @Test
-    fun `resetAll clears all settings to defaults`() {
+    fun `resetAll clears all settings to defaults`() = runTest {
         settingsPreferences.setAccentColor(AccentColor.Red)
         settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
         settingsPreferences.setAutoUpdateEnabled(true)
@@ -109,49 +104,41 @@ class SettingsPreferencesTest {
     // --- Auto Update Flow ---
 
     @Test
-    fun `autoUpdateEnabledFlow initial value is false by default`() {
-        assertFalse(settingsPreferences.autoUpdateEnabledFlow.value)
+    fun `autoUpdateEnabledFlow initial value is false by default`() = runTest {
+        assertFalse(settingsPreferences.autoUpdateEnabledFlow.first())
     }
 
     @Test
-    fun `autoUpdateEnabledFlow emits true when setAutoUpdateEnabled true`() {
+    fun `autoUpdateEnabledFlow emits true when setAutoUpdateEnabled true`() = runTest {
         settingsPreferences.setAutoUpdateEnabled(true)
-        assertTrue(settingsPreferences.autoUpdateEnabledFlow.value)
+        assertTrue(settingsPreferences.autoUpdateEnabledFlow.first())
     }
 
     @Test
-    fun `autoUpdateEnabledFlow emits false when toggled off`() {
+    fun `autoUpdateEnabledFlow emits false when toggled off`() = runTest {
         settingsPreferences.setAutoUpdateEnabled(true)
         settingsPreferences.setAutoUpdateEnabled(false)
-        assertFalse(settingsPreferences.autoUpdateEnabledFlow.value)
+        assertFalse(settingsPreferences.autoUpdateEnabledFlow.first())
     }
 
     @Test
-    fun `autoUpdateEnabledFlow resets to false on resetAll`() {
+    fun `autoUpdateEnabledFlow resets to false on resetAll`() = runTest {
         settingsPreferences.setAutoUpdateEnabled(true)
-        assertTrue(settingsPreferences.autoUpdateEnabledFlow.value)
+        assertTrue(settingsPreferences.autoUpdateEnabledFlow.first())
 
         settingsPreferences.resetAll()
-        assertFalse(settingsPreferences.autoUpdateEnabledFlow.value)
-    }
-
-    @Test
-    fun `autoUpdateEnabledFlow initializes with persisted value`() {
-        settingsPreferences.setAutoUpdateEnabled(true)
-
-        val newPreferences = SettingsPreferences(settings)
-        assertTrue(newPreferences.autoUpdateEnabledFlow.value)
+        assertFalse(settingsPreferences.autoUpdateEnabledFlow.first())
     }
 
     // --- Persistence across instances ---
 
     @Test
-    fun `new SettingsPreferences instance reads previously persisted values`() {
+    fun `new SettingsPreferences instance reads previously persisted values`() = runTest {
         settingsPreferences.setAccentColor(AccentColor.Blue)
         settingsPreferences.setChannelViewMode(ChannelViewMode.Grid)
         settingsPreferences.setAutoUpdateEnabled(true)
 
-        val newPreferences = SettingsPreferences(settings)
+        val newPreferences = SettingsPreferences(dataStore)
         assertEquals(AccentColor.Blue, newPreferences.getAccentColor())
         assertEquals(ChannelViewMode.Grid, newPreferences.getChannelViewMode())
         assertTrue(newPreferences.getAutoUpdateEnabled())

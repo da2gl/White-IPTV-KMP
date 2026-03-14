@@ -1,8 +1,12 @@
 package com.simplevideo.whiteiptv.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
 import com.simplevideo.whiteiptv.data.local.AppDatabase
+import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
+import com.simplevideo.whiteiptv.data.local.createDataStore
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
 import com.simplevideo.whiteiptv.platform.AndroidFilePickerFactory
 import com.simplevideo.whiteiptv.platform.AndroidFileReader
@@ -36,5 +40,13 @@ actual fun platformModule(): Module = module {
 
     single<FilePickerFactory> {
         AndroidFilePickerFactory(get())
+    }
+
+    single<DataStore<Preferences>> {
+        createDataStore(
+            producePath = {
+                get<Context>().filesDir.resolve(DATA_STORE_FILE_NAME).absolutePath
+            },
+        )
     }
 }

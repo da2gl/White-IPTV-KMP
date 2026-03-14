@@ -76,13 +76,13 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
             implementation(libs.kermit)
-            implementation(libs.multiplatform.settings.no.arg)
             implementation(libs.paging.common)
             implementation(libs.paging.compose)
+            implementation(libs.androidx.datastore.preferences)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-            implementation(libs.multiplatform.settings.test)
+
             implementation(libs.kotlinx.coroutines.test)
         }
     }

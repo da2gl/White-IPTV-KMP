@@ -1,56 +1,63 @@
 package com.simplevideo.whiteiptv.data.local
 
-import com.russhwolf.settings.Settings
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 /**
- * Manages non-theme settings persistence using multiplatform-settings.
+ * Manages non-theme settings persistence using Jetpack DataStore.
  * Theme settings are handled by [ThemePreferences].
  */
-class SettingsPreferences(private val settings: Settings) {
+class SettingsPreferences(private val dataStore: DataStore<Preferences>) {
 
-    private val _autoUpdateEnabledFlow = MutableStateFlow(getAutoUpdateEnabled())
-    val autoUpdateEnabledFlow: StateFlow<Boolean> = _autoUpdateEnabledFlow.asStateFlow()
+    val autoUpdateEnabledFlow: Flow<Boolean> = dataStore.data
+        .map { prefs -> prefs[AUTO_UPDATE_KEY] ?: false }
+        .distinctUntilChanged()
 
-    fun getAccentColor(): AccentColor {
-        val name = settings.getString(KEY_ACCENT_COLOR, AccentColor.Teal.name)
+    suspend fun getAccentColor(): AccentColor {
+        val prefs = dataStore.data.first()
+        val name = prefs[ACCENT_COLOR_KEY] ?: AccentColor.Teal.name
         return runCatching { AccentColor.valueOf(name) }.getOrDefault(AccentColor.Teal)
     }
 
-    fun setAccentColor(color: AccentColor) {
-        settings.putString(KEY_ACCENT_COLOR, color.name)
+    suspend fun setAccentColor(color: AccentColor) {
+        dataStore.edit { prefs -> prefs[ACCENT_COLOR_KEY] = color.name }
     }
 
-    fun getChannelViewMode(): ChannelViewMode {
-        val name = settings.getString(KEY_CHANNEL_VIEW_MODE, ChannelViewMode.List.name)
+    suspend fun getChannelViewMode(): ChannelViewMode {
+        val prefs = dataStore.data.first()
+        val name = prefs[CHANNEL_VIEW_MODE_KEY] ?: ChannelViewMode.List.name
         return runCatching { ChannelViewMode.valueOf(name) }.getOrDefault(ChannelViewMode.List)
     }
 
-    fun setChannelViewMode(mode: ChannelViewMode) {
-        settings.putString(KEY_CHANNEL_VIEW_MODE, mode.name)
+    suspend fun setChannelViewMode(mode: ChannelViewMode) {
+        dataStore.edit { prefs -> prefs[CHANNEL_VIEW_MODE_KEY] = mode.name }
     }
 
-    fun getAutoUpdateEnabled(): Boolean {
-        return settings.getBoolean(KEY_AUTO_UPDATE, false)
+    suspend fun getAutoUpdateEnabled(): Boolean {
+        val prefs = dataStore.data.first()
+        return prefs[AUTO_UPDATE_KEY] ?: false
     }
 
-    fun setAutoUpdateEnabled(enabled: Boolean) {
-        settings.putBoolean(KEY_AUTO_UPDATE, enabled)
-        _autoUpdateEnabledFlow.value = enabled
+    suspend fun setAutoUpdateEnabled(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[AUTO_UPDATE_KEY] = enabled }
     }
 
-    fun resetAll() {
-        settings.clear()
-        _autoUpdateEnabledFlow.value = false
+    suspend fun resetAll() {
+        dataStore.edit { it.clear() }
     }
 
     companion object {
-        private const val KEY_ACCENT_COLOR = "accent_color"
-        private const val KEY_CHANNEL_VIEW_MODE = "channel_view_mode"
-        private const val KEY_AUTO_UPDATE = "auto_update_playlists"
+        private val ACCENT_COLOR_KEY = stringPreferencesKey("accent_color")
+        private val CHANNEL_VIEW_MODE_KEY = stringPreferencesKey("channel_view_mode")
+        private val AUTO_UPDATE_KEY = booleanPreferencesKey("auto_update_playlists")
     }
 }
