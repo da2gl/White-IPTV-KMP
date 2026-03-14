@@ -3,6 +3,8 @@ package com.simplevideo.whiteiptv.feature.settings
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.simplevideo.whiteiptv.AppConfig
+import com.simplevideo.whiteiptv.data.cache.FakeCacheManager
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences
 import com.simplevideo.whiteiptv.data.repository.FakeChannelRepository
@@ -51,6 +53,7 @@ class SettingsViewModelTest {
     private lateinit var clearFavoritesUseCase: ClearFavoritesUseCase
     private lateinit var fakeBackgroundScheduler: FakeBackgroundScheduler
     private lateinit var refreshCoordinator: BackgroundRefreshCoordinator
+    private lateinit var fakeCacheManager: FakeCacheManager
 
     @BeforeTest
     fun setUp() {
@@ -77,6 +80,7 @@ class SettingsViewModelTest {
             playlistRepository = FakePlaylistRepository(),
             refreshPlaylist = {},
         )
+        fakeCacheManager = FakeCacheManager(initialCacheSizeBytes = 1048576L)
     }
 
     @AfterTest
@@ -92,6 +96,7 @@ class SettingsViewModelTest {
             clearFavoritesUseCase = clearFavoritesUseCase,
             backgroundScheduler = fakeBackgroundScheduler,
             refreshCoordinator = refreshCoordinator,
+            cacheManager = fakeCacheManager,
         )
     }
 
@@ -123,7 +128,7 @@ class SettingsViewModelTest {
         assertEquals(AccentColor.Teal, state.accentColor)
         assertEquals(ChannelViewMode.List, state.channelViewMode)
         assertFalse(state.autoUpdateEnabled)
-        assertEquals("1.0", state.appVersion)
+        assertEquals(AppConfig.VERSION_NAME, state.appVersion)
         assertFalse(state.showClearFavoritesDialog)
         assertFalse(state.showResetDialog)
     }
@@ -270,12 +275,22 @@ class SettingsViewModelTest {
     // --- Clear Cache ---
 
     @Test
-    fun `OnClearCacheClick emits ShowCacheCleared action`() = runTest {
+    fun `init loads cache size from CacheManager`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
+        assertEquals("1 MB", viewModel.viewStates().value.cacheSize)
+    }
+
+    @Test
+    fun `OnClearCacheClick clears cache and updates size`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        assertEquals("1 MB", viewModel.viewStates().value.cacheSize)
 
         viewModel.obtainEvent(SettingsEvent.OnClearCacheClick)
 
+        assertTrue(fakeCacheManager.clearCalled)
+        assertEquals("0 B", viewModel.viewStates().value.cacheSize)
         val action = viewModel.viewActions().first()
         assertIs<SettingsAction.ShowCacheCleared>(action)
     }
