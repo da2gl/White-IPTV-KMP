@@ -54,11 +54,14 @@ class ChannelsViewModel(
 
     private val searchQuery = MutableStateFlow("")
 
+    private val refreshTrigger = MutableStateFlow(0L)
+
     val pagedChannels: Flow<PagingData<ChannelEntity>> = combine(
         currentPlaylistRepository.selection,
         selectedGroupIdFlow,
         searchQuery.debounce(300),
-    ) { selection, selectedGroupId, query ->
+        refreshTrigger,
+    ) { selection, selectedGroupId, query, _ ->
         Triple(selection, selectedGroupId, query)
     }.flatMapLatest { (selection, selectedGroupId, query) ->
         val filter = resolveFilter(selection, selectedGroupId)
@@ -173,6 +176,7 @@ class ChannelsViewModel(
         viewModelScope.launch {
             try {
                 toggleFavorite(channelId)
+                refreshTrigger.value++
             } catch (e: Exception) {
                 viewAction = ChannelsAction.ShowError(e.message ?: "Unknown error")
             }
