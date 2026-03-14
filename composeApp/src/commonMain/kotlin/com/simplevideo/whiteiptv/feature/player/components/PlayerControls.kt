@@ -42,7 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.simplevideo.whiteiptv.domain.model.EpgProgram
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
+import com.simplevideo.whiteiptv.platform.AirPlayButton
 import com.simplevideo.whiteiptv.platform.AudioTrackInfo
+import com.simplevideo.whiteiptv.platform.CastButton
 import com.simplevideo.whiteiptv.platform.SubtitleTrackInfo
 import com.simplevideo.whiteiptv.platform.TracksInfo
 import com.simplevideo.whiteiptv.platform.VideoQualityInfo
@@ -241,6 +243,8 @@ private fun PlayerBottomBar(
                         )
                     }
                 }
+                CastButton()
+                AirPlayButton()
             }
         }
     }
