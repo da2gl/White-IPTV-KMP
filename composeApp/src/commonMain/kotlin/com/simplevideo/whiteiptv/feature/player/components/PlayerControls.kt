@@ -22,7 +22,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.HighQuality
+import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material.icons.filled.Subtitles
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -53,10 +55,14 @@ fun PlayerControlsOverlay(
     tracksInfo: TracksInfo,
     currentProgram: EpgProgram?,
     nextProgram: EpgProgram?,
+    sleepTimerRemainingMs: Long?,
+    isPipSupported: Boolean,
     onBackClick: () -> Unit,
     onShowAudioTracks: () -> Unit,
     onShowSubtitles: () -> Unit,
     onShowQuality: () -> Unit,
+    onShowSleepTimer: () -> Unit,
+    onEnterPip: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize()) {
@@ -81,9 +87,13 @@ fun PlayerControlsOverlay(
                 )
                 PlayerBottomBar(
                     tracksInfo = tracksInfo,
+                    sleepTimerRemainingMs = sleepTimerRemainingMs,
+                    isPipSupported = isPipSupported,
                     onShowAudioTracks = onShowAudioTracks,
                     onShowSubtitles = onShowSubtitles,
                     onShowQuality = onShowQuality,
+                    onShowSleepTimer = onShowSleepTimer,
+                    onEnterPip = onEnterPip,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
@@ -145,9 +155,13 @@ private fun PlayerTopBar(
 @Composable
 private fun PlayerBottomBar(
     tracksInfo: TracksInfo,
+    sleepTimerRemainingMs: Long?,
+    isPipSupported: Boolean,
     onShowAudioTracks: () -> Unit,
     onShowSubtitles: () -> Unit,
     onShowQuality: () -> Unit,
+    onShowSleepTimer: () -> Unit,
+    onEnterPip: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -168,9 +182,29 @@ private fun PlayerBottomBar(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (sleepTimerRemainingMs != null) {
+                Text(
+                    text = formatRemainingTime(sleepTimerRemainingMs),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+            }
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                IconButton(onClick = onShowSleepTimer) {
+                    Icon(
+                        imageVector = Icons.Default.Timer,
+                        contentDescription = "Sleep timer",
+                        tint = if (sleepTimerRemainingMs != null) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.White
+                        },
+                    )
+                }
                 if (tracksInfo.audioTracks.size > 1) {
                     IconButton(onClick = onShowAudioTracks) {
                         Icon(
@@ -194,6 +228,15 @@ private fun PlayerBottomBar(
                         Icon(
                             imageVector = Icons.Default.HighQuality,
                             contentDescription = "Quality",
+                            tint = Color.White,
+                        )
+                    }
+                }
+                if (isPipSupported) {
+                    IconButton(onClick = onEnterPip) {
+                        Icon(
+                            imageVector = Icons.Default.PictureInPicture,
+                            contentDescription = "Picture in Picture",
                             tint = Color.White,
                         )
                     }

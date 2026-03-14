@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.simplevideo.whiteiptv.feature.player.components.GestureOverlay
 import com.simplevideo.whiteiptv.feature.player.components.PlayerControlsOverlay
+import com.simplevideo.whiteiptv.feature.player.components.SleepTimerSheet
 import com.simplevideo.whiteiptv.feature.player.components.TrackSelectionDialog
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerAction
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
@@ -29,6 +30,7 @@ import com.simplevideo.whiteiptv.platform.KeepScreenOn
 import com.simplevideo.whiteiptv.platform.PlayerListener
 import com.simplevideo.whiteiptv.platform.TracksInfo
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
+import com.simplevideo.whiteiptv.platform.rememberPipController
 import com.simplevideo.whiteiptv.platform.rememberSystemControls
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -50,6 +52,12 @@ fun PlayerScreen(
                 onNavigateBack()
                 viewModel.clearAction()
             }
+
+            is PlayerAction.SleepTimerExpired -> {
+                onNavigateBack()
+                viewModel.clearAction()
+            }
+
             null -> Unit
         }
     }
@@ -69,6 +77,7 @@ private fun PlayerScreenContent(
     val playerFactory = koinInject<VideoPlayerFactory>()
     val player = remember { playerFactory.createPlayer() }
     val systemControls = rememberSystemControls()
+    val pipController = rememberPipController()
     val scope = rememberCoroutineScope()
     var hideJob: Job? = remember { null }
 
@@ -204,6 +213,8 @@ private fun PlayerScreenContent(
                 tracksInfo = state.tracksInfo,
                 currentProgram = state.currentProgram,
                 nextProgram = state.nextProgram,
+                sleepTimerRemainingMs = state.sleepTimerRemainingMs,
+                isPipSupported = pipController.isPipSupported(),
                 onBackClick = { onEvent(PlayerEvent.OnBackClick) },
                 onShowAudioTracks = {
                     onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.AUDIO))
@@ -214,6 +225,8 @@ private fun PlayerScreenContent(
                 onShowQuality = {
                     onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.QUALITY))
                 },
+                onShowSleepTimer = { onEvent(PlayerEvent.OnShowSleepTimer) },
+                onEnterPip = { pipController.enterPipMode() },
             )
         }
 
@@ -235,6 +248,16 @@ private fun PlayerScreenContent(
                     player.selectVideoQuality(qualityId)
                     onEvent(PlayerEvent.OnSelectVideoQuality(qualityId))
                 },
+            )
+        }
+
+        // Sleep timer bottom sheet
+        if (state.showSleepTimerSheet) {
+            SleepTimerSheet(
+                activeTimerRemainingMs = state.sleepTimerRemainingMs,
+                onDismiss = { onEvent(PlayerEvent.OnDismissSleepTimer) },
+                onSetTimer = { durationMs -> onEvent(PlayerEvent.OnSetSleepTimer(durationMs)) },
+                onCancelTimer = { onEvent(PlayerEvent.OnCancelSleepTimer) },
             )
         }
     }

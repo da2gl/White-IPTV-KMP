@@ -42,6 +42,7 @@ class PlayerViewModel(
     private var watchStartTime: Long = 0L
     private var watchTimerJob: Job? = null
     private var epgRefreshJob: Job? = null
+    private var sleepTimerJob: Job? = null
 
     init {
         observeChannel()
@@ -142,6 +143,33 @@ class PlayerViewModel(
         }
     }
 
+    private fun startSleepTimer(durationMs: Long) {
+        sleepTimerJob?.cancel()
+        sleepTimerJob = viewModelScope.launch {
+            var remaining = durationMs
+            viewState = viewState.copy(
+                sleepTimerRemainingMs = remaining,
+                showSleepTimerSheet = false,
+            )
+            while (remaining > 0) {
+                delay(SLEEP_TIMER_TICK_MS)
+                remaining -= SLEEP_TIMER_TICK_MS
+                viewState = viewState.copy(sleepTimerRemainingMs = remaining.coerceAtLeast(0))
+            }
+            viewState = viewState.copy(sleepTimerRemainingMs = null)
+            viewAction = PlayerAction.SleepTimerExpired
+        }
+    }
+
+    private fun cancelSleepTimer() {
+        sleepTimerJob?.cancel()
+        sleepTimerJob = null
+        viewState = viewState.copy(
+            sleepTimerRemainingMs = null,
+            showSleepTimerSheet = false,
+        )
+    }
+
     override fun obtainEvent(viewEvent: PlayerEvent) {
         when (viewEvent) {
             is PlayerEvent.OnBackClick -> {
@@ -191,6 +219,26 @@ class PlayerViewModel(
             is PlayerEvent.OnSelectVideoQuality -> {
                 viewState = viewState.copy(showTrackSelectionDialog = null)
             }
+
+            is PlayerEvent.OnShowSleepTimer -> {
+                viewState = viewState.copy(showSleepTimerSheet = true)
+            }
+
+            is PlayerEvent.OnDismissSleepTimer -> {
+                viewState = viewState.copy(showSleepTimerSheet = false)
+            }
+
+            is PlayerEvent.OnSetSleepTimer -> {
+                startSleepTimer(viewEvent.durationMs)
+            }
+
+            is PlayerEvent.OnCancelSleepTimer -> {
+                cancelSleepTimer()
+            }
+
+            is PlayerEvent.OnEnterPip -> {
+                // PiP is triggered from the screen via the PiP controller
+            }
         }
     }
 
@@ -218,10 +266,12 @@ class PlayerViewModel(
         super.onCleared()
         watchTimerJob?.cancel()
         epgRefreshJob?.cancel()
+        sleepTimerJob?.cancel()
     }
 
     companion object {
         private const val WATCH_UPDATE_INTERVAL_MS = 30_000L
         private const val EPG_REFRESH_INTERVAL_MS = 60_000L
+        private const val SLEEP_TIMER_TICK_MS = 1_000L
     }
 }

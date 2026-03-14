@@ -15,6 +15,9 @@ data class PlayerState(
     val showTrackSelectionDialog: TrackSelectionType? = null,
     val currentProgram: EpgProgram? = null,
     val nextProgram: EpgProgram? = null,
+    val sleepTimerRemainingMs: Long? = null,
+    val showSleepTimerSheet: Boolean = false,
+    val isInPipMode: Boolean = false,
 )
 
 sealed interface PlayerEvent {
@@ -30,10 +33,16 @@ sealed interface PlayerEvent {
     data class OnSelectAudioTrack(val trackId: String) : PlayerEvent
     data class OnSelectSubtitleTrack(val trackId: String?) : PlayerEvent
     data class OnSelectVideoQuality(val qualityId: String?) : PlayerEvent
+    data object OnShowSleepTimer : PlayerEvent
+    data object OnDismissSleepTimer : PlayerEvent
+    data class OnSetSleepTimer(val durationMs: Long) : PlayerEvent
+    data object OnCancelSleepTimer : PlayerEvent
+    data object OnEnterPip : PlayerEvent
 }
 
 sealed interface PlayerAction {
     data object NavigateBack : PlayerAction
+    data object SleepTimerExpired : PlayerAction
 }
 
 enum class TrackSelectionType {

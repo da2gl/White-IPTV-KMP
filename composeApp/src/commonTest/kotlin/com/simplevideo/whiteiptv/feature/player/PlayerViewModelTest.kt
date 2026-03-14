@@ -1,36 +1,36 @@
-//package com.simplevideo.whiteiptv.feature.player
+// package com.simplevideo.whiteiptv.feature.player
 //
-//import androidx.lifecycle.SavedStateHandle
-//import com.simplevideo.whiteiptv.data.local.FakePlaylistDao
-//import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-//import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
-//import com.simplevideo.whiteiptv.data.repository.FakeEpgRepository
-//import com.simplevideo.whiteiptv.data.repository.FakePlaylistRepository
-//import com.simplevideo.whiteiptv.domain.model.EpgProgram
-//import com.simplevideo.whiteiptv.domain.usecase.FakeWatchHistoryRepository
-//import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
-//import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
-//import com.simplevideo.whiteiptv.domain.usecase.GetCurrentProgramUseCase
-//import com.simplevideo.whiteiptv.domain.usecase.LoadEpgUseCase
-//import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
-//import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.ExperimentalCoroutinesApi
-//import kotlinx.coroutines.test.StandardTestDispatcher
-//import kotlinx.coroutines.test.advanceUntilIdle
-//import kotlinx.coroutines.test.resetMain
-//import kotlinx.coroutines.test.runTest
-//import kotlinx.coroutines.test.setMain
-//import kotlin.test.AfterTest
-//import kotlin.test.BeforeTest
-//import kotlin.test.Test
-//import kotlin.test.assertEquals
-//import kotlin.test.assertNotNull
-//import kotlin.test.assertNull
-//import kotlin.test.assertTrue
+// import androidx.lifecycle.SavedStateHandle
+// import com.simplevideo.whiteiptv.data.local.FakePlaylistDao
+// import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
+// import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
+// import com.simplevideo.whiteiptv.data.repository.FakeEpgRepository
+// import com.simplevideo.whiteiptv.data.repository.FakePlaylistRepository
+// import com.simplevideo.whiteiptv.domain.model.EpgProgram
+// import com.simplevideo.whiteiptv.domain.usecase.FakeWatchHistoryRepository
+// import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
+// import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
+// import com.simplevideo.whiteiptv.domain.usecase.GetCurrentProgramUseCase
+// import com.simplevideo.whiteiptv.domain.usecase.LoadEpgUseCase
+// import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
+// import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
+// import kotlinx.coroutines.Dispatchers
+// import kotlinx.coroutines.ExperimentalCoroutinesApi
+// import kotlinx.coroutines.test.StandardTestDispatcher
+// import kotlinx.coroutines.test.advanceUntilIdle
+// import kotlinx.coroutines.test.resetMain
+// import kotlinx.coroutines.test.runTest
+// import kotlinx.coroutines.test.setMain
+// import kotlin.test.AfterTest
+// import kotlin.test.BeforeTest
+// import kotlin.test.Test
+// import kotlin.test.assertEquals
+// import kotlin.test.assertNotNull
+// import kotlin.test.assertNull
+// import kotlin.test.assertTrue
 //
-//@OptIn(ExperimentalCoroutinesApi::class)
-//class PlayerViewModelTest {
+// @OptIn(ExperimentalCoroutinesApi::class)
+// class PlayerViewModelTest {
 //
 //    private val testDispatcher = StandardTestDispatcher()
 //
@@ -202,20 +202,20 @@
 //        assertNull(state.nextProgram)
 //    }
 //
-////    @Test
-////    fun `channel loads correctly with EPG fields in initial state`() = runTest {
-////        fakePlaylistDao.addChannel(testChannel)
-////        fakePlaylistRepository.addPlaylist(testPlaylist)
-////
-////        val viewModel = createViewModel()
-////        advanceUntilIdle()
-////
-////        val state = viewModel.viewStates().value
-////        assertNotNull(state.channel)
-////        assertEquals("Test Channel", state.channel?.name)
-////        assertEquals(false, state.isLoading)
-////        assertNull(state.error)
-////    }
+// //    @Test
+// //    fun `channel loads correctly with EPG fields in initial state`() = runTest {
+// //        fakePlaylistDao.addChannel(testChannel)
+// //        fakePlaylistRepository.addPlaylist(testPlaylist)
+// //
+// //        val viewModel = createViewModel()
+// //        advanceUntilIdle()
+// //
+// //        val state = viewModel.viewStates().value
+// //        assertNotNull(state.channel)
+// //        assertEquals("Test Channel", state.channel?.name)
+// //        assertEquals(false, state.isLoading)
+// //        assertNull(state.error)
+// //    }
 //
 //    @Test
 //    fun `EPG load failure does not affect channel state`() = runTest {
@@ -236,4 +236,4 @@
 //        // No error shown to user (EPG is non-critical)
 //        assertNull(state.error)
 //    }
-//}
+// }
