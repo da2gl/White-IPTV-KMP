@@ -17,6 +17,12 @@ After the coder finishes, you write tests and check for security issues. You mak
 ### 1. Understand What Was Built
 - Read `docs/features-claude/<feature-name>/prep.md` — the plan
 - Read `docs/features-claude/<feature-name>/code-report.md` — what was actually built
+- **Use `ast-index` to explore the implementation** (see `.claude/rules/ast-index.md`):
+  ```bash
+  ast-index class "NewClassName"    # Find new classes to test
+  ast-index usages "NewClassName"   # Understand dependencies
+  ast-index hierarchy "ClassName"   # See class hierarchy for fakes
+  ```
 - Read all created/modified files from the code report
 
 ### 2. Write Unit Tests

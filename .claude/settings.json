@@ -1,5 +1,11 @@
 {
   "enabledPlugins": {
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": true,
+    "ast-index@ast-index-marketplace": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(ast-index *)"
+    ]
   }
 }

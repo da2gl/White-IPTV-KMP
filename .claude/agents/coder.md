@@ -29,9 +29,15 @@ This tells you the actual module names. **NEVER assume `composeApp`** — the pr
 - **Translate all paths**: if plan says `composeApp/src/`, use `shared/src/`
 
 ### 3. Read Existing Code
+- **Use `ast-index` for code navigation** (see `.claude/rules/ast-index.md`):
+  ```bash
+  ast-index class "ClassName"           # Find where class is defined
+  ast-index usages "SymbolName"         # Find all usages before modifying
+  ast-index implementations "Interface" # Find all implementations
+  ast-index outline "File.kt"           # Quick file structure overview
+  ```
 - Read all files listed in "Current State" and "Modified Files" sections
 - Understand the patterns used in similar features
-- Read BaseViewModel, existing MVI screens, DI modules
 
 ### 4. Implement in Order
 Follow the "Implementation Order" from the plan exactly:

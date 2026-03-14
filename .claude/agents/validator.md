@@ -23,6 +23,13 @@ You are the gatekeeper. Nothing ships without your approval. Compare plan vs rea
 - All test files
 
 ### 2. Plan vs Implementation Check
+Use `ast-index` for fast verification (see `.claude/rules/ast-index.md`):
+```bash
+ast-index class "NewClassName"          # Verify new class exists
+ast-index usages "NewClassName"         # Verify it's wired up (DI, navigation)
+ast-index implementations "Interface"   # Verify actual implementations exist
+```
+
 For each item in the plan's "Changes Required":
 - [ ] File exists at specified path
 - [ ] File contains the specified classes/functions

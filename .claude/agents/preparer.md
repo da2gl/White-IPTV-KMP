@@ -29,8 +29,16 @@ This tells you the actual module names and structure. **NEVER hardcode `composeA
 - Read `docs/constraints/open-questions.md` for unresolved topics
 
 ### 3. Analyze Existing Code
-- Find all related files using Glob and Grep
-- Understand current architecture patterns from similar features
+- **Use `ast-index` first** for code search (see `.claude/rules/ast-index.md`):
+  ```bash
+  ast-index class "ClassName"          # Find class definition
+  ast-index usages "SymbolName"        # Find all usages
+  ast-index implementations "Interface" # Find implementations
+  ast-index hierarchy "ClassName"      # Class hierarchy
+  ast-index composables "ScreenName"   # Find composable
+  ast-index flows                      # Find Flow/StateFlow usage
+  ```
+- Fall back to Glob/Grep only for regex patterns or string literals
 - Read CLAUDE.md for project conventions
 - Identify what already exists vs what needs to be built
 
