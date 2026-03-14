@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.simplevideo.whiteiptv.common.BaseViewModel
+import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
@@ -38,6 +39,7 @@ class ChannelsViewModel(
     private val getPagedChannels: GetPagedChannelsUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
+    private val settingsPreferences: SettingsPreferences,
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
     initialState = ChannelsState()
 ) {
@@ -65,6 +67,15 @@ class ChannelsViewModel(
 
     init {
         loadData()
+        observeViewMode()
+    }
+
+    private fun observeViewMode() {
+        settingsPreferences.channelViewModeFlow
+            .onEach { mode ->
+                viewState = viewState.copy(channelViewMode = mode)
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun updateSelectedGroupId(groupId: String?) {

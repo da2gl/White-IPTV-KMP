@@ -2,6 +2,7 @@ package com.simplevideo.whiteiptv.feature.channels.mvi
 
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
+import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 
 data class ChannelsState(
@@ -13,6 +14,7 @@ data class ChannelsState(
     val isSearchActive: Boolean = false,
     val isLoading: Boolean = true,
     val error: String? = null,
+    val channelViewMode: ChannelViewMode = ChannelViewMode.List,
 )
 
 sealed interface ChannelsEvent {

@@ -22,6 +22,20 @@ class SettingsPreferences(private val dataStore: DataStore<Preferences>) {
         .map { prefs -> prefs[AUTO_UPDATE_KEY] ?: false }
         .distinctUntilChanged()
 
+    val channelViewModeFlow: Flow<ChannelViewMode> = dataStore.data
+        .map { prefs ->
+            val name = prefs[CHANNEL_VIEW_MODE_KEY] ?: ChannelViewMode.List.name
+            runCatching { ChannelViewMode.valueOf(name) }.getOrDefault(ChannelViewMode.List)
+        }
+        .distinctUntilChanged()
+
+    val accentColorFlow: Flow<AccentColor> = dataStore.data
+        .map { prefs ->
+            val name = prefs[ACCENT_COLOR_KEY] ?: AccentColor.Teal.name
+            runCatching { AccentColor.valueOf(name) }.getOrDefault(AccentColor.Teal)
+        }
+        .distinctUntilChanged()
+
     suspend fun getAccentColor(): AccentColor {
         val prefs = dataStore.data.first()
         val name = prefs[ACCENT_COLOR_KEY] ?: AccentColor.Teal.name
