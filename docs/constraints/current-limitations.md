@@ -26,33 +26,3 @@ The Accent Color preference (Teal/Blue/Red) is saved in settings but does not ye
 
 **Target behavior**: Switching accent color changes the primary color throughout the app.
 
----
-
-## iOS video player not implemented
-
-The iOS player (`IOSVideoPlayerFactory`) is a stub returning a non-functional dummy player. No AVPlayer integration exists.
-
-**Target behavior**: AVPlayer-based implementation matching the Android ExoPlayer feature set (playback, track selection, gestures).
-
----
-
-## EPG partially implemented
-
-EPG data layer is implemented (XMLTV parser, Room entity, DAO, repository, use cases). Not yet implemented:
-
-- Player UI integration (current/next program overlay) — Wave 3b
-- Channel card EPG badges on browse screens
-- EPG grid/timeline view
-- Catchup/archive playback
-- EPG auto-refresh scheduling
-
-**Target behavior**: See [EPG](../features/epg.md).
-
----
-
-## PiP, Sleep Timer, Chromecast/AirPlay not implemented
-
-Player features exist only in the specification. No code for picture-in-picture, sleep timer countdown, or cast functionality.
-
-**Target behavior**: See [Player](../features/player.md#planned-features).
-
