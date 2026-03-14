@@ -1,12 +1,10 @@
 package com.simplevideo.whiteiptv.feature.channels.mvi
 
-import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 
 data class ChannelsState(
-    val channels: List<ChannelEntity> = emptyList(),
     val playlists: List<PlaylistEntity> = emptyList(),
     val selection: PlaylistSelection = PlaylistSelection.All,
     val groups: List<ChannelGroup> = emptyList(),

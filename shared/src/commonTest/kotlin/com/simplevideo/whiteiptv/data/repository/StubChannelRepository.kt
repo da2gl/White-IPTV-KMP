@@ -33,4 +33,36 @@ class StubChannelRepository : ChannelRepository {
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> = emptyList()
     override suspend fun insertGroups(groups: List<ChannelGroupEntity>): List<Long> = emptyList()
     override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) {}
+
+    // Paged channels
+    override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> = emptyList()
+    override suspend fun getChannelsCount(): Int = 0
+    override suspend fun getChannelsByPlaylistIdPaged(
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> = emptyList()
+    override suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int = 0
+    override suspend fun getChannelsByGroupIdPaged(
+        groupId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> = emptyList()
+    override suspend fun getChannelsByGroupIdCount(groupId: Long): Int = 0
+    override suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity> = emptyList()
+    override suspend fun searchChannelsCount(query: String): Int = 0
+    override suspend fun searchChannelsByPlaylistIdPaged(
+        query: String,
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> = emptyList()
+    override suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int = 0
+    override suspend fun searchChannelsByGroupIdPaged(
+        query: String,
+        groupId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> = emptyList()
+    override suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int = 0
 }

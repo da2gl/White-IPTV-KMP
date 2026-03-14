@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -38,6 +38,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.components.GroupDropdown
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
@@ -58,6 +62,7 @@ fun ChannelsScreen(
     val viewModel = koinViewModel<ChannelsViewModel>()
     val state by viewModel.viewStates().collectAsState()
     val action by viewModel.viewActions().collectAsState(initial = null)
+    val pagedItems = viewModel.pagedChannels.collectAsLazyPagingItems()
 
     LaunchedEffect(action) {
         when (val currentAction = action) {
@@ -97,6 +102,7 @@ fun ChannelsScreen(
     ) { paddingValues ->
         ChannelsContent(
             state = state,
+            pagedItems = pagedItems,
             onPlaylistSelect = { selection ->
                 viewModel.obtainEvent(ChannelsEvent.OnPlaylistSelected(selection))
             },
@@ -130,12 +136,16 @@ private fun ChannelsTopAppBar(onSearchClick: () -> Unit) {
 @Composable
 private fun ChannelsContent(
     state: ChannelsState,
+    pagedItems: LazyPagingItems<ChannelEntity>,
     onPlaylistSelect: (PlaylistSelection) -> Unit,
     onGroupSelect: (ChannelGroup?) -> Unit,
     onChannelClick: (Long) -> Unit,
     onToggleFavorite: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isInitialLoading = pagedItems.loadState.refresh is LoadState.Loading
+    val isEmptyResult = pagedItems.loadState.refresh is LoadState.NotLoading && pagedItems.itemCount == 0
+
     Column(modifier = modifier.fillMaxSize()) {
         PlaylistDropdown(
             playlists = state.playlists,
@@ -151,14 +161,14 @@ private fun ChannelsContent(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
-        if (state.isLoading) {
+        if (isInitialLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
-        } else if (state.channels.isEmpty()) {
+        } else if (isEmptyResult) {
             if (state.isSearchActive && state.searchQuery.isNotEmpty()) {
                 SearchEmptyState(query = state.searchQuery)
             } else {
@@ -180,12 +190,31 @@ private fun ChannelsContent(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                items(state.channels) { channel ->
-                    ChannelGridItem(
-                        channel = channel,
-                        onClick = { onChannelClick(channel.id) },
-                        onToggleFavorite = { onToggleFavorite(channel.id) },
-                    )
+                items(
+                    count = pagedItems.itemCount,
+                    key = pagedItems.itemKey { it.id },
+                ) { index ->
+                    val channel = pagedItems[index]
+                    if (channel != null) {
+                        ChannelGridItem(
+                            channel = channel,
+                            onClick = { onChannelClick(channel.id) },
+                            onToggleFavorite = { onToggleFavorite(channel.id) },
+                        )
+                    }
+                }
+
+                if (pagedItems.loadState.append is LoadState.Loading) {
+                    item(span = { GridItemSpan(2) }) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
             }
         }
