@@ -5,7 +5,8 @@
   },
   "permissions": {
     "allow": [
-      "Bash(ast-index *)"
+      "Bash(ast-index *)",
+      "Bash(claude-in-mobile *)"
     ]
   }
 }
