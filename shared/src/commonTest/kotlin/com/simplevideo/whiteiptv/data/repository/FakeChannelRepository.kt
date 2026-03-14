@@ -162,4 +162,77 @@ class FakeChannelRepository : ChannelRepository {
         methodCalls.add("insertChannelGroupCrossRefs")
         crossRefs.addAll(refs)
     }
+
+    // Paged channels
+    override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> {
+        methodCalls.add("getChannelsPaged($limit, $offset)")
+        return channels.value.sortedBy { it.name }.drop(offset).take(limit)
+    }
+
+    override suspend fun getChannelsCount(): Int = channels.value.size
+
+    override suspend fun getChannelsByPlaylistIdPaged(
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> {
+        methodCalls.add("getChannelsByPlaylistIdPaged($playlistId, $limit, $offset)")
+        return channels.value.filter { it.playlistId == playlistId }.sortedBy { it.name }.drop(offset).take(limit)
+    }
+
+    override suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int =
+        channels.value.count { it.playlistId == playlistId }
+
+    override suspend fun getChannelsByGroupIdPaged(groupId: Long, limit: Int, offset: Int): List<ChannelEntity> {
+        methodCalls.add("getChannelsByGroupIdPaged($groupId, $limit, $offset)")
+        val channelIds = crossRefs.filter { it.groupId == groupId }.map { it.channelId }.toSet()
+        return channels.value.filter { it.id in channelIds }.sortedBy { it.name }.drop(offset).take(limit)
+    }
+
+    override suspend fun getChannelsByGroupIdCount(groupId: Long): Int {
+        val channelIds = crossRefs.filter { it.groupId == groupId }.map { it.channelId }.toSet()
+        return channels.value.count { it.id in channelIds }
+    }
+
+    override suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity> {
+        methodCalls.add("searchChannelsPaged($query, $limit, $offset)")
+        return channels.value.filter { it.name.contains(query, ignoreCase = true) }
+            .sortedBy { it.name }.drop(offset).take(limit)
+    }
+
+    override suspend fun searchChannelsCount(query: String): Int =
+        channels.value.count { it.name.contains(query, ignoreCase = true) }
+
+    override suspend fun searchChannelsByPlaylistIdPaged(
+        query: String,
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> {
+        methodCalls.add("searchChannelsByPlaylistIdPaged($query, $playlistId, $limit, $offset)")
+        return channels.value
+            .filter { it.name.contains(query, ignoreCase = true) && it.playlistId == playlistId }
+            .sortedBy { it.name }.drop(offset).take(limit)
+    }
+
+    override suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int =
+        channels.value.count { it.name.contains(query, ignoreCase = true) && it.playlistId == playlistId }
+
+    override suspend fun searchChannelsByGroupIdPaged(
+        query: String,
+        groupId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> {
+        methodCalls.add("searchChannelsByGroupIdPaged($query, $groupId, $limit, $offset)")
+        val channelIds = crossRefs.filter { it.groupId == groupId }.map { it.channelId }.toSet()
+        return channels.value
+            .filter { it.name.contains(query, ignoreCase = true) && it.id in channelIds }
+            .sortedBy { it.name }.drop(offset).take(limit)
+    }
+
+    override suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int {
+        val channelIds = crossRefs.filter { it.groupId == groupId }.map { it.channelId }.toSet()
+        return channels.value.count { it.name.contains(query, ignoreCase = true) && it.id in channelIds }
+    }
 }

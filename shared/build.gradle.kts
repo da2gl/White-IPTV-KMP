@@ -77,6 +77,8 @@ kotlin {
             implementation(libs.coil.network.ktor3)
             implementation(libs.kermit)
             implementation(libs.multiplatform.settings.no.arg)
+            implementation(libs.paging.common)
+            implementation(libs.paging.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

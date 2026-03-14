@@ -205,6 +205,100 @@ interface PlaylistDao {
     )
     suspend fun getGroupsForChannel(channelId: Long): List<ChannelGroupEntity>
 
+    // Paged channel queries
+    @Query("SELECT * FROM channels ORDER BY name ASC LIMIT :limit OFFSET :offset")
+    suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity>
+
+    @Query("SELECT COUNT(*) FROM channels")
+    suspend fun getChannelsCount(): Int
+
+    @Query("SELECT * FROM channels WHERE playlistId = :playlistId ORDER BY name ASC LIMIT :limit OFFSET :offset")
+    suspend fun getChannelsByPlaylistIdPaged(playlistId: Long, limit: Int, offset: Int): List<ChannelEntity>
+
+    @Query("SELECT COUNT(*) FROM channels WHERE playlistId = :playlistId")
+    suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int
+
+    @Query(
+        """
+        SELECT c.* FROM channels c
+        INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
+        WHERE cgr.groupId = :groupId
+        ORDER BY c.name ASC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    suspend fun getChannelsByGroupIdPaged(groupId: Long, limit: Int, offset: Int): List<ChannelEntity>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM channels c
+        INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
+        WHERE cgr.groupId = :groupId
+        """,
+    )
+    suspend fun getChannelsByGroupIdCount(groupId: Long): Int
+
+    @Query(
+        """
+        SELECT * FROM channels
+        WHERE name LIKE '%' || :query || '%' COLLATE NOCASE
+        ORDER BY name ASC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity>
+
+    @Query("SELECT COUNT(*) FROM channels WHERE name LIKE '%' || :query || '%' COLLATE NOCASE")
+    suspend fun searchChannelsCount(query: String): Int
+
+    @Query(
+        """
+        SELECT * FROM channels
+        WHERE name LIKE '%' || :query || '%' COLLATE NOCASE AND playlistId = :playlistId
+        ORDER BY name ASC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    suspend fun searchChannelsByPlaylistIdPaged(
+        query: String,
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM channels
+        WHERE name LIKE '%' || :query || '%' COLLATE NOCASE AND playlistId = :playlistId
+        """,
+    )
+    suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int
+
+    @Query(
+        """
+        SELECT c.* FROM channels c
+        INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
+        WHERE cgr.groupId = :groupId AND c.name LIKE '%' || :query || '%' COLLATE NOCASE
+        ORDER BY c.name ASC
+        LIMIT :limit OFFSET :offset
+        """,
+    )
+    suspend fun searchChannelsByGroupIdPaged(
+        query: String,
+        groupId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM channels c
+        INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
+        WHERE cgr.groupId = :groupId AND c.name LIKE '%' || :query || '%' COLLATE NOCASE
+        """,
+    )
+    suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int
+
     /**
      * Import playlist with all related data in a single transaction
      */

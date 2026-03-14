@@ -31,6 +31,25 @@ interface ChannelRepository {
     fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>>
     fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>>
 
+    // Paged channels
+    suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity>
+    suspend fun getChannelsCount(): Int
+    suspend fun getChannelsByPlaylistIdPaged(playlistId: Long, limit: Int, offset: Int): List<ChannelEntity>
+    suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int
+    suspend fun getChannelsByGroupIdPaged(groupId: Long, limit: Int, offset: Int): List<ChannelEntity>
+    suspend fun getChannelsByGroupIdCount(groupId: Long): Int
+    suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity>
+    suspend fun searchChannelsCount(query: String): Int
+    suspend fun searchChannelsByPlaylistIdPaged(
+        query: String,
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity>
+    suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int
+    suspend fun searchChannelsByGroupIdPaged(query: String, groupId: Long, limit: Int, offset: Int): List<ChannelEntity>
+    suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int
+
     // Groups
     fun getAllGroups(): Flow<List<ChannelGroupEntity>>
     fun getTopGroups(limit: Int): Flow<List<ChannelGroupEntity>>

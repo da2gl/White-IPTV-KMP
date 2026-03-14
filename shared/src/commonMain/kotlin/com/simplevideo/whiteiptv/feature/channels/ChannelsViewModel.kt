@@ -2,13 +2,16 @@ package com.simplevideo.whiteiptv.feature.channels
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.simplevideo.whiteiptv.common.BaseViewModel
+import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
-import com.simplevideo.whiteiptv.domain.usecase.GetChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetGroupsUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetPagedChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
@@ -16,6 +19,7 @@ import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -31,7 +35,7 @@ class ChannelsViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val getPlaylists: GetPlaylistsUseCase,
     private val getGroups: GetGroupsUseCase,
-    private val getChannels: GetChannelsUseCase,
+    private val getPagedChannels: GetPagedChannelsUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
@@ -48,12 +52,36 @@ class ChannelsViewModel(
 
     private val searchQuery = MutableStateFlow("")
 
+    val pagedChannels: Flow<PagingData<ChannelEntity>> = combine(
+        currentPlaylistRepository.selection,
+        selectedGroupIdFlow,
+        searchQuery.debounce(300),
+    ) { selection, selectedGroupId, query ->
+        Triple(selection, selectedGroupId, query)
+    }.flatMapLatest { (selection, selectedGroupId, query) ->
+        val filter = resolveFilter(selection, selectedGroupId)
+        getPagedChannels(filter, query)
+    }.cachedIn(viewModelScope)
+
     init {
         loadData()
     }
 
     private fun updateSelectedGroupId(groupId: String?) {
         savedStateHandle[GROUP_ID_KEY] = groupId
+    }
+
+    private fun resolveFilter(selection: PlaylistSelection, selectedGroupId: String?): ChannelsFilter {
+        if (selectedGroupId != null) {
+            val groupId = selectedGroupId.toLongOrNull()
+            if (groupId != null) {
+                return ChannelsFilter.ByGroup(groupId)
+            }
+        }
+        if (selection is PlaylistSelection.Selected) {
+            return ChannelsFilter.ByPlaylist(selection.id)
+        }
+        return ChannelsFilter.All
     }
 
     private fun loadData() {
@@ -71,34 +99,15 @@ class ChannelsViewModel(
                 }
                 DataState(params.playlists, params.selection, groups, selectedGroup, params.query)
             }
-        }.flatMapLatest { data ->
-            val filter = when {
-                data.selectedGroup != null -> {
-                    val groupId = data.selectedGroup.id.toLongOrNull()
-                    if (groupId != null) {
-                        ChannelsFilter.ByGroup(groupId)
-                    } else {
-                        ChannelsFilter.All
-                    }
-                }
-
-                data.selection is PlaylistSelection.Selected -> {
-                    ChannelsFilter.ByPlaylist(data.selection.id)
-                }
-
-                else -> ChannelsFilter.All
-            }
-            getChannels(filter, data.query).onEach { channels ->
-                viewState = ChannelsState(
-                    channels = channels,
-                    playlists = data.playlists,
-                    selection = data.selection,
-                    groups = data.groups,
-                    selectedGroup = data.selectedGroup,
-                    searchQuery = data.query,
-                    isLoading = false,
-                )
-            }
+        }.onEach { data ->
+            viewState = ChannelsState(
+                playlists = data.playlists,
+                selection = data.selection,
+                groups = data.groups,
+                selectedGroup = data.selectedGroup,
+                searchQuery = data.query,
+                isLoading = false,
+            )
         }.launchIn(viewModelScope)
     }
 

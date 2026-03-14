@@ -68,6 +68,53 @@ class ChannelRepositoryImpl(
     override fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
         playlistDao.searchFavoriteChannelsByPlaylist(query, playlistId)
 
+    // Paged channels
+    override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> =
+        playlistDao.getChannelsPaged(limit, offset)
+
+    override suspend fun getChannelsCount(): Int =
+        playlistDao.getChannelsCount()
+
+    override suspend fun getChannelsByPlaylistIdPaged(playlistId: Long, limit: Int, offset: Int): List<ChannelEntity> =
+        playlistDao.getChannelsByPlaylistIdPaged(playlistId, limit, offset)
+
+    override suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int =
+        playlistDao.getChannelsByPlaylistIdCount(playlistId)
+
+    override suspend fun getChannelsByGroupIdPaged(groupId: Long, limit: Int, offset: Int): List<ChannelEntity> =
+        playlistDao.getChannelsByGroupIdPaged(groupId, limit, offset)
+
+    override suspend fun getChannelsByGroupIdCount(groupId: Long): Int =
+        playlistDao.getChannelsByGroupIdCount(groupId)
+
+    override suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity> =
+        playlistDao.searchChannelsPaged(query, limit, offset)
+
+    override suspend fun searchChannelsCount(query: String): Int =
+        playlistDao.searchChannelsCount(query)
+
+    override suspend fun searchChannelsByPlaylistIdPaged(
+        query: String,
+        playlistId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> =
+        playlistDao.searchChannelsByPlaylistIdPaged(query, playlistId, limit, offset)
+
+    override suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int =
+        playlistDao.searchChannelsByPlaylistIdCount(query, playlistId)
+
+    override suspend fun searchChannelsByGroupIdPaged(
+        query: String,
+        groupId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<ChannelEntity> =
+        playlistDao.searchChannelsByGroupIdPaged(query, groupId, limit, offset)
+
+    override suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int =
+        playlistDao.searchChannelsByGroupIdCount(query, groupId)
+
     // Groups
     override fun getAllGroups(): Flow<List<ChannelGroupEntity>> =
         playlistDao.getAllGroups()
