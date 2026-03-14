@@ -3,6 +3,7 @@ package com.simplevideo.whiteiptv.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
+import coil3.PlatformContext
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
 import com.simplevideo.whiteiptv.data.local.createDataStore
@@ -15,7 +16,6 @@ import com.simplevideo.whiteiptv.platform.IOSFilePickerFactory
 import com.simplevideo.whiteiptv.platform.IOSFileReader
 import com.simplevideo.whiteiptv.platform.IOSVideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
-import coil3.PlatformContext
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
 import org.koin.dsl.module

@@ -5,8 +5,8 @@ import androidx.compose.runtime.remember
 import com.simplevideo.whiteiptv.platform.avplayer.AVPlayerWrapper
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.compose.koinInject
-import platform.AVFoundation.*
-import platform.AVKit.*
+import platform.AVFoundation.AVPlayerLayer
+import platform.AVKit.AVPictureInPictureController
 import platform.CoreGraphics.CGRectMake
 
 @OptIn(ExperimentalForeignApi::class)

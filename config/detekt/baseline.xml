@@ -3,14 +3,17 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:M3uParser.kt$M3uParser$key != null &amp;&amp; value != null &amp;&amp; key.isNotEmpty() &amp;&amp; value.isNotEmpty()</ID>
-    <ID>ComposableParamOrder:SettingsComponents.kt$SettingsSwitchItem</ID>
     <ID>CyclomaticComplexMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
     <ID>CyclomaticComplexMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>CyclomaticComplexMethod:M3uParser.kt$M3uParser$private fun parseChannel( lines: List&lt;String&gt;, startIndex: Int, pendingVlcOpts: Map&lt;String, String&gt;, pendingKodiProps: Map&lt;String, String&gt;, ): Channel?</ID>
+    <ID>CyclomaticComplexMethod:PlayerViewModel.kt$PlayerViewModel$override fun obtainEvent(viewEvent: PlayerEvent)</ID>
     <ID>CyclomaticComplexMethod:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
+    <ID>LongMethod:ChannelsScreen.kt$@Composable private fun ChannelListItem( channel: ChannelEntity, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, )</ID>
+    <ID>LongMethod:ChannelsScreen.kt$@Composable private fun ChannelsContent( state: ChannelsState, pagedItems: LazyPagingItems&lt;ChannelEntity&gt;, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onGroupSelect: (ChannelGroup?) -&gt; Unit, onChannelClick: (Long) -&gt; Unit, onToggleFavorite: (Long) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:Color.kt$fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme</ID>
     <ID>LongMethod:FavoritesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoritesScreen( onNavigateToPlayer: (Long) -&gt; Unit, )</ID>
     <ID>LongMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
@@ -19,16 +22,24 @@
     <ID>LongMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>LongMethod:MainScreen.kt$@Composable fun MainScreen( onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
     <ID>LongMethod:OnboardingScreen.kt$@Composable private fun OnboardingContent( state: OnboardingState, onEvent: (OnboardingEvent) -&gt; Unit, )</ID>
-    <ID>LongMethod:PlayerControls.kt$@Composable fun PlayerControlsOverlay( channelName: String, isVisible: Boolean, isBuffering: Boolean, tracksInfo: TracksInfo, onBackClick: () -&gt; Unit, onShowAudioTracks: () -&gt; Unit, onShowSubtitles: () -&gt; Unit, onShowQuality: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PlayerControls.kt$@Composable private fun PlayerBottomBar( tracksInfo: TracksInfo, sleepTimerRemainingMs: Long?, isPipSupported: Boolean, onShowAudioTracks: () -&gt; Unit, onShowSubtitles: () -&gt; Unit, onShowQuality: () -&gt; Unit, onShowSleepTimer: () -&gt; Unit, onEnterPip: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PlaylistDropdown.kt$@Composable fun PlaylistDropdown( playlists: List&lt;PlaylistEntity&gt;, selection: PlaylistSelection, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onAddPlaylistClick: (() -&gt; Unit)? = null, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen()</ID>
+    <ID>LongMethod:SettingsViewModel.kt$SettingsViewModel$override fun obtainEvent(viewEvent: SettingsEvent)</ID>
+    <ID>LongMethod:SleepTimerSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SleepTimerSheet( activeTimerRemainingMs: Long?, onDismiss: () -&gt; Unit, onSetTimer: (durationMs: Long) -&gt; Unit, onCancelTimer: () -&gt; Unit, )</ID>
     <ID>LongMethod:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
+    <ID>LongParameterList:ChannelsViewModel.kt$ChannelsViewModel$( private val savedStateHandle: SavedStateHandle, private val getPlaylists: GetPlaylistsUseCase, private val getGroups: GetGroupsUseCase, private val getPagedChannels: GetPagedChannelsUseCase, private val toggleFavorite: ToggleFavoriteUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val settingsPreferences: SettingsPreferences, )</ID>
     <ID>LongParameterList:HomeViewModel.kt$HomeViewModel$( getPlaylists: GetPlaylistsUseCase, getContinueWatching: GetContinueWatchingUseCase, getFavorites: GetFavoritesUseCase, getHomeCategories: GetHomeCategoriesUseCase, private val getChannels: GetChannelsUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val renamePlaylistUseCase: RenamePlaylistUseCase, private val deletePlaylistUseCase: DeletePlaylistUseCase, private val importPlaylistUseCase: ImportPlaylistUseCase, )</ID>
     <ID>LoopWithTooManyJumpStatements:M3uParser.kt$M3uParser$for</ID>
     <ID>MaxLineLength:SettingsScreen.kt$message = "This will reset all settings to their default values. Your playlists and channels will not be affected."</ID>
     <ID>MaximumLineLength:SettingsScreen.kt$ </ID>
     <ID>NestedBlockDepth:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
+    <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun getCurrentLiveOffset(): Long</ID>
+    <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun selectAudioTrack(trackId: String)</ID>
+    <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun selectSubtitleTrack(trackId: String?)</ID>
     <ID>ReturnCount:ChannelMapper.kt$ChannelMapper$private fun buildExtendedMetadata(channel: Channel): String?</ID>
+    <ID>ReturnCount:ChannelsViewModel.kt$ChannelsViewModel$private fun resolveFilter(selection: PlaylistSelection, selectedGroupId: String?): ChannelsFilter</ID>
     <ID>ReturnCount:ExoVideoPlayer.kt$ExoVideoPlayer$override fun selectSubtitleTrack(trackId: String?)</ID>
     <ID>ReturnCount:ExoVideoPlayer.kt$ExoVideoPlayer$override fun selectVideoQuality(qualityId: String?)</ID>
     <ID>ReturnCount:ExoVideoPlayer.kt$ExoVideoPlayer$private fun parseTrackId(trackId: String): Pair&lt;String, Int&gt;?</ID>
@@ -39,15 +50,83 @@
     <ID>TooGenericExceptionCaught:AndroidSystemControls.kt$AndroidSystemControls$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ChannelsViewModel.kt$ChannelsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$e: Exception</ID>
+    <ID>TooManyFunctions:AVPlayerWrapper.kt$AVPlayerWrapper : VideoPlayer</ID>
     <ID>TooManyFunctions:ChannelRepository.kt$ChannelRepository</ID>
     <ID>TooManyFunctions:ChannelRepositoryImpl.kt$ChannelRepositoryImpl : ChannelRepository</ID>
     <ID>TooManyFunctions:ExoVideoPlayer.kt$ExoVideoPlayer : VideoPlayer</ID>
     <ID>TooManyFunctions:HomeScreen.kt$com.simplevideo.whiteiptv.feature.home.HomeScreen.kt</ID>
-    <ID>TooManyFunctions:IOSVideoPlayerFactory.kt$IOSVideoPlayer : VideoPlayer</ID>
     <ID>TooManyFunctions:PlaylistDao.kt$PlaylistDao</ID>
     <ID>TooManyFunctions:VideoPlayerFactory.kt$VideoPlayer</ID>
     <ID>TopLevelPropertyNaming:Color.kt$// Keeping other colors from the original file for a complete theme val LightPrimaryContainer = Color(0xFFEADDFF)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$// Slate color variants for text hierarchy and borders (matching Tailwind slate scale) val Slate200 = Color(0xFFe2e8f0)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnPrimary = Color(0xFF003062)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnPrimaryContainer = Color(0xFFd3e3fd)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnSecondary = Color(0xFF263141)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnSecondaryContainer = Color(0xFFd7e3f7)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnTertiary = Color(0xFF3b2948)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnTertiaryContainer = Color(0xFFf2daff)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkPrimary = Color(0xFF8ab4f8)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkPrimaryContainer = Color(0xFF00468a)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkSecondary = Color(0xFFbbc7db)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkSecondaryContainer = Color(0xFF3c4858)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkTertiary = Color(0xFFd6bee4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkTertiaryContainer = Color(0xFF533f5f)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightOnPrimary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightOnPrimaryContainer = Color(0xFF001c3b)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightOnSecondary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightOnSecondaryContainer = Color(0xFF101c2b)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightOnTertiary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightOnTertiaryContainer = Color(0xFF251431)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightPrimary = Color(0xFF1a73e8)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightPrimaryContainer = Color(0xFFd3e3fd)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightSecondary = Color(0xFF535f70)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightSecondaryContainer = Color(0xFFd7e3f7)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightTertiary = Color(0xFF6b5778)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val BlueLightTertiaryContainer = Color(0xFFf2daff)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkOnPrimary = Color(0xFF690005)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkOnPrimaryContainer = Color(0xFFffdad4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkOnSecondary = Color(0xFF442925)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkOnSecondaryContainer = Color(0xFFffdad4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkOnTertiary = Color(0xFF3d2e00)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkOnTertiaryContainer = Color(0xFFfbdfa6)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkPrimary = Color(0xFFef9a9a)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkPrimaryContainer = Color(0xFF930006)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkSecondary = Color(0xFFe7bdb6)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkSecondaryContainer = Color(0xFF5d3f3a)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkTertiary = Color(0xFFdbc06c)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedDarkTertiaryContainer = Color(0xFF584417)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightOnPrimary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightOnPrimaryContainer = Color(0xFF410000)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightOnSecondary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightOnSecondaryContainer = Color(0xFF2c1511)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightOnTertiary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightOnTertiaryContainer = Color(0xFF261900)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightPrimary = Color(0xFFc62828)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightPrimaryContainer = Color(0xFFffdad4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightSecondary = Color(0xFF775651)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightSecondaryContainer = Color(0xFFffdad4)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightTertiary = Color(0xFF6f5b2e)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val RedLightTertiaryContainer = Color(0xFFfbdfa6)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkOnPrimaryContainer = Color(0xFFc5e7ff)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkOnSecondary = Color(0xFF1b3438)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkOnSecondaryContainer = Color(0xFFcde7ed)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkOnTertiary = Color(0xFF1f352a)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkOnTertiaryContainer = Color(0xFFcfe8d9)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkPrimaryContainer = Color(0xFF004a77)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkSecondary = Color(0xFF9ecbd2)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkSecondaryContainer = Color(0xFF324b4f)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkTertiary = Color(0xFF9ecbab)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealDarkTertiaryContainer = Color(0xFF354b40)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightOnPrimaryContainer = Color(0xFF001c38)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightOnSecondary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightOnSecondaryContainer = Color(0xFF051f23)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightOnTertiary = Color(0xFFFFFFFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightOnTertiaryContainer = Color(0xFF0a2016)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightPrimaryContainer = Color(0xFFc5e7ff)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightSecondary = Color(0xFF4a6267)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightSecondaryContainer = Color(0xFFcde7ed)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightTertiary = Color(0xFF4d6357)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$private val TealLightTertiaryContainer = Color(0xFFcfe8d9)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val AppDarkColorScheme = darkColorScheme( primary = Primary, onPrimary = OnPrimary, background = BackgroundDark, surface = BackgroundDark, onBackground = OnBackgroundDark, onSurface = OnBackgroundDark, onSurfaceVariant = Slate400, outline = Slate700, surfaceVariant = Slate800, primaryContainer = DarkPrimaryContainer, onPrimaryContainer = DarkOnPrimaryContainer, secondary = DarkSecondary, onSecondary = DarkOnSecondary, secondaryContainer = DarkSecondaryContainer, onSecondaryContainer = DarkOnSecondaryContainer, tertiary = DarkTertiary, onTertiary = DarkOnTertiary, tertiaryContainer = DarkTertiaryContainer, onTertiaryContainer = DarkOnTertiaryContainer, error = DarkError, onError = DarkOnError, errorContainer = DarkErrorContainer, onErrorContainer = DarkOnErrorContainer, )</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val AppLightColorScheme = lightColorScheme( primary = Primary, onPrimary = OnPrimary, background = BackgroundLight, surface = BackgroundLight, onBackground = OnBackgroundLight, onSurface = OnBackgroundLight, onSurfaceVariant = Slate600, outline = Slate300, surfaceVariant = Slate200, primaryContainer = LightPrimaryContainer, onPrimaryContainer = LightOnPrimaryContainer, secondary = LightSecondary, onSecondary = LightOnSecondary, secondaryContainer = LightSecondaryContainer, onSecondaryContainer = LightOnSecondaryContainer, tertiary = LightTertiary, onTertiary = LightOnTertiary, tertiaryContainer = LightTertiaryContainer, onTertiaryContainer = LightOnTertiaryContainer, error = LightError, onError = LightOnError, errorContainer = LightErrorContainer, onErrorContainer = LightOnErrorContainer, )</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val BackgroundDark = Color(0xFF101c22)</ID>
@@ -90,16 +169,6 @@
     <ID>TopLevelPropertyNaming:Color.kt$val Slate700 = Color(0xFF334155)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val Slate800 = Color(0xFF1e293b)</ID>
     <ID>TopLevelPropertyNaming:Typography.kt$/** * Material 3 Typography for WhiteIPTV * * TODO: Import custom fonts if needed * TODO: Adjust font sizes based on design requirements */ val AppTypography = Typography( // Display styles displayLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 57.sp, lineHeight = 64.sp, letterSpacing = (-0.25).sp, ), displayMedium = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 45.sp, lineHeight = 52.sp, letterSpacing = 0.sp, ), displaySmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 36.sp, lineHeight = 44.sp, letterSpacing = 0.sp, ), // Headline styles headlineLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Bold, fontSize = 32.sp, lineHeight = 40.sp, letterSpacing = (-0.32).sp, ), headlineMedium = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 28.sp, lineHeight = 36.sp, letterSpacing = 0.sp, ), headlineSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Bold, fontSize = 24.sp, lineHeight = 32.sp, letterSpacing = (-0.24).sp, ), // Title styles titleLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 22.sp, lineHeight = 28.sp, letterSpacing = 0.sp, ), titleMedium = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.15.sp, ), titleSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp, ), // Body styles bodyLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, letterSpacing = 0.5.sp, ), bodyMedium = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.25.sp, ), bodySmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Normal, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.4.sp, ), // Label styles labelLarge = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 14.sp, lineHeight = 20.sp, letterSpacing = 0.1.sp, ), labelMedium = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp, ), labelSmall = TextStyle( fontFamily = FontFamily.Default, fontWeight = FontWeight.Medium, fontSize = 11.sp, lineHeight = 16.sp, letterSpacing = 0.5.sp, ), )</ID>
-    <ID>UnstableCollections:DropdownSelector.kt$List&lt;T&gt;</ID>
-    <ID>UnstableCollections:FavoritesScreen.kt$List&lt;ChannelEntity&gt;</ID>
-    <ID>UnstableCollections:GroupDropdown.kt$List&lt;ChannelGroup&gt;</ID>
-    <ID>UnstableCollections:HomeScreen.kt$List&lt;ChannelEntity&gt;</ID>
-    <ID>UnstableCollections:HomeScreen.kt$List&lt;PlaylistEntity&gt;</ID>
-    <ID>UnstableCollections:PlayerControls.kt$List&lt;AudioTrackInfo&gt;</ID>
-    <ID>UnstableCollections:PlayerControls.kt$List&lt;SubtitleTrackInfo&gt;</ID>
-    <ID>UnstableCollections:PlayerControls.kt$List&lt;VideoQualityInfo&gt;</ID>
-    <ID>UnstableCollections:PlaylistDropdown.kt$List&lt;PlaylistEntity&gt;</ID>
-    <ID>UnstableCollections:SettingsComponents.kt$List&lt;T&gt;</ID>
     <ID>UnusedPrivateMember:MainActivity.kt$@Preview @Composable private fun AppAndroidPreview()</ID>
     <ID>UnusedPrivateMember:OnboardingScreen.kt$@Preview(showBackground = true) @Composable private fun OnboardingScreenDarkPreview()</ID>
     <ID>UnusedPrivateMember:OnboardingScreen.kt$@Preview(showBackground = true) @Composable private fun OnboardingScreenErrorDarkPreview()</ID>

@@ -4,19 +4,19 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
+import coil3.PlatformContext
 import com.simplevideo.whiteiptv.data.local.AppDatabase
 import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
 import com.simplevideo.whiteiptv.data.local.createDataStore
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
+import com.simplevideo.whiteiptv.platform.AndroidBackgroundScheduler
 import com.simplevideo.whiteiptv.platform.AndroidFilePickerFactory
 import com.simplevideo.whiteiptv.platform.AndroidFileReader
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
-import com.simplevideo.whiteiptv.platform.AndroidBackgroundScheduler
-import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.exoplayer.ExoPlayerFactory
-import coil3.PlatformContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 

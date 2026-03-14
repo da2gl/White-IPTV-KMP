@@ -579,17 +579,12 @@ Compose:
     active: true
   ComposableNaming:
     active: true
-    allowedComposableFunctionNames: '.*'
   ComposableParamOrder:
     active: true
   CompositionLocalNaming:
     active: true
   ContentEmitterReturningValues:
     active: true
-    contentEmitters:
-      - 'item'
-      - 'items'
-      - 'composable'
   DefaultsVisibility:
     active: false
   LambdaParameterInRestartableEffect:
@@ -598,7 +593,7 @@ Compose:
     active: false
   ModifierClickableOrder:
     active: true
-  ModifierComposable:
+  ModifierComposed:
     active: true
   ModifierMissing:
     active: false
@@ -610,7 +605,7 @@ Compose:
     active: true
   ModifierWithoutDefault:
     active: true
-  MultipleContentEmitters:
+  MultipleEmitters:
     active: true
   MutableParams:
     active: true
@@ -620,22 +615,16 @@ Compose:
     active: true
   ParameterNaming:
     active: true
-  ParameterOrder:
-    active: true
   PreviewAnnotationNaming:
     active: true
   PreviewPublic:
-    active: false
-  PublicComposablePreview:
     active: false
   RememberContentMissing:
     active: true
   RememberMissing:
     active: true
-  RememberStateMissing:
-    active: true
-  StateFlowValueCalledInComposition:
-    active: true
+  StateParam:
+    active: false
   UnstableCollections:
     active: true
   ViewModelForwarding:

@@ -44,12 +44,6 @@ import white_iptv_kmp.shared.generated.resources.Res
 import white_iptv_kmp.shared.generated.resources.app_name
 import white_iptv_kmp.shared.generated.resources.choose_file_button
 import white_iptv_kmp.shared.generated.resources.demo_playlist_link
-import white_iptv_kmp.shared.generated.resources.ic_play_circle
-import white_iptv_kmp.shared.generated.resources.import_playlist_button
-import white_iptv_kmp.shared.generated.resources.importing_message
-import white_iptv_kmp.shared.generated.resources.onboarding_subtitle
-import white_iptv_kmp.shared.generated.resources.onboarding_title
-import white_iptv_kmp.shared.generated.resources.or_separator
 import white_iptv_kmp.shared.generated.resources.error_empty_playlist
 import white_iptv_kmp.shared.generated.resources.error_http_403
 import white_iptv_kmp.shared.generated.resources.error_http_404
@@ -62,6 +56,12 @@ import white_iptv_kmp.shared.generated.resources.error_server_not_found
 import white_iptv_kmp.shared.generated.resources.error_storage
 import white_iptv_kmp.shared.generated.resources.error_timeout
 import white_iptv_kmp.shared.generated.resources.error_unknown
+import white_iptv_kmp.shared.generated.resources.ic_play_circle
+import white_iptv_kmp.shared.generated.resources.import_playlist_button
+import white_iptv_kmp.shared.generated.resources.importing_message
+import white_iptv_kmp.shared.generated.resources.onboarding_subtitle
+import white_iptv_kmp.shared.generated.resources.onboarding_title
+import white_iptv_kmp.shared.generated.resources.or_separator
 import white_iptv_kmp.shared.generated.resources.playlist_url_label
 import white_iptv_kmp.shared.generated.resources.playlist_url_placeholder
 

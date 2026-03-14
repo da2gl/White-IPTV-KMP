@@ -3,8 +3,10 @@ package com.simplevideo.whiteiptv.platform.avplayer
 import com.simplevideo.whiteiptv.platform.AudioTrackInfo
 import com.simplevideo.whiteiptv.platform.SubtitleTrackInfo
 import com.simplevideo.whiteiptv.platform.TracksInfo
-import platform.AVFoundation.*
-import platform.Foundation.*
+import platform.AVFoundation.AVMediaCharacteristicAudible
+import platform.AVFoundation.AVMediaCharacteristicLegible
+import platform.AVFoundation.AVMediaSelectionOption
+import platform.AVFoundation.AVPlayerItem
 
 /**
  * Maps AVPlayer media selection groups to platform-agnostic TracksInfo

@@ -43,7 +43,7 @@ actual fun rememberPipController(): PictureInPictureController {
         } else {
             object : PictureInPictureController {
                 override fun isPipSupported(): Boolean = false
-                override fun enterPipMode() {}
+                override fun enterPipMode() = Unit
             }
         }
     }

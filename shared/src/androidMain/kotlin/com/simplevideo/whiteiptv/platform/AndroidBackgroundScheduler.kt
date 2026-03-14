@@ -25,7 +25,8 @@ class AndroidBackgroundScheduler(
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val request = PeriodicWorkRequestBuilder<PlaylistRefreshWorker>(
-            intervalMinutes, TimeUnit.MINUTES,
+            intervalMinutes,
+            TimeUnit.MINUTES,
         ).setConstraints(constraints).build()
 
         WorkManager.getInstance(context)

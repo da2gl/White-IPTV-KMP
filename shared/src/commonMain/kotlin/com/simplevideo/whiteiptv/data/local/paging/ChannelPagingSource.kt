@@ -27,7 +27,7 @@ class ChannelPagingSource(
                 prevKey = if (page > 0) page - 1 else null,
                 nextKey = if (offset + items.size < totalCount) page + 1 else null,
             )
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
             LoadResult.Error(e)
         }
     }

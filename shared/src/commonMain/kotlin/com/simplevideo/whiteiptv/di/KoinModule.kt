@@ -32,8 +32,8 @@ import com.simplevideo.whiteiptv.domain.usecase.GetContinueWatchingUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetCurrentProgramUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetGroupsUseCase
-import com.simplevideo.whiteiptv.domain.usecase.GetPagedChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetHomeCategoriesUseCase
+import com.simplevideo.whiteiptv.domain.usecase.GetPagedChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.HasPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase

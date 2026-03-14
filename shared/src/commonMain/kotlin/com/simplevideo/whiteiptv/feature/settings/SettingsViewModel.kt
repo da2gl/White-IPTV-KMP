@@ -6,13 +6,13 @@ import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.data.cache.CacheManager
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
-import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
 import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsAction
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsEvent
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsState
+import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
