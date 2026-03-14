@@ -1,6 +1,8 @@
 package com.simplevideo.whiteiptv.feature.settings
 
-import com.russhwolf.settings.MapSettings
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.ThemePreferences
 import com.simplevideo.whiteiptv.data.repository.FakeChannelRepository
@@ -19,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import okio.Path.Companion.toPath
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -32,7 +35,7 @@ class SettingsViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var settings: MapSettings
+    private lateinit var dataStore: DataStore<Preferences>
     private lateinit var themePreferences: ThemePreferences
     private lateinit var themeRepository: ThemeRepositoryImpl
     private lateinit var settingsPreferences: SettingsPreferences
@@ -42,10 +45,14 @@ class SettingsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        settings = MapSettings()
-        themePreferences = ThemePreferences(settings)
+        dataStore = PreferenceDataStoreFactory.createWithPath(
+            produceFile = {
+                "test_settings_vm_${kotlin.random.Random.nextInt()}.preferences_pb".toPath()
+            },
+        )
+        themePreferences = ThemePreferences(dataStore)
         themeRepository = ThemeRepositoryImpl(themePreferences)
-        settingsPreferences = SettingsPreferences(settings)
+        settingsPreferences = SettingsPreferences(dataStore)
         fakeChannelRepository = FakeChannelRepository()
         clearFavoritesUseCase = ClearFavoritesUseCase(fakeChannelRepository)
     }
@@ -68,6 +75,7 @@ class SettingsViewModelTest {
     @Test
     fun `init loads default state when no preferences stored`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         val state = viewModel.viewStates().value
         assertEquals(ThemeMode.System, state.themeMode)
@@ -87,6 +95,7 @@ class SettingsViewModelTest {
         settingsPreferences.setAutoUpdateEnabled(true)
 
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         val state = viewModel.viewStates().value
         assertEquals(ThemeMode.Dark, state.themeMode)
@@ -100,8 +109,10 @@ class SettingsViewModelTest {
     @Test
     fun `OnThemeModeChanged updates state and persists`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+        advanceUntilIdle()
 
         assertEquals(ThemeMode.Dark, viewModel.viewStates().value.themeMode)
         assertEquals(ThemeMode.Dark, themeRepository.themeMode.value)
@@ -110,8 +121,10 @@ class SettingsViewModelTest {
     @Test
     fun `OnThemeModeChanged to Light updates state`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Light))
+        advanceUntilIdle()
 
         assertEquals(ThemeMode.Light, viewModel.viewStates().value.themeMode)
         assertEquals(ThemeMode.Light, themeRepository.themeMode.value)
@@ -120,9 +133,12 @@ class SettingsViewModelTest {
     @Test
     fun `OnThemeModeChanged to System updates state`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.System))
+        advanceUntilIdle()
 
         assertEquals(ThemeMode.System, viewModel.viewStates().value.themeMode)
         assertEquals(ThemeMode.System, themeRepository.themeMode.value)
@@ -133,8 +149,10 @@ class SettingsViewModelTest {
     @Test
     fun `OnAccentColorChanged updates state and persists`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Blue))
+        advanceUntilIdle()
 
         assertEquals(AccentColor.Blue, viewModel.viewStates().value.accentColor)
         assertEquals(AccentColor.Blue, settingsPreferences.getAccentColor())
@@ -143,8 +161,10 @@ class SettingsViewModelTest {
     @Test
     fun `OnAccentColorChanged to Red updates state`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Red))
+        advanceUntilIdle()
 
         assertEquals(AccentColor.Red, viewModel.viewStates().value.accentColor)
         assertEquals(AccentColor.Red, settingsPreferences.getAccentColor())
@@ -155,8 +175,10 @@ class SettingsViewModelTest {
     @Test
     fun `OnChannelViewModeChanged updates state and persists`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
+        advanceUntilIdle()
 
         assertEquals(ChannelViewMode.Grid, viewModel.viewStates().value.channelViewMode)
         assertEquals(ChannelViewMode.Grid, settingsPreferences.getChannelViewMode())
@@ -165,9 +187,12 @@ class SettingsViewModelTest {
     @Test
     fun `OnChannelViewModeChanged back to List updates state`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.List))
+        advanceUntilIdle()
 
         assertEquals(ChannelViewMode.List, viewModel.viewStates().value.channelViewMode)
         assertEquals(ChannelViewMode.List, settingsPreferences.getChannelViewMode())
@@ -178,8 +203,10 @@ class SettingsViewModelTest {
     @Test
     fun `OnAutoUpdateChanged true updates state and persists`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
+        advanceUntilIdle()
 
         assertTrue(viewModel.viewStates().value.autoUpdateEnabled)
         assertTrue(settingsPreferences.getAutoUpdateEnabled())
@@ -188,9 +215,12 @@ class SettingsViewModelTest {
     @Test
     fun `OnAutoUpdateChanged false after true updates state`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(false))
+        advanceUntilIdle()
 
         assertFalse(viewModel.viewStates().value.autoUpdateEnabled)
         assertFalse(settingsPreferences.getAutoUpdateEnabled())
@@ -201,6 +231,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnClearCacheClick emits ShowCacheCleared action`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnClearCacheClick)
 
@@ -213,6 +244,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnClearFavoritesClick shows confirmation dialog`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnClearFavoritesClick)
 
@@ -222,6 +254,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnClearFavoritesConfirm closes dialog and clears favorites`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnClearFavoritesClick)
 
         viewModel.obtainEvent(SettingsEvent.OnClearFavoritesConfirm)
@@ -238,6 +271,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnResetClick shows confirmation dialog`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnResetClick)
 
@@ -247,13 +281,16 @@ class SettingsViewModelTest {
     @Test
     fun `OnResetConfirm closes dialog and resets all settings`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
         viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Red))
         viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
         viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
         viewModel.obtainEvent(SettingsEvent.OnResetClick)
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
+        advanceUntilIdle()
 
         val state = viewModel.viewStates().value
         assertFalse(state.showResetDialog)
@@ -267,9 +304,11 @@ class SettingsViewModelTest {
     @Test
     fun `OnResetConfirm emits ShowSettingsReset action`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnResetClick)
 
         viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
+        advanceUntilIdle()
 
         val action = viewModel.viewActions().first()
         assertIs<SettingsAction.ShowSettingsReset>(action)
@@ -280,6 +319,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnDismissDialog closes clear favorites dialog`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnClearFavoritesClick)
         assertTrue(viewModel.viewStates().value.showClearFavoritesDialog)
 
@@ -291,6 +331,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnDismissDialog closes reset dialog`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnResetClick)
         assertTrue(viewModel.viewStates().value.showResetDialog)
 
@@ -304,6 +345,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnContactSupportClick emits OpenEmail action`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnContactSupportClick)
 
@@ -317,6 +359,7 @@ class SettingsViewModelTest {
     @Test
     fun `OnPrivacyPolicyClick emits OpenUrl action`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnPrivacyPolicyClick)
 
@@ -330,10 +373,13 @@ class SettingsViewModelTest {
     @Test
     fun `reset from Dark theme reverts to System`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
+        advanceUntilIdle()
         assertEquals(ThemeMode.Dark, viewModel.viewStates().value.themeMode)
 
         viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
+        advanceUntilIdle()
 
         assertEquals(ThemeMode.System, viewModel.viewStates().value.themeMode)
         assertEquals(ThemeMode.System, themeRepository.themeMode.value)
@@ -342,10 +388,12 @@ class SettingsViewModelTest {
     @Test
     fun `multiple rapid theme switches preserve last value`() = runTest {
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Light))
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
         viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Light))
+        advanceUntilIdle()
 
         assertEquals(ThemeMode.Light, viewModel.viewStates().value.themeMode)
         assertEquals(ThemeMode.Light, themeRepository.themeMode.value)
