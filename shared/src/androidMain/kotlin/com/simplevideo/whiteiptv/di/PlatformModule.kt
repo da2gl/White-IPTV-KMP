@@ -16,6 +16,7 @@ import com.simplevideo.whiteiptv.platform.AndroidBackgroundScheduler
 import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.exoplayer.ExoPlayerFactory
+import coil3.PlatformContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -55,4 +56,6 @@ actual fun platformModule(): Module = module {
             },
         )
     }
+
+    single<PlatformContext> { get<Context>().applicationContext }
 }

@@ -15,6 +15,7 @@ import com.simplevideo.whiteiptv.platform.IOSFilePickerFactory
 import com.simplevideo.whiteiptv.platform.IOSFileReader
 import com.simplevideo.whiteiptv.platform.IOSVideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
+import coil3.PlatformContext
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -56,6 +57,8 @@ actual fun platformModule(): Module = module {
             },
         )
     }
+
+    single<PlatformContext> { PlatformContext.INSTANCE }
 }
 
 @OptIn(ExperimentalForeignApi::class)

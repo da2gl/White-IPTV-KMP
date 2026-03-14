@@ -50,7 +50,7 @@ Settings are stored locally using a key-value preferences store. They persist ac
 ## Implementation Notes
 
 - **Language**: Shows "System" only for MVP. No locale override until translated string resources are added.
-- **Clear Cache**: Shows "0 MB" placeholder. Actual cache clearing requires platform-specific implementation.
+- **Clear Cache**: Shows actual Coil image cache size (disk + memory) and clears both caches when tapped.
 - **Accent Color**: Implemented. Changing the accent color in Settings reactively updates primary, secondary, and tertiary Material3 color roles across the entire app.
 - **Auto Update**: Toggle is persisted. When enabled, `PlaylistAutoRefreshScheduler` runs a coroutine-based loop that re-downloads URL-based playlists at their `refreshInterval` (default: 6 hours). Local file playlists are skipped. Runs in foreground only.
 - **Reset to Defaults**: Resets all settings preferences to defaults. Does NOT delete playlists, channels, or watch history.

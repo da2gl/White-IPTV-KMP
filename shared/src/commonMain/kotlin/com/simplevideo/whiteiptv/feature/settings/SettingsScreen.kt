@@ -108,7 +108,7 @@ fun SettingsScreen() {
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
             item { AppBehaviorSection(state, viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
-            item { DataStorageSection(viewModel::obtainEvent) }
+            item { DataStorageSection(state, viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
             item { AboutSection(state, viewModel::obtainEvent) }
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -192,12 +192,13 @@ private fun AppBehaviorSection(
 
 @Composable
 private fun DataStorageSection(
+    state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
 ) {
     SettingsSection(title = "Data & Storage") {
         SettingsItem(
             title = "Clear Cache",
-            subtitle = "0 MB",
+            subtitle = state.cacheSize,
             onClick = { onEvent(SettingsEvent.OnClearCacheClick) },
         )
         SettingsItem(
