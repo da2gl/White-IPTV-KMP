@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.data.local
 
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.data.local.model.ChannelFtsEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelWithGroups
@@ -74,7 +73,7 @@ class FakePlaylistDao : PlaylistDao {
     override fun getGroupWithChannels(groupId: Long): Flow<GroupWithChannels?> = flowOf(null)
     override fun getChannelsByGroupId(groupId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override suspend fun getGroupsForChannel(channelId: Long): List<ChannelGroupEntity> = emptyList()
-    override suspend fun insertChannelFts(ftsEntities: List<ChannelFtsEntity>) {}
+    override suspend fun rebuildChannelFtsForPlaylist(playlistId: Long) {}
     override suspend fun deleteAllChannelFts() {}
     override suspend fun deleteChannelFtsByPlaylistId(playlistId: Long) {}
 

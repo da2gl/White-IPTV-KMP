@@ -8,7 +8,6 @@ import androidx.room.Transaction
 import androidx.room.Update
 import androidx.room.Upsert
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.data.local.model.ChannelFtsEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelWithGroups
@@ -159,8 +158,8 @@ interface PlaylistDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>)
 
-    @Insert
-    suspend fun insertChannelFts(ftsEntities: List<ChannelFtsEntity>)
+    @Query("INSERT INTO channels_fts(rowid, name) SELECT id, name FROM channels WHERE playlistId = :playlistId")
+    suspend fun rebuildChannelFtsForPlaylist(playlistId: Long)
 
     @Query("DELETE FROM channels_fts")
     suspend fun deleteAllChannelFts()
@@ -343,13 +342,7 @@ interface PlaylistDao {
         }
 
         insertChannels(channels)
-
-        val ftsEntities = channels.map { channel ->
-            ChannelFtsEntity(name = channel.name)
-        }
-        if (ftsEntities.isNotEmpty()) {
-            insertChannelFts(ftsEntities)
-        }
+        rebuildChannelFtsForPlaylist(playlistId)
 
         if (crossRefs.isNotEmpty()) {
             insertChannelGroupCrossRefs(crossRefs)
@@ -378,13 +371,7 @@ interface PlaylistDao {
         }
 
         insertChannels(channels)
-
-        val ftsEntities = channels.map { channel ->
-            ChannelFtsEntity(name = channel.name)
-        }
-        if (ftsEntities.isNotEmpty()) {
-            insertChannelFts(ftsEntities)
-        }
+        rebuildChannelFtsForPlaylist(playlist.id)
 
         if (crossRefs.isNotEmpty()) {
             insertChannelGroupCrossRefs(crossRefs)
