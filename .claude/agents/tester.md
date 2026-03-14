@@ -41,24 +41,56 @@ class XxxUseCaseTest {
 **Mappers**: Test transformations
 **Repositories**: Test with fake/mock DAOs
 
-Place tests in `composeApp/src/commonTest/` mirroring the main source structure.
+Place tests in `shared/src/commonTest/` mirroring the main source structure.
 
-### 3. Run Tests
+### 3. Coroutine Test Patterns
+
+**CRITICAL**: Follow these patterns to avoid flaky tests:
+
+**DataStore tests**: Create DataStore with test scope to control IO:
+```kotlin
+val dataStore = PreferenceDataStoreFactory.createWithPath(
+    scope = CoroutineScope(testDispatcher + SupervisorJob()),
+    produceFile = { "test_${Random.nextInt()}.preferences_pb".toPath() },
+)
+```
+
+**Repository tests with ongoing collection (e.g., ThemeRepositoryImpl)**:
+- Use `backgroundScope` from `runTest` for infinite collection coroutines
+- For tests that need to wait for flow emission, use child scope with `coroutineContext`:
+```kotlin
+val repoScope = CoroutineScope(SupervisorJob(coroutineContext[Job]) + coroutineContext)
+```
+
+**ViewModel tests**:
+- Set `Dispatchers.setMain(testDispatcher)` in setUp
+- Create `SupervisorJob()` per test, cancel in tearDown
+- Use `advanceUntilIdle()` after each event
+
+**Test name rules for KMP compatibility**:
+- NO parentheses `()` in backtick test names (Kotlin/Native forbids)
+- NO commas `,` in backtick test names
+- Use dashes or "and" instead: `title - description` or `title and description`
+
+### 4. Run Tests
 ```bash
-./gradlew :composeApp:testDebugUnitTest
+./gradlew :shared:testAndroidHostTest
 ```
 Fix any test failures. All tests must pass.
 
-### 4. Security Review
+**IMPORTANT**: If you see `NoSuchFileException` on test binary files, another process is running tests. Wait 30 seconds and retry.
+
+### 5. Security Review
 Check for:
 - **Input validation**: URLs, file paths, user input sanitized?
 - **SQL injection**: Room parameterized queries used correctly?
+- **FTS injection**: FTS MATCH queries use double-quote escaping?
 - **XSS in WebView**: If any web content displayed, is it sanitized?
 - **Insecure HTTP**: Are stream URLs validated? HTTPS preferred?
 - **Data exposure**: Sensitive data in logs? Exported components?
 - **Path traversal**: File operations use safe paths?
 
-### 5. Write Report
+### 6. Write Report
 Create `.claude/features/<feature-name>/test-report.md`:
 
 ```markdown
@@ -100,3 +132,4 @@ Create `.claude/features/<feature-name>/test-report.md`:
 - **Security issues are blocking** — critical issues must be fixed before proceeding
 - **KMP test compatibility** — tests go in commonTest, use kotlin.test annotations
 - **No flaky tests** — no timing-dependent assertions, no real network calls
+- **Clean up test artifacts** — add `*.preferences_pb` to .gitignore if DataStore tests create them

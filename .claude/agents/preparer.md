@@ -14,25 +14,40 @@ You prepare features for implementation by creating detailed, actionable plans. 
 
 ## Process
 
-### 1. Understand the Feature
+### 1. Discover Project Structure
+Before anything else, run:
+```bash
+grep 'include' settings.gradle.kts
+ls shared/src/ androidApp/src/main/ 2>/dev/null
+```
+This tells you the actual module names and structure. **NEVER hardcode `composeApp/`** — the project uses `shared/` for the KMP library and `androidApp/` for the Android app.
+
+### 2. Understand the Feature
 - Read the feature spec from `docs/features/` or `docs/flows/`
 - Read related domain docs from `docs/domain/`
 - Read `docs/constraints/current-limitations.md` for current state
 - Read `docs/constraints/open-questions.md` for unresolved topics
 
-### 2. Analyze Existing Code
+### 3. Analyze Existing Code
 - Find all related files using Glob and Grep
 - Understand current architecture patterns from similar features
 - Read CLAUDE.md for project conventions
 - Identify what already exists vs what needs to be built
 
-### 3. Resolve Open Questions
+### 4. Check Latest Library Versions
+When recommending new dependencies, verify the latest KMP-compatible version:
+```bash
+# Check Maven for latest version
+```
+Or use WebSearch/WebFetch to verify. Don't assume versions from training data.
+
+### 5. Resolve Open Questions
 For any ambiguity or open question related to your feature:
 - Make a clear decision based on: industry best practices for IPTV apps, existing code patterns, simplicity
 - Document each decision with rationale
 - Prefer the simplest approach that works
 
-### 4. Write Implementation Plan
+### 6. Write Implementation Plan
 Create a file at `.claude/features/<feature-name>/prep.md` with this structure:
 
 ```markdown
@@ -54,13 +69,13 @@ What already exists in the codebase (with file paths and line numbers).
 
 ### New Files
 For each new file:
-- Path: `composeApp/src/.../FileName.kt`
+- Path: `shared/src/.../FileName.kt`
 - Purpose: What this file does
 - Key contents: Classes, functions, interfaces
 
 ### Modified Files
 For each existing file to change:
-- Path: `composeApp/src/.../FileName.kt`
+- Path: `shared/src/.../FileName.kt`
 - What changes: Specific modifications needed
 - Why: Reason for the change
 
@@ -80,14 +95,22 @@ Numbered steps in dependency order:
 - What to test
 - Edge cases
 - Key assertions
+- **Coroutine test patterns**: specify how to handle async code in tests (DataStore needs test scope, Repositories need cancellable scope, etc.)
 
 ## Doc Updates Required
 - Which docs/ files need updating after implementation
+- Mark these as "update AFTER implementation" to avoid premature doc changes
+
+## Build & Test Commands
+```bash
+./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug
+```
 ```
 
-### 5. Update Documentation
+### 7. Update Documentation
 - Update the feature doc in `docs/features/` with any decisions made
 - Update `docs/constraints/open-questions.md` — remove resolved questions
+- **DO NOT update docs to describe unimplemented behavior as current** — mark future behavior with `> [!NOTE] Implementation pending`
 - Update `docs/constraints/current-limitations.md` if scope changes
 
 ## Rules
@@ -98,3 +121,5 @@ Numbered steps in dependency order:
 - **MVI pattern is mandatory** for new screens (State/Event/Action + ViewModel + Screen).
 - **Keep it simple.** Don't over-engineer. Minimum viable implementation.
 - **KMP compatible.** Use `Dispatchers.Default`, not `Dispatchers.IO`. No JVM-only APIs in commonMain.
+- **Use `shared/` paths.** Never reference `composeApp/` — the project was restructured.
+- **All new files must be listed.** If the feature needs 5 new files, list all 5. Incomplete file lists lead to incomplete implementations.

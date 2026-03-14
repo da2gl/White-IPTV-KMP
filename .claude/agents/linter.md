@@ -43,7 +43,7 @@ Both must pass with zero errors.
 
 ### 5. Build Check
 ```bash
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 ```
 Ensure formatting changes didn't break anything.
 
