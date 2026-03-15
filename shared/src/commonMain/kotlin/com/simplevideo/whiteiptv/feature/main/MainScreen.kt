@@ -136,25 +136,25 @@ private fun BottomNavigationBar(
 private val bottomNavItems = persistentListOf(
     BottomNavItem(
         title = "Home",
-        selectedIcon = Icons.Filled.Home,
+        selectedIcon = Icons.Outlined.Home,
         unselectedIcon = Icons.Outlined.Home,
         route = MainTab.Home,
     ),
     BottomNavItem(
         title = "Favorites",
-        selectedIcon = Icons.Filled.Favorite,
+        selectedIcon = Icons.Outlined.FavoriteBorder,
         unselectedIcon = Icons.Outlined.FavoriteBorder,
         route = MainTab.Favorites,
     ),
     BottomNavItem(
         title = "Channels",
-        selectedIcon = Icons.Filled.Tv,
+        selectedIcon = Icons.Outlined.Tv,
         unselectedIcon = Icons.Outlined.Tv,
         route = MainTab.Channels(),
     ),
     BottomNavItem(
         title = "Settings",
-        selectedIcon = Icons.Filled.Settings,
+        selectedIcon = Icons.Outlined.Settings,
         unselectedIcon = Icons.Outlined.Settings,
         route = MainTab.Settings,
     ),
