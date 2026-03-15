@@ -2,7 +2,7 @@ package com.simplevideo.whiteiptv.feature.settings.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,17 +52,25 @@ import com.simplevideo.whiteiptv.designsystem.TextPrimaryLight
 import com.simplevideo.whiteiptv.designsystem.TextSecondaryDark
 import com.simplevideo.whiteiptv.designsystem.TextSecondaryLight
 
+/**
+ * Checks if the current MaterialTheme is dark by testing background luminance.
+ * This respects the app's theme setting, not the system theme.
+ */
 @Composable
-fun settingsCardColor(): Color = if (isSystemInDarkTheme()) CardDark else CardLight
+private fun isAppDarkTheme(): Boolean =
+    MaterialTheme.colorScheme.background.luminance() < 0.5f
 
 @Composable
-fun settingsBorderColor(): Color = if (isSystemInDarkTheme()) BorderDark else BorderLight
+fun settingsCardColor(): Color = if (isAppDarkTheme()) CardDark else CardLight
 
 @Composable
-fun settingsTextPrimary(): Color = if (isSystemInDarkTheme()) TextPrimaryDark else TextPrimaryLight
+fun settingsBorderColor(): Color = if (isAppDarkTheme()) BorderDark else BorderLight
 
 @Composable
-fun settingsTextSecondary(): Color = if (isSystemInDarkTheme()) TextSecondaryDark else TextSecondaryLight
+fun settingsTextPrimary(): Color = if (isAppDarkTheme()) TextPrimaryDark else TextPrimaryLight
+
+@Composable
+fun settingsTextSecondary(): Color = if (isAppDarkTheme()) TextSecondaryDark else TextSecondaryLight
 
 @Composable
 fun SettingsSectionHeader(

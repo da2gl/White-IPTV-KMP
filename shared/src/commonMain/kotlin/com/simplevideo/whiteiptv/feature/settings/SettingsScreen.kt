@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
 import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Hd
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayCircle
@@ -192,6 +193,16 @@ private fun PlaybackSection(
             subtitle = "ExoPlayer",
             options = listOf("ExoPlayer"),
             selectedOption = "ExoPlayer",
+            onOptionSelected = {},
+            optionLabel = { it },
+            showDivider = true,
+        )
+        SettingsDropdownRow(
+            icon = Icons.Outlined.Hd,
+            title = "Preferred Quality",
+            subtitle = "Auto",
+            options = listOf("Auto", "HD", "SD"),
+            selectedOption = "Auto",
             onOptionSelected = {},
             optionLabel = { it },
             showDivider = false,

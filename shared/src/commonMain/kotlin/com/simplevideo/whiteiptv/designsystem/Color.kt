@@ -24,6 +24,9 @@ val TextSecondaryDark = Color(0xFF9ca3af)
 val TextSecondaryLight = Color(0xFF6b7280)
 val DestructiveRed = Color(0xFFef4444)
 
+// Card/border/text colors mapped to MaterialTheme surface roles for theme-awareness
+// Use these via settingsCardColor() etc. in SettingsComponents.kt
+
 // Slate color variants for text hierarchy and borders (matching Tailwind slate scale)
 val Slate200 = Color(0xFFe2e8f0)
 val Slate300 = Color(0xFFcbd5e1)
