@@ -9,6 +9,7 @@ import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
 import com.simplevideo.whiteiptv.data.local.createDataStore
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
 import com.simplevideo.whiteiptv.platform.BackgroundScheduler
+import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
 import com.simplevideo.whiteiptv.platform.IOSBackgroundScheduler
@@ -61,6 +62,8 @@ actual fun platformModule(): Module = module {
     single<com.simplevideo.whiteiptv.data.cache.CacheManager> {
         com.simplevideo.whiteiptv.data.cache.CoilCacheManager(PlatformContext.INSTANCE)
     }
+
+    single { CastManager() }
 }
 
 @OptIn(ExperimentalForeignApi::class)

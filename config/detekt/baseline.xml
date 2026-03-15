@@ -8,6 +8,7 @@
     <ID>CyclomaticComplexMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
     <ID>CyclomaticComplexMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>CyclomaticComplexMethod:M3uParser.kt$M3uParser$private fun parseChannel( lines: List&lt;String&gt;, startIndex: Int, pendingVlcOpts: Map&lt;String, String&gt;, pendingKodiProps: Map&lt;String, String&gt;, ): Channel?</ID>
+    <ID>CyclomaticComplexMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>CyclomaticComplexMethod:PlayerViewModel.kt$PlayerViewModel$override fun obtainEvent(viewEvent: PlayerEvent)</ID>
     <ID>CyclomaticComplexMethod:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
@@ -33,6 +34,7 @@
     <ID>LongMethod:Typography.kt$private fun buildTypography(fontFamily: FontFamily): Typography</ID>
     <ID>LongParameterList:ChannelsViewModel.kt$ChannelsViewModel$( private val savedStateHandle: SavedStateHandle, private val getPlaylists: GetPlaylistsUseCase, private val getGroups: GetGroupsUseCase, private val getPagedChannels: GetPagedChannelsUseCase, private val toggleFavorite: ToggleFavoriteUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val settingsPreferences: SettingsPreferences, )</ID>
     <ID>LongParameterList:HomeViewModel.kt$HomeViewModel$( getPlaylists: GetPlaylistsUseCase, getContinueWatching: GetContinueWatchingUseCase, getFavorites: GetFavoritesUseCase, getHomeCategories: GetHomeCategoriesUseCase, private val getChannels: GetChannelsUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val renamePlaylistUseCase: RenamePlaylistUseCase, private val deletePlaylistUseCase: DeletePlaylistUseCase, private val importPlaylistUseCase: ImportPlaylistUseCase, )</ID>
+    <ID>LongParameterList:PlayerViewModel.kt$PlayerViewModel$( savedStateHandle: SavedStateHandle, private val getChannelById: GetChannelByIdUseCase, private val getAdjacentChannel: GetAdjacentChannelUseCase, private val recordWatchEvent: RecordWatchEventUseCase, private val loadEpg: LoadEpgUseCase, private val getCurrentProgram: GetCurrentProgramUseCase, private val castManager: CastManager, )</ID>
     <ID>LoopWithTooManyJumpStatements:M3uParser.kt$M3uParser$for</ID>
     <ID>MaxLineLength:SettingsScreen.kt$message = "This will reset all settings to their default values. Your playlists and channels will not be affected."</ID>
     <ID>MaximumLineLength:SettingsScreen.kt$ </ID>
@@ -50,7 +52,6 @@
     <ID>SwallowedException:AndroidSystemControls.kt$AndroidSystemControls$e: Exception</ID>
     <ID>ThrowsCount:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>TooGenericExceptionCaught:AndroidSystemControls.kt$AndroidSystemControls$e: Exception</ID>
-    <ID>TooGenericExceptionCaught:CastButton.kt$e: RuntimeException</ID>
     <ID>TooGenericExceptionCaught:ChannelsViewModel.kt$ChannelsViewModel$e: Exception</ID>
     <ID>TooGenericExceptionCaught:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$e: Exception</ID>
     <ID>TooManyFunctions:AVPlayerWrapper.kt$AVPlayerWrapper : VideoPlayer</ID>

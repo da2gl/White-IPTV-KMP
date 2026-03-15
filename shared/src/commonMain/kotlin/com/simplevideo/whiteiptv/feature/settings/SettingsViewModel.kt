@@ -1,9 +1,7 @@
 package com.simplevideo.whiteiptv.feature.settings
 
 import androidx.lifecycle.viewModelScope
-import com.simplevideo.whiteiptv.AppConfig
 import com.simplevideo.whiteiptv.common.BaseViewModel
-import com.simplevideo.whiteiptv.data.cache.CacheManager
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
@@ -21,7 +19,6 @@ class SettingsViewModel(
     private val clearFavoritesUseCase: ClearFavoritesUseCase,
     private val backgroundScheduler: BackgroundScheduler,
     private val refreshCoordinator: BackgroundRefreshCoordinator,
-    private val cacheManager: CacheManager,
 ) : BaseViewModel<SettingsState, SettingsAction, SettingsEvent>(
     initialState = SettingsState(),
 ) {
@@ -33,8 +30,7 @@ class SettingsViewModel(
                 accentColor = settingsPreferences.getAccentColor(),
                 channelViewMode = settingsPreferences.getChannelViewMode(),
                 autoUpdateEnabled = settingsPreferences.getAutoUpdateEnabled(),
-                appVersion = AppConfig.VERSION_NAME,
-                cacheSize = cacheManager.getFormattedCacheSize(),
+                appVersion = APP_VERSION,
             )
         }
     }
@@ -78,8 +74,6 @@ class SettingsViewModel(
             }
 
             is SettingsEvent.OnClearCacheClick -> {
-                cacheManager.clearCache()
-                viewState = viewState.copy(cacheSize = cacheManager.getFormattedCacheSize())
                 viewAction = SettingsAction.ShowCacheCleared
             }
 
@@ -106,7 +100,7 @@ class SettingsViewModel(
                     themeRepository.setThemeMode(ThemeMode.System)
                 }
                 viewState = SettingsState(
-                    appVersion = AppConfig.VERSION_NAME,
+                    appVersion = APP_VERSION,
                 )
                 viewAction = SettingsAction.ShowSettingsReset
             }
@@ -129,6 +123,7 @@ class SettingsViewModel(
     }
 
     companion object {
+        private const val APP_VERSION = "1.0"
         private const val SUPPORT_EMAIL = "mailto:support@simplevideo.com"
         private const val PRIVACY_POLICY_URL = "https://simplevideo.com/privacy"
     }

@@ -11,6 +11,8 @@ import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerAction
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerState
+import com.simplevideo.whiteiptv.platform.CastConnectionState
+import com.simplevideo.whiteiptv.platform.CastManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +33,7 @@ class PlayerViewModel(
     private val recordWatchEvent: RecordWatchEventUseCase,
     private val loadEpg: LoadEpgUseCase,
     private val getCurrentProgram: GetCurrentProgramUseCase,
+    private val castManager: CastManager,
 ) : BaseViewModel<PlayerState, PlayerAction, PlayerEvent>(
     initialState = PlayerState(),
 ) {
@@ -46,6 +49,15 @@ class PlayerViewModel(
 
     init {
         observeChannel()
+        observeCastState()
+    }
+
+    private fun observeCastState() {
+        castManager.castState
+            .onEach { state ->
+                viewState = viewState.copy(isCasting = state == CastConnectionState.CONNECTED)
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun observeChannel() {
@@ -238,6 +250,12 @@ class PlayerViewModel(
 
             is PlayerEvent.OnEnterPip -> {
                 // PiP is triggered from the screen via the PiP controller
+            }
+
+            is PlayerEvent.OnCastStateChanged -> {
+                viewState = viewState.copy(
+                    isCasting = viewEvent.state == CastConnectionState.CONNECTED,
+                )
             }
         }
     }

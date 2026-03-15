@@ -1,9 +1,17 @@
 package com.simplevideo.whiteiptv.feature.player
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cast
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.simplevideo.whiteiptv.feature.player.components.GestureOverlay
 import com.simplevideo.whiteiptv.feature.player.components.PlayerControlsOverlay
 import com.simplevideo.whiteiptv.feature.player.components.SleepTimerSheet
@@ -26,6 +35,7 @@ import com.simplevideo.whiteiptv.feature.player.mvi.PlayerAction
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerEvent
 import com.simplevideo.whiteiptv.feature.player.mvi.PlayerState
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
+import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.KeepScreenOn
 import com.simplevideo.whiteiptv.platform.PlayerListener
 import com.simplevideo.whiteiptv.platform.TracksInfo
@@ -75,6 +85,7 @@ private fun PlayerScreenContent(
     modifier: Modifier = Modifier,
 ) {
     val playerFactory = koinInject<VideoPlayerFactory>()
+    val castManager = koinInject<CastManager>()
     val player = remember { playerFactory.createPlayer() }
     val systemControls = rememberSystemControls()
     val pipController = rememberPipController()
@@ -134,8 +145,21 @@ private fun PlayerScreenContent(
                 referer = it.referer,
             )
             player.play()
-            // Schedule auto-hide when player starts
             scheduleHideControls()
+        }
+    }
+
+    // When casting starts, pause local player and send stream to Cast device
+    LaunchedEffect(state.isCasting, state.channel) {
+        if (state.isCasting && state.channel != null) {
+            player.pause()
+            castManager.startCasting(
+                url = state.channel.url,
+                title = state.channel.name,
+                logoUrl = state.channel.logoUrl,
+            )
+        } else if (!state.isCasting && state.channel != null && !state.isLoading) {
+            player.play()
         }
     }
 
@@ -204,6 +228,14 @@ private fun PlayerScreenContent(
             )
         }
 
+        // Casting overlay
+        if (state.isCasting) {
+            CastingOverlay(
+                channelName = state.channel?.name.orEmpty(),
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
+
         // Controls overlay
         if (state.channel != null) {
             PlayerControlsOverlay(
@@ -258,6 +290,39 @@ private fun PlayerScreenContent(
                 onDismiss = { onEvent(PlayerEvent.OnDismissSleepTimer) },
                 onSetTimer = { durationMs -> onEvent(PlayerEvent.OnSetSleepTimer(durationMs)) },
                 onCancelTimer = { onEvent(PlayerEvent.OnCancelSleepTimer) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun CastingOverlay(
+    channelName: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Default.Cast,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier.size(64.dp),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Casting",
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.White,
+        )
+        if (channelName.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = channelName,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.7f),
             )
         }
     }

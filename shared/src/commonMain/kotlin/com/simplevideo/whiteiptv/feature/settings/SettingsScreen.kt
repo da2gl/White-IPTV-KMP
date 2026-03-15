@@ -6,23 +6,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.outlined.PlaylistPlay
 import androidx.compose.material.icons.automirrored.outlined.ViewList
-import androidx.compose.material.icons.outlined.Brush
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.HighQuality
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.Mail
+import androidx.compose.material.icons.outlined.Contrast
+import androidx.compose.material.icons.outlined.Hd
 import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.PlayCircle
-import androidx.compose.material.icons.outlined.Policy
-import androidx.compose.material.icons.outlined.RestartAlt
-import androidx.compose.material.icons.outlined.StarBorder
-import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -40,9 +33,9 @@ import androidx.compose.ui.unit.dp
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
+import com.simplevideo.whiteiptv.feature.settings.components.SettingsDropdownItem
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsItem
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsSection
-import com.simplevideo.whiteiptv.feature.settings.components.SettingsSegmentedButton
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsSwitchItem
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsAction
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsEvent
@@ -120,11 +113,9 @@ fun SettingsScreen() {
         ) {
             item { AppearanceSection(state, viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
-            item { PlaybackSection() }
-            item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
             item { AppBehaviorSection(state, viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
-            item { DataStorageSection(state, viewModel::obtainEvent) }
+            item { DataStorageSection(viewModel::obtainEvent) }
             item { HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp)) }
             item { AboutSection(state, viewModel::obtainEvent) }
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -138,12 +129,9 @@ private fun AppearanceSection(
     onEvent: (SettingsEvent) -> Unit,
 ) {
     SettingsSection(title = "Appearance") {
-        SettingsItem(
+        SettingsDropdownItem(
             title = "Theme",
-            onClick = {},
-            icon = Icons.Outlined.Palette,
-        )
-        SettingsSegmentedButton(
+            icon = Icons.Outlined.Contrast,
             options = listOf(ThemeMode.System, ThemeMode.Light, ThemeMode.Dark),
             selected = state.themeMode,
             onSelect = { onEvent(SettingsEvent.OnThemeModeChanged(it)) },
@@ -156,28 +144,18 @@ private fun AppearanceSection(
             },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SettingsItem(
+        SettingsDropdownItem(
             title = "Accent Color",
-            onClick = {},
-            icon = Icons.Outlined.Brush,
-        )
-        SettingsSegmentedButton(
+            icon = Icons.Outlined.Palette,
             options = AccentColor.entries.toList(),
             selected = state.accentColor,
             onSelect = { onEvent(SettingsEvent.OnAccentColorChanged(it)) },
             label = { it.name },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        SettingsItem(
+        SettingsDropdownItem(
             title = "Channel View",
-            onClick = {},
             icon = Icons.AutoMirrored.Outlined.ViewList,
-        )
-        SettingsSegmentedButton(
             options = ChannelViewMode.entries.toList(),
             selected = state.channelViewMode,
             onSelect = { onEvent(SettingsEvent.OnChannelViewModeChanged(it)) },
@@ -192,46 +170,59 @@ private fun AppBehaviorSection(
     onEvent: (SettingsEvent) -> Unit,
 ) {
     SettingsSection(title = "App Behavior") {
+        SettingsDropdownItem(
+            title = "Default Player",
+            icon = Icons.Outlined.Hd,
+            options = listOf("ExoPlayer"),
+            selected = "ExoPlayer",
+            onSelect = {},
+            label = { it },
+        )
+
         SettingsItem(
             title = "Language",
-            subtitle = "System",
+            subtitle = "English",
             onClick = {},
-            icon = Icons.Outlined.Language,
         )
+
+        SettingsDropdownItem(
+            title = "Default Playlist",
+            icon = Icons.AutoMirrored.Outlined.PlaylistPlay,
+            options = listOf("Last Used"),
+            selected = "Last Used",
+            onSelect = {},
+            label = { it },
+        )
+
         SettingsSwitchItem(
             title = "Auto-Update Playlists",
-            subtitle = "Automatically refresh playlists on app start",
+            icon = Icons.Outlined.Update,
             checked = state.autoUpdateEnabled,
             onCheckedChange = { onEvent(SettingsEvent.OnAutoUpdateChanged(it)) },
-            icon = Icons.Outlined.Sync,
         )
     }
 }
 
 @Composable
 private fun DataStorageSection(
-    state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
 ) {
     SettingsSection(title = "Data & Storage") {
         SettingsItem(
             title = "Clear Cache",
-            subtitle = state.cacheSize,
+            subtitle = "0 MB",
+            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             onClick = { onEvent(SettingsEvent.OnClearCacheClick) },
-            icon = Icons.Outlined.Delete,
         )
         SettingsItem(
             title = "Clear Favorites",
-            subtitle = "Remove all favorite channels",
+            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             onClick = { onEvent(SettingsEvent.OnClearFavoritesClick) },
-            icon = Icons.Outlined.StarBorder,
         )
         SettingsItem(
             title = "Reset to Defaults",
-            subtitle = "Restore all settings to default values",
+            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             onClick = { onEvent(SettingsEvent.OnResetClick) },
-            icon = Icons.Outlined.RestartAlt,
-            titleColor = MaterialTheme.colorScheme.error,
         )
     }
 }
@@ -246,36 +237,16 @@ private fun AboutSection(
             title = "Version",
             subtitle = state.appVersion,
             onClick = {},
-            icon = Icons.Outlined.Info,
         )
         SettingsItem(
             title = "Contact Support",
-            subtitle = "support@simplevideo.com",
+            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             onClick = { onEvent(SettingsEvent.OnContactSupportClick) },
-            icon = Icons.Outlined.Mail,
         )
         SettingsItem(
             title = "Privacy Policy",
+            trailingIcon = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             onClick = { onEvent(SettingsEvent.OnPrivacyPolicyClick) },
-            icon = Icons.Outlined.Policy,
-        )
-    }
-}
-
-@Composable
-private fun PlaybackSection() {
-    SettingsSection(title = "Playback") {
-        SettingsItem(
-            title = "Default Player",
-            subtitle = "Built-in",
-            onClick = {},
-            icon = Icons.Outlined.PlayCircle,
-        )
-        SettingsItem(
-            title = "Preferred Quality",
-            subtitle = "Auto",
-            onClick = {},
-            icon = Icons.Outlined.HighQuality,
         )
     }
 }

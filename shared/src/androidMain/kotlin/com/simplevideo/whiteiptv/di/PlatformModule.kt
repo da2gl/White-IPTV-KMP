@@ -14,6 +14,7 @@ import com.simplevideo.whiteiptv.platform.AndroidBackgroundScheduler
 import com.simplevideo.whiteiptv.platform.AndroidFilePickerFactory
 import com.simplevideo.whiteiptv.platform.AndroidFileReader
 import com.simplevideo.whiteiptv.platform.BackgroundScheduler
+import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
@@ -60,4 +61,6 @@ actual fun platformModule(): Module = module {
     }
 
     single<CacheManager> { CoilCacheManager(androidContext()) }
+
+    single { CastManager(get()) }
 }

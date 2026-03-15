@@ -9,7 +9,6 @@ data class SettingsState(
     val accentColor: AccentColor = AccentColor.Teal,
     val channelViewMode: ChannelViewMode = ChannelViewMode.List,
     val autoUpdateEnabled: Boolean = false,
-    val cacheSize: String = "0 B",
     val appVersion: String = "",
     val showClearFavoritesDialog: Boolean = false,
     val showResetDialog: Boolean = false,

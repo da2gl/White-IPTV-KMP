@@ -1,8 +1,6 @@
 package com.simplevideo.whiteiptv.platform
 
-import android.util.Log
 import android.view.ContextThemeWrapper
-import android.view.View
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -10,28 +8,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.gms.cast.framework.CastButtonFactory
+import com.simplevideo.whiteiptv.shared.R
 
 /**
  * Android Chromecast media route button using MediaRouteButton.
- * Displays the Cast device picker when tapped.
- * Uses ContextThemeWrapper with AppCompat theme to provide an opaque background,
- * which is required by MediaRouterThemeHelper.calculateContrast().
+ *
+ * Uses [ContextThemeWrapper] with a minimal [R.style.CastButtonTheme] that provides
+ * an opaque `android:colorBackground`. This is required because Compose's [AndroidView]
+ * context has a transparent background, and [MediaRouteButton] internally calls
+ * `ColorUtils.calculateContrast()` which rejects translucent backgrounds.
  */
 @Composable
 actual fun CastButton(modifier: Modifier) {
     AndroidView(
         factory = { context ->
-            try {
-                val themedContext = ContextThemeWrapper(
-                    context,
-                    androidx.appcompat.R.style.Theme_AppCompat,
-                )
-                MediaRouteButton(themedContext).also { button ->
-                    CastButtonFactory.setUpMediaRouteButton(themedContext, button)
-                }
-            } catch (e: RuntimeException) {
-                Log.e("WhiteIPTV:Cast", "Failed to create MediaRouteButton", e)
-                View(context)
+            val themedContext = ContextThemeWrapper(context, R.style.CastButtonTheme)
+            MediaRouteButton(themedContext).also { button ->
+                CastButtonFactory.setUpMediaRouteButton(themedContext, button)
             }
         },
         modifier = modifier.size(48.dp),
