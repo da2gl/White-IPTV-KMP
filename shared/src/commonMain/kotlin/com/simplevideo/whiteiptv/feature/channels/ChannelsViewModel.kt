@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
@@ -29,6 +30,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -54,19 +56,31 @@ class ChannelsViewModel(
 
     private val searchQuery = MutableStateFlow("")
 
-    private val refreshTrigger = MutableStateFlow(0L)
+    private val _toggledFavoriteIds = MutableStateFlow<Set<Long>>(emptySet())
 
     val pagedChannels: Flow<PagingData<ChannelEntity>> = combine(
         currentPlaylistRepository.selection,
         selectedGroupIdFlow,
         searchQuery.debounce(300),
-        refreshTrigger,
-    ) { selection, selectedGroupId, query, _ ->
+    ) { selection, selectedGroupId, query ->
         Triple(selection, selectedGroupId, query)
     }.flatMapLatest { (selection, selectedGroupId, query) ->
         val filter = resolveFilter(selection, selectedGroupId)
         getPagedChannels(filter, query)
     }.cachedIn(viewModelScope)
+        .combine(_toggledFavoriteIds) { pagingData, toggledIds ->
+            if (toggledIds.isEmpty()) {
+                pagingData
+            } else {
+                pagingData.map { channel ->
+                    if (channel.id in toggledIds) {
+                        channel.copy(isFavorite = !channel.isFavorite)
+                    } else {
+                        channel
+                    }
+                }
+            }
+        }
 
     init {
         loadData()
@@ -173,11 +187,16 @@ class ChannelsViewModel(
     }
 
     private fun toggleFavoriteChannel(channelId: Long) {
+        _toggledFavoriteIds.update { ids ->
+            if (channelId in ids) ids - channelId else ids + channelId
+        }
         viewModelScope.launch {
             try {
                 toggleFavorite(channelId)
-                refreshTrigger.value++
             } catch (e: Exception) {
+                _toggledFavoriteIds.update { ids ->
+                    if (channelId in ids) ids - channelId else ids + channelId
+                }
                 viewAction = ChannelsAction.ShowError(e.message ?: "Unknown error")
             }
         }
