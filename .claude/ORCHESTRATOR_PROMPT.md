@@ -40,8 +40,15 @@ For each feature, follow `.claude/PIPELINE.md` stages:
 3. **coder** (worktree) → implements
 4. **tester** → writes tests
 5. **linter** → formats code
-6. **mobile-tester** → E2E (skip if no emulator)
+6. **mobile-tester** → E2E on emulator (AUTO — always run, check device first)
 7. **validator** → approves or requests rework
+
+**IMPORTANT**: mobile-tester is NOT optional. After merge + build:
+- Run `claude-in-mobile devices` to check emulator
+- If available → install APK, run E2E tests, write report
+- If unavailable → note in report, don't block pipeline
+- Fix trivial E2E bugs immediately (sequential, one at a time)
+- Report critical bugs to validator
 
 ### Parallel Execution Rules
 

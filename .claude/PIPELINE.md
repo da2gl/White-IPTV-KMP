@@ -65,7 +65,7 @@ START
   │          runs in same worktree branch
   │
   ▼
-[mobile-tester] ── builds APK, installs, tests on emulator (skip if no emulator)
+[mobile-tester] ── builds APK, installs, tests on emulator (auto — check device first)
   │
   ▼
 [validator] ── reads everything, compares plan vs result
@@ -213,14 +213,26 @@ Build: ./gradlew :androidApp:assembleDebug
 Fix all issues.
 ```
 
-### Mobile Tester
+### Mobile Tester (AUTO — runs after every feature)
 ```
 E2E test feature: <name>
 Spec: docs/features/<name>.md
-Build: ./gradlew :androidApp:assembleDebug
+Build: ./gradlew :androidApp:installDebug
 Package: com.simplevideo.whiteiptv
 Write report to: docs/features-claude/<name>/e2e-report.md
-Requires: running Android emulator + claude-in-mobile MCP
+
+PRE-CHECK: Run `claude-in-mobile devices` first.
+- If emulator available → run full E2E tests
+- If no emulator → log warning in report, continue pipeline
+  (do NOT block the pipeline on missing emulator)
+
+MUST DO:
+1. Install fresh APK before testing
+2. Screenshot before and after each action
+3. Check logs for crashes after interactions
+4. Write report even if partial (document what was tested)
+5. Fix trivial bugs inline (wrong text, missing icon) → re-test
+6. Report critical bugs → pipeline continues to validator with bug noted
 ```
 
 ### Validator
