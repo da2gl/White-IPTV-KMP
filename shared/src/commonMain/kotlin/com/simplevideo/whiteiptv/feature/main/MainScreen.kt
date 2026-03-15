@@ -2,10 +2,6 @@ package com.simplevideo.whiteiptv.feature.main
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
@@ -121,12 +117,7 @@ private fun BottomNavigationBar(
                         onItemClick(item.route)
                     }
                 },
-                icon = {
-                    Icon(
-                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.title,
-                    )
-                },
+                icon = { Icon(item.icon, contentDescription = item.title) },
                 label = { Text(item.title) },
             )
         }
@@ -136,33 +127,28 @@ private fun BottomNavigationBar(
 private val bottomNavItems = persistentListOf(
     BottomNavItem(
         title = "Home",
-        selectedIcon = Icons.Outlined.Home,
-        unselectedIcon = Icons.Outlined.Home,
+        icon = Icons.Outlined.Home,
         route = MainTab.Home,
     ),
     BottomNavItem(
         title = "Favorites",
-        selectedIcon = Icons.Outlined.FavoriteBorder,
-        unselectedIcon = Icons.Outlined.FavoriteBorder,
+        icon = Icons.Outlined.FavoriteBorder,
         route = MainTab.Favorites,
     ),
     BottomNavItem(
         title = "Channels",
-        selectedIcon = Icons.Outlined.Tv,
-        unselectedIcon = Icons.Outlined.Tv,
+        icon = Icons.Outlined.Tv,
         route = MainTab.Channels(),
     ),
     BottomNavItem(
         title = "Settings",
-        selectedIcon = Icons.Outlined.Settings,
-        unselectedIcon = Icons.Outlined.Settings,
+        icon = Icons.Outlined.Settings,
         route = MainTab.Settings,
     ),
 )
 
 private data class BottomNavItem(
     val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
+    val icon: ImageVector,
     val route: MainTab,
 )
