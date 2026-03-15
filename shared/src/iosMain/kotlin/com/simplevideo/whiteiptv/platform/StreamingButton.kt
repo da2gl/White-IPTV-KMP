@@ -10,12 +10,11 @@ import platform.AVKit.AVRoutePickerView
 import platform.UIKit.UIColor
 
 /**
- * iOS AirPlay route picker button using AVRoutePickerView.
- * Displays the system AirPlay device picker when tapped.
+ * iOS: AirPlay route picker using AVRoutePickerView.
  */
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun AirPlayButton(modifier: Modifier) {
+actual fun StreamingButton(modifier: Modifier) {
     UIKitView(
         factory = {
             AVRoutePickerView().apply {

@@ -11,15 +11,13 @@ import com.google.android.gms.cast.framework.CastButtonFactory
 import com.simplevideo.whiteiptv.shared.R
 
 /**
- * Android Chromecast media route button using MediaRouteButton.
+ * Android: Chromecast MediaRouteButton.
  *
- * Uses [ContextThemeWrapper] with a minimal [R.style.CastButtonTheme] that provides
- * an opaque `android:colorBackground`. This is required because Compose's [AndroidView]
- * context has a transparent background, and [MediaRouteButton] internally calls
- * `ColorUtils.calculateContrast()` which rejects translucent backgrounds.
+ * Uses [ContextThemeWrapper] with [R.style.CastButtonTheme] to provide an opaque
+ * `android:colorBackground` required by `MediaRouterThemeHelper.calculateContrast()`.
  */
 @Composable
-actual fun CastButton(modifier: Modifier) {
+actual fun StreamingButton(modifier: Modifier) {
     AndroidView(
         factory = { context ->
             val themedContext = ContextThemeWrapper(context, R.style.CastButtonTheme)
