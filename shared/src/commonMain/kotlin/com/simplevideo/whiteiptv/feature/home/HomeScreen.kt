@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +38,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -233,7 +232,6 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
@@ -244,27 +242,43 @@ private fun HomeTopAppBar(
     onPlaylistSettingsClick: () -> Unit,
     isPlaylistSettingsEnabled: Boolean,
 ) {
-    TopAppBar(
-        title = {
-            HomeTopAppBarTitle(
-                playlists = playlists,
-                selection = selection,
-                onPlaylistSelect = onPlaylistSelect,
-                onAddPlaylistClick = onAddPlaylistClick,
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
+            .statusBarsPadding()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PlaylistDropdown(
+            playlists = playlists,
+            selection = selection,
+            onPlaylistSelect = onPlaylistSelect,
+            onAddPlaylistClick = onAddPlaylistClick,
+        )
+        Spacer(modifier = Modifier.weight(1f))
+        IconButton(
+            onClick = onSearchClick,
+            modifier = Modifier.size(40.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        },
-        actions = {
-            IconButton(onClick = onSearchClick) {
-                Icon(Icons.Default.Search, contentDescription = "Search")
-            }
-            IconButton(
-                onClick = onPlaylistSettingsClick,
-                enabled = isPlaylistSettingsEnabled,
-            ) {
-                Icon(Icons.Default.Settings, contentDescription = "Playlist Settings")
-            }
-        },
-    )
+        }
+        IconButton(
+            onClick = onPlaylistSettingsClick,
+            enabled = isPlaylistSettingsEnabled,
+            modifier = Modifier.size(40.dp),
+        ) {
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Playlist Settings",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 @Composable
@@ -345,21 +359,6 @@ private fun ViewUrlDialog(
                 Text("Close")
             }
         },
-    )
-}
-
-@Composable
-private fun HomeTopAppBarTitle(
-    playlists: List<PlaylistEntity>,
-    selection: PlaylistSelection,
-    onPlaylistSelect: (PlaylistSelection) -> Unit,
-    onAddPlaylistClick: () -> Unit,
-) {
-    PlaylistDropdown(
-        playlists = playlists,
-        selection = selection,
-        onPlaylistSelect = onPlaylistSelect,
-        onAddPlaylistClick = onAddPlaylistClick,
     )
 }
 

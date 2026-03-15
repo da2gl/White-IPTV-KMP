@@ -1,8 +1,9 @@
 package com.simplevideo.whiteiptv.common.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -11,7 +12,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
@@ -34,40 +36,38 @@ fun PlaylistDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedText = when (selection) {
-        is PlaylistSelection.Selected -> playlists.find { it.id == selection.id }?.name ?: "All"
-        PlaylistSelection.All -> "All"
+        is PlaylistSelection.Selected -> playlists.find { it.id == selection.id }?.name ?: "All Playlists"
+        PlaylistSelection.All -> "All Playlists"
     }
 
-    Box(modifier = modifier.fillMaxWidth()) {
-        OutlinedCard(
-            onClick = { expanded = true },
-            modifier = Modifier.fillMaxWidth(),
+    Box(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .clickable { expanded = true }
+                .widthIn(max = 200.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            ) {
-                Text(
-                    text = "Playlist: $selectedText",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.align(Alignment.CenterStart),
-                )
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Select Playlist",
-                    modifier = Modifier.align(Alignment.CenterEnd),
-                )
-            }
+            Text(
+                text = selectedText,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "Select Playlist",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
 
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.9f),
         ) {
             DropdownMenuItem(
-                text = { Text("All") },
+                text = { Text("All Playlists") },
                 onClick = {
                     onPlaylistSelect(PlaylistSelection.All)
                     expanded = false
