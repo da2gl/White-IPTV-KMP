@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - IPTV App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2badee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101c22",
+                        "card-dark": "#18262d",
+                        "card-light": "#ffffff",
+                        "text-light-primary": "#1f2937",
+                        "text-light-secondary": "#6b7280",
+                        "text-dark-primary": "#e5e7eb",
+                        "text-dark-secondary": "#9ca3af",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#374151"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative w-full flex flex-col min-h-screen">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 flex items-center justify-between p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-border-light dark:border-border-dark">
+<div class="flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-text-light-primary dark:text-text-dark-primary text-2xl">arrow_back</span>
+</div>
+<h1 class="flex-1 text-lg font-bold tracking-tight text-text-light-primary dark:text-text-dark-primary text-center">Settings</h1>
+<div class="size-10 shrink-0"></div> <!-- Spacer -->
+</header>
+<main class="flex-1 px-4 py-6 space-y-8">
+<!-- Appearance Section -->
+<section class="space-y-3">
+<h2 class="px-4 text-sm font-bold uppercase tracking-wider text-text-light-secondary dark:text-text-dark-secondary">Appearance</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden">
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">contrast</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Theme</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">System</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">palette</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Accent Color</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">Teal</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">view_list</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Channel View</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">List</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Playback Section -->
+<section class="space-y-3">
+<h2 class="px-4 text-sm font-bold uppercase tracking-wider text-text-light-secondary dark:text-text-dark-secondary">Playback</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden">
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">play_circle</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Default Player</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">ExoPlayer</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">hd</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Preferred Quality</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">Auto</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- App Behavior Section -->
+<section class="space-y-3">
+<h2 class="px-4 text-sm font-bold uppercase tracking-wider text-text-light-secondary dark:text-text-dark-secondary">App Behavior</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden">
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">playlist_play</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Default Playlist</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">My Main Playlist</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">language</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Language</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">English</p>
+</div>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[72px] py-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div class="flex flex-col justify-center flex-1">
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Auto Update Playlists</p>
+<p class="text-sm font-normal leading-normal text-text-light-secondary dark:text-text-dark-secondary">Daily</p>
+</div>
+</div>
+<div class="shrink-0">
+<div class="relative inline-block w-12 h-7 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-7 h-7 rounded-full bg-white dark:bg-gray-600 border-4 appearance-none cursor-pointer checked:right-0 checked:bg-primary" id="toggle" name="toggle" type="checkbox"/>
+<label class="toggle-label block overflow-hidden h-7 rounded-full bg-gray-300 dark:bg-gray-700 cursor-pointer" for="toggle"></label>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Data & Storage Section -->
+<section class="space-y-3">
+<h2 class="px-4 text-sm font-bold uppercase tracking-wider text-text-light-secondary dark:text-text-dark-secondary">Data &amp; Storage</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden">
+<div class="flex items-center gap-4 px-4 min-h-[60px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">cleaning_services</span>
+</div>
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Clear Cache</p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[60px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">favorite</span>
+</div>
+<p class="text-base font-medium leading-normal text-text-light-primary dark:text-text-dark-primary">Clear Favorites</p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[60px] py-2 justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center shrink-0 size-12 text-red-500">
+<span class="material-symbols-outlined">restart_alt</span>
+</div>
+<p class="text-base font-medium leading-normal text-red-500">Reset to Defaults</p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- About Section -->
+<section class="space-y-3 pb-8">
+<h2 class="px-4 text-sm font-bold uppercase tracking-wider text-text-light-secondary dark:text-text-dark-secondary">About</h2>
+<div class="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden">
+<div class="flex items-center gap-4 px-4 min-h-[60px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<p class="text-base font-medium text-text-light-primary dark:text-text-dark-primary">App Version</p>
+<p class="text-sm text-text-light-secondary dark:text-text-dark-secondary">1.2.3</p>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[60px] py-2 justify-between border-b border-border-light dark:border-border-dark">
+<p class="text-base font-medium text-text-light-primary dark:text-text-dark-primary">Contact Support</p>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-4 min-h-[60px] py-2 justify-between">
+<p class="text-base font-medium text-text-light-primary dark:text-text-dark-primary">Privacy Policy</p>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-text-light-secondary dark:text-text-dark-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>

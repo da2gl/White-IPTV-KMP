@@ -27,6 +27,7 @@
     <ID>LongMethod:PlayerControls.kt$@Composable private fun PlayerBottomBar( tracksInfo: TracksInfo, sleepTimerRemainingMs: Long?, isPipSupported: Boolean, onShowAudioTracks: () -&gt; Unit, onShowSubtitles: () -&gt; Unit, onShowQuality: () -&gt; Unit, onShowSleepTimer: () -&gt; Unit, onEnterPip: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlaylistDropdown.kt$@Composable fun PlaylistDropdown( playlists: List&lt;PlaylistEntity&gt;, selection: PlaylistSelection, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onAddPlaylistClick: (() -&gt; Unit)? = null, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:SettingsComponents.kt$@Composable fun &lt;T&gt; SettingsDropdownRow( icon: ImageVector, title: String, subtitle: String, options: List&lt;T&gt;, selectedOption: T, onOptionSelected: (T) -&gt; Unit, optionLabel: (T) -&gt; String, modifier: Modifier = Modifier, showDivider: Boolean = true, )</ID>
     <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen()</ID>
     <ID>LongMethod:SettingsViewModel.kt$SettingsViewModel$override fun obtainEvent(viewEvent: SettingsEvent)</ID>
     <ID>LongMethod:SleepTimerSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SleepTimerSheet( activeTimerRemainingMs: Long?, onDismiss: () -&gt; Unit, onSetTimer: (durationMs: Long) -&gt; Unit, onCancelTimer: () -&gt; Unit, )</ID>
@@ -36,8 +37,6 @@
     <ID>LongParameterList:HomeViewModel.kt$HomeViewModel$( getPlaylists: GetPlaylistsUseCase, getContinueWatching: GetContinueWatchingUseCase, getFavorites: GetFavoritesUseCase, getHomeCategories: GetHomeCategoriesUseCase, private val getChannels: GetChannelsUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val renamePlaylistUseCase: RenamePlaylistUseCase, private val deletePlaylistUseCase: DeletePlaylistUseCase, private val importPlaylistUseCase: ImportPlaylistUseCase, )</ID>
     <ID>LongParameterList:PlayerViewModel.kt$PlayerViewModel$( savedStateHandle: SavedStateHandle, private val getChannelById: GetChannelByIdUseCase, private val getAdjacentChannel: GetAdjacentChannelUseCase, private val recordWatchEvent: RecordWatchEventUseCase, private val loadEpg: LoadEpgUseCase, private val getCurrentProgram: GetCurrentProgramUseCase, private val castManager: CastManager, )</ID>
     <ID>LoopWithTooManyJumpStatements:M3uParser.kt$M3uParser$for</ID>
-    <ID>MaxLineLength:SettingsScreen.kt$message = "This will reset all settings to their default values. Your playlists and channels will not be affected."</ID>
-    <ID>MaximumLineLength:SettingsScreen.kt$ </ID>
     <ID>NestedBlockDepth:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun getCurrentLiveOffset(): Long</ID>
     <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun selectAudioTrack(trackId: String)</ID>
@@ -59,8 +58,10 @@
     <ID>TooManyFunctions:ChannelRepositoryImpl.kt$ChannelRepositoryImpl : ChannelRepository</ID>
     <ID>TooManyFunctions:ExoVideoPlayer.kt$ExoVideoPlayer : VideoPlayer</ID>
     <ID>TooManyFunctions:PlaylistDao.kt$PlaylistDao</ID>
+    <ID>TooManyFunctions:SettingsComponents.kt$com.simplevideo.whiteiptv.feature.settings.components.SettingsComponents.kt</ID>
     <ID>TooManyFunctions:VideoPlayerFactory.kt$VideoPlayer</ID>
     <ID>TopLevelPropertyNaming:Color.kt$// Keeping other colors from the original file for a complete theme val LightPrimaryContainer = Color(0xFFEADDFF)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$// Settings card colors (Stitch design tokens) val CardDark = Color(0xFF18262d)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$// Slate color variants for text hierarchy and borders (matching Tailwind slate scale) val Slate200 = Color(0xFFe2e8f0)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnPrimary = Color(0xFF003062)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnPrimaryContainer = Color(0xFFd3e3fd)</ID>
@@ -134,6 +135,9 @@
     <ID>TopLevelPropertyNaming:Color.kt$val AppLightColorScheme = lightColorScheme( primary = Primary, onPrimary = OnPrimary, background = BackgroundLight, surface = BackgroundLight, onBackground = OnBackgroundLight, onSurface = OnBackgroundLight, onSurfaceVariant = Slate600, outline = Slate300, surfaceVariant = Slate200, primaryContainer = LightPrimaryContainer, onPrimaryContainer = LightOnPrimaryContainer, secondary = LightSecondary, onSecondary = LightOnSecondary, secondaryContainer = LightSecondaryContainer, onSecondaryContainer = LightOnSecondaryContainer, tertiary = LightTertiary, onTertiary = LightOnTertiary, tertiaryContainer = LightTertiaryContainer, onTertiaryContainer = LightOnTertiaryContainer, error = LightError, onError = LightOnError, errorContainer = LightErrorContainer, onErrorContainer = LightOnErrorContainer, )</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val BackgroundDark = Color(0xFF101c22)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val BackgroundLight = Color(0xFFf6f7f8)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val BorderDark = Color(0xFF374151)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val BorderLight = Color(0xFFe5e7eb)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val CardLight = Color(0xFFFFFFFF)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val DarkError = Color(0xFFF2B8B5)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val DarkErrorContainer = Color(0xFF8C1D18)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val DarkOnError = Color(0xFF601410)</ID>
@@ -148,6 +152,7 @@
     <ID>TopLevelPropertyNaming:Color.kt$val DarkSecondaryContainer = Color(0xFF4A4458)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val DarkTertiary = Color(0xFFEFB8C8)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val DarkTertiaryContainer = Color(0xFF633B48)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val DestructiveRed = Color(0xFFef4444)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val LightError = Color(0xFFB3261E)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val LightErrorContainer = Color(0xFFF9DEDC)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val LightOnError = Color(0xFFFFFFFF)</ID>
@@ -171,6 +176,10 @@
     <ID>TopLevelPropertyNaming:Color.kt$val Slate600 = Color(0xFF475569)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val Slate700 = Color(0xFF334155)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$val Slate800 = Color(0xFF1e293b)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val TextPrimaryDark = Color(0xFFe5e7eb)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val TextPrimaryLight = Color(0xFF111827)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val TextSecondaryDark = Color(0xFF9ca3af)</ID>
+    <ID>TopLevelPropertyNaming:Color.kt$val TextSecondaryLight = Color(0xFF6b7280)</ID>
     <ID>TopLevelPropertyNaming:Typography.kt$/** * Fallback typography using system default font. * * Used by screens that reference typography outside a theme context. */ val AppTypography = buildTypography(FontFamily.Default)</ID>
     <ID>UnusedPrivateMember:MainActivity.kt$@Preview @Composable private fun AppAndroidPreview()</ID>
     <ID>UnusedPrivateMember:OnboardingScreen.kt$@Preview(showBackground = true) @Composable private fun OnboardingScreenDarkPreview()</ID>

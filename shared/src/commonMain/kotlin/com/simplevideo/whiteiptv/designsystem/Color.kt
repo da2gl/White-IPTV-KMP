@@ -13,6 +13,17 @@ val OnPrimary = Color.White
 val OnBackgroundLight = Color(0xFF101c22)
 val OnBackgroundDark = Color(0xFFf6f7f8)
 
+// Settings card colors (Stitch design tokens)
+val CardDark = Color(0xFF18262d)
+val CardLight = Color(0xFFFFFFFF)
+val BorderDark = Color(0xFF374151)
+val BorderLight = Color(0xFFe5e7eb)
+val TextPrimaryDark = Color(0xFFe5e7eb)
+val TextPrimaryLight = Color(0xFF111827)
+val TextSecondaryDark = Color(0xFF9ca3af)
+val TextSecondaryLight = Color(0xFF6b7280)
+val DestructiveRed = Color(0xFFef4444)
+
 // Slate color variants for text hierarchy and borders (matching Tailwind slate scale)
 val Slate200 = Color(0xFFe2e8f0)
 val Slate300 = Color(0xFFcbd5e1)

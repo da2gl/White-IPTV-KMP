@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IPTV App - All Channels</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2badee",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101c22",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative mx-auto flex h-auto min-h-screen w-full max-w-md flex-col bg-background-light dark:bg-background-dark group/design-root">
+<div class="flex flex-col flex-1">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm p-4 pb-0">
+<div class="flex items-center justify-between pb-3">
+<h1 class="text-2xl font-bold text-slate-900 dark:text-white">All Channels</h1>
+<button class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-slate-700 dark:text-slate-300">
+<span class="material-symbols-outlined text-2xl">search</span>
+</button>
+</div>
+<!-- Chips / Category Filter -->
+<div class="flex gap-2 py-3 overflow-x-auto">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 whitespace-nowrap rounded-full bg-primary pl-4 pr-3 text-white">
+<p class="text-sm font-semibold">All</p>
+<span class="material-symbols-outlined !text-xl">expand_more</span>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 whitespace-nowrap rounded-full bg-slate-200 dark:bg-slate-700 pl-4 pr-4">
+<p class="text-slate-800 dark:text-slate-200 text-sm font-medium">News</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 whitespace-nowrap rounded-full bg-slate-200 dark:bg-slate-700 pl-4 pr-4">
+<p class="text-slate-800 dark:text-slate-200 text-sm font-medium">Sports</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 whitespace-nowrap rounded-full bg-slate-200 dark:bg-slate-700 pl-4 pr-4">
+<p class="text-slate-800 dark:text-slate-200 text-sm font-medium">Movies</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 whitespace-nowrap rounded-full bg-slate-200 dark:bg-slate-700 pl-4 pr-4">
+<p class="text-slate-800 dark:text-slate-200 text-sm font-medium">Entertainment</p>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 pt-2 pb-24">
+<!-- Channel Grid -->
+<div class="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-16 w-16 object-contain" data-alt="CNN channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwPK-ldLoINhcJcvMZAaDqjuUcHxP1zLqrUZBRv0QJJJQeXQ_rU9eC0JCqXkU3QGpI3GNGOH8_p9QhOMgAHT8lIkPVm-sbqoEjpReJhC54QAhbYRF6F9Xg9_Abpu52idyYIve_arXDrwPRTk9MS-eLfRG82ppLFqQjzF85Wry7e8qdmD3vkxbVIum_DNGlKawRxnkFzqlWqsbiHpYtm263M_lRaFZ9Sf6jd4WfUEYJsffIAvORXmn0swSTb9P0sRMx52U2zHxnQwk0"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">CNN News</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-10 w-auto object-contain" data-alt="ESPN channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0M63XlIr9WiooQOv5WXeyG848KHd0R6cTw5OUhvqWQK4x4NCc9lJuiarPbO81NtgetKmwEx-JMMSMoB29vZoLbbV1w3A_8t3ptEqLr9w7BAR9lfkxnrRJqPw1d29JOqgS0s39RDnG-os1vvBRPoavv9XNQu6KfYSVtVffZOvMXRg024EsSZ21T51yxyzIQdDwB_lHhW-TJJpxH7-0slwl6MH6XNxrrCu0c04H-cSx5SbE--67R3H2AJDuqr77f3ipKMsQQFZVqJCM"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg filled text-yellow-400">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">ESPN</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-10 w-auto object-contain" data-alt="HBO channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAt6mSSlXFr_AuSqsJbwgwAZa2jZSQR5k51GwQu3pHx_Dsu9dfAUK-oMg_DD3WjZmS1ZM-h_cwNuUDBzBcc-6MknUbh9E8vAyeDzIWIbMsB303frlHKpky09iFvrTyS0RUwRkTx5LNmG_7ngG9d_nIierWgs2Hlu3cxvWYlv30WravPaebss5IHyt08ziYmP5CnLFGZUmxxo4EretCiQs1Xg3R56PUrtrl0mEmkflRx4yZ_qmWaZjoNtHXoYhLcYloLiKru-4Rcftj"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">HBO Movies</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-8 w-auto object-contain" data-alt="Discovery channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrMicFellN329RLlSTNebtrQ13NA6n8uCW-0UcyxtMBZTWMy1hXMVsJeeEadXn9GE25iKrrSMBSMLWji7Hz59_g3nbJHMbpZyjoB_5R9IOIb6Kw8vRyFZpDQKfYT9TxjBb-4kiOpBXCsOg4eE7Q3cf9SjdIA4-L_1KsFDZTrscCuIeQtKl09xi192TAM_pFxL13QfKJOPJBVNCGeOK6CWKF2wZ5g6KzkkI11OyamNsWbEN3_aatWsYTp7k0xGtECoIMKgWvSWgvzi6"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">Discovery</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-12 w-auto object-contain" data-alt="Sky Sports channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv4p9K_52lFsIshSIOOyK-uHgTHJcQ-ACjjjtOTtGFY1RNr_DpoLBxhV_g29Ul4NHl5i7_oIRpfAfYKnunJjycaI9uO7iaH5c8dx0LIhAZqWWAKfpCvX_mZiGsLUiRVo3aY90hJTRJmdoB3M5USDGx6HbYcJP0KLFDPMGv_HXjDe0aaqQdfqT8WEnRbwowBbic-k-5mYbUXgnVSmatw5ARbN_KLwpn3UK4ublndG5J-gFu4IdJt_tlxRw7Tq04YAgz3baCzXjg569M"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">Sky Sports F1</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-12 w-12 object-contain" data-alt="BBC News channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_OGko1F37YOjy74XXUfUIWVJSyzcI2CnH6jHQwAvGDyfQg_ecb3bk0X2544hxe5_pNawpu5Nn5E6fb2DVeY-hS-rfdiUU8fjHrpgNnu9BP3AJGoxEMClntMqHb3ubiUTLJFWPmRuwaOxrKvLjFqTUanyjX_Yw8xNOX5OLPEhh8Uy6H7c9awGdua28gwvXAvX9YRUY_our-tZmeua7kxNLx12RwBH-A94vhe-BlhheZTmsSlO_x6ekBxcmHBJHy-Si0JeYoJRbxnQR"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">BBC News</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-14 w-14 object-contain" data-alt="Nat Geo channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZ87Sd02T3hYQedIe0iXbrEZjmexsZQ9CLp5bNsBaBIUHlQsCFgSOCIIxAwN_L5yBVbgKXY6poqLrqmoQSda7VskhH1IiW2N_JWMZtgVnp6lEnZqBjNvZRZbU8RnnUXot6H96k_qDFW0DeGaY_kAyZvpxbGiNxyW0XwKt4VlQ0InOMoN7RLMVXFxnF2pmewxDqkDx8_qEbf3DFj5pfWwobyXmHbKSDnh9JE7HSCKCghXUPw5eCpOFSc9GvBYE4ywhqNwW9MBuTIuWD"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg filled text-yellow-400">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">Nat Geo Wild</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="relative w-full">
+<div class="w-full aspect-square bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+<img class="h-12 w-12 object-contain" data-alt="AMC channel logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1G0jB4e4f1kII0lt1fB8oGjO_gV5CcuILDE89ku-MKkb5D7b5HNLoeIed0tGm509dE22-4dtBbZq3xa5xzt1PHnn8R9JZ3q-xDlnJJcAJQ_ioGh1EKZA-suo91fAkB26wX59UhyekIgLfiwRStFWJLLnFOXGIBaRd4Jta5HxNB7f4UQgf51aa_sGrRwbxmrWUgPPH7yZuIUCwr4qS5IxXvV5rbVgKp-ukLazOuylCizTnHtVLLR4oTyXe7H0RuIelxniLMyFaOBAp"/>
+</div>
+<button class="absolute top-1 right-1 flex h-7 w-7 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm">
+<span class="material-symbols-outlined !text-lg">star</span>
+</button>
+</div>
+<p class="text-slate-900 dark:text-slate-100 text-sm font-medium text-center truncate w-full">AMC</p>
+</div>
+<!-- Empty State Example -->
+<!-- To show the empty state, remove the channel grid items and uncomment the div below -->
+<!-- 
+                 <div class="col-span-full flex flex-col items-center justify-center gap-4 text-center py-16">
+                    <span class="material-symbols-outlined text-6xl text-slate-400 dark:text-slate-500">sentiment_dissatisfied</span>
+                    <p class="text-lg font-semibold text-slate-800 dark:text-slate-200">No channels found</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xs">Try selecting a different category or reload your playlist.</p>
+                    <button class="mt-4 flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary px-6 text-base font-semibold text-white">
+                        Reload playlist
+                    </button>
+                 </div>
+                 -->
+</div>
+</main>
+</div>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-0 left-0 right-0 z-10 max-w-md mx-auto border-t border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex h-[72px]">
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-xs font-medium">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined filled">grid_view</span>
+<p class="text-xs font-bold">Channels</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<p class="text-xs font-medium">EPG</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-center gap-1 text-slate-500 dark:text-slate-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-xs font-medium">Settings</p>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

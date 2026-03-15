@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Favorites - IPTV App</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#2badee",
+              "background-light": "#f6f7f8",
+              "background-dark": "#101c22",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-screen min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-10 flex flex-col bg-background-light dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4">
+<h1 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] flex-1">⭐ Favorites</h1>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-2xl">search</span>
+</button>
+</div>
+</div>
+<!-- Chips -->
+<div class="flex gap-3 px-4 pb-3 overflow-x-auto">
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary pl-4 pr-3 text-white">
+<p class="text-sm font-medium leading-normal">Playlist: All</p>
+<span class="material-symbols-outlined text-xl">expand_more</span>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-slate-700 dark:text-slate-300">
+<p class="text-sm font-medium leading-normal">Main</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-slate-700 dark:text-slate-300">
+<p class="text-sm font-medium leading-normal">Sports</p>
+</button>
+<button class="flex h-9 shrink-0 items-center justify-center gap-x-2 rounded-full bg-slate-200 dark:bg-slate-800 px-4 text-slate-700 dark:text-slate-300">
+<p class="text-sm font-medium leading-normal">Kids</p>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto">
+<!-- Section Header -->
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">All Channels</h3>
+<!-- Image Grid -->
+<div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 p-4">
+<div class="flex flex-col gap-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" data-alt="Channel One logo on abstract blue background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBsCEmsn28AfuW7zd9-8TebjAKqLMfvE153R1CZTdAmzbMX89PqK2NlNtPutuJij9hwsFCcUAq2EnTKM32hboyNrekpsORDLHaJBY783c9ypT8Qk6Rmf8rHbb7_G9u0fGdGblfR2eAaPZnpXNTLLsL_AZ9m18JcekI18f0ObEVIzndF0xgoEssQm7zdylCVkji5bc0HV9kdFxXf6wVoDo0yBWr0z47twFWf0YJUR8qDtsvha4z6qqbU8bZjs7I1K6QPyMzD2Zd0mL5E");'></div>
+<button class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-yellow-400">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Channel One</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">Main</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" data-alt="Channel Two logo on fiery background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBpslFuR3HhHcWqHEc_kZZhT-NE5OGfa44WdVaU9xyH8-GdLrUMb6UYcpthrJ-FpG06CmHabYURsHGrN8wMTjpoYTO6nKMBK4_7OpYJF-_3VtUK3PWQ06d_pZ3Qddvj4k7QMJW-a7uAYVID-_nLar5MgA556O_RclHcvZ97yaJDQjHObisldR9KoMHSYo--g9sELmH1cAvkHqEOjki59tpfMSnceW9cGBqqHjYnM39-C_Ed0_-L3myRERhz_UMitJ7V4DQ0az36btTe");'></div>
+<button class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-yellow-400">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Channel Two</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">Sports</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" data-alt="Channel Three logo on colorful cartoon background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCFoVWOLfrD4UgTwUiKeYub9QpMtw3PQgrv8KWi2Z9O3172EpFOEoWQCNXe1_sMuFDpB3sTdTlxrwynY128fDuePIw8vDv9P6GW8IrvlI61vGTmhKsZqPBSWMIY83fQX0tE-dEn2QmTmMd25aYEyI515eRgxzsvL_k9eoSyjyASt1bd6g_K5rYX7E5JRuhhecO5AaEKFP-TMLfPXwhNZHkbpqELcKdQOnHw7P4aUXisqDKvkrHwaSbNX6IZqmQGW9chRV-jKJRYK9T3");'></div>
+<button class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-yellow-400">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Channel Three</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">Kids</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" data-alt="Channel Four logo on dramatic weather background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCilK8NJYiIi__pdiWNC4N7Tf3GZmQFXaUkI8FYJrEiQRdDLBRNdHZu5INN7rxmqMUOFNeNQZvuI5ifbz18W6C8MwC_2lUUnVvnWm5bEPjmeZsqgamN9-xlc1wx0m5WjPg-YaanMHBr4BLHHULpI5NjQiqYGkXC_ouzN7VLZjj5sNe6qvWfKldU9uA8nl4zP91XDGZN1Ptk9-HLqnc-mjlQ_YJsiRc56R_eclZ_0liXBi_0VBDr4GeDW1U59Iew1NNECWPDFkLRDFYv");'></div>
+<button class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-yellow-400">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Channel Four</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">News</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" data-alt="Channel Five logo on cinematic background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDitI61PI9e-wMVzke8xH9nLgmjaTz37KvsQokRGFWpEPfMHO3xtxYpTa7QZ6YvIvbcQstBVEcNa181EOcHmV52kJseFimJSh8btEgwKizw1aJb_-WQoZbGFdAczLnRC3n3pfPrVupTTafc-xTI3G6xLezEZGpMIR1-yb0VwhFfGl_-f2f-ATo4a3rOfpN_es6cm4AjMkom3ikir5nTgCmQRJZ9LG8DkRrx-eLoMrKFGUrtbfIWlgJHwVMajl6ln5SutJERZPFcGCg4");'></div>
+<button class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-yellow-400">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Channel Five</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">Main</p>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<div class="relative w-full">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-lg" data-alt="Channel Six logo with soccer ball" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCk1VbFWe0OhCtSz-10ILpXnp6SHI2qNHuZchYKPBwvrZIPIPXZyR34hjrELx16EREGHMdFpOaEu8ndYzlrQ4ZB7boIoA8pNOb8rthx3JnxIhG7a-GAiOeCA2B8HU_Fh06e7nXGdGzaMPn32_9gQH0u9bCsYpa-oJxx_RcIXMuugfLiYcLB6CeY7czrv_ICFhzanSlxBncDBu-o9KkWLfPQxCHrx9XrKPcFOxU8D0cbXme7G6rXpEqu17XkfY90mnL0fOhoVP8Lzwqv");'></div>
+<button class="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-yellow-400">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white text-base font-medium leading-normal">Channel Six</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal">Sports</p>
+</div>
+</div>
+</div>
+<!-- Empty State (Uncomment to view) -->
+<!--
+            <div class="flex flex-col items-center justify-center h-full p-8 text-center">
+                <span class="material-symbols-outlined text-7xl text-slate-400 dark:text-slate-600">star</span>
+                <h2 class="mt-4 text-lg font-semibold text-slate-800 dark:text-slate-200">You haven’t added any favorite channels yet</h2>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Add channels to Favorites by tapping the ⭐ icon.</p>
+            </div>
+            -->
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="sticky bottom-0 z-10 border-t border-slate-200 dark:border-slate-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex gap-2 px-4 pb-3 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">list_alt</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Playlists</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary dark:text-primary" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Favorites</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-500 dark:text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">settings</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Settings</p>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

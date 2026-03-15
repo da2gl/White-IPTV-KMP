@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IPTV Playlist Upload</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary": "#2badee",
+                "background-light": "#f6f7f8",
+                "background-dark": "#101c22",
+              },
+              fontFamily: {
+                "display": ["Inter", "sans-serif"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<div class="flex w-full grow flex-col items-center justify-center p-4">
+<div class="flex w-full max-w-md flex-col items-center gap-6">
+<!-- Header: Logo/App Name -->
+<div class="flex flex-col items-center justify-center gap-3 py-6">
+<span class="material-symbols-outlined text-primary text-5xl">play_circle</span>
+<h2 class="text-2xl font-bold tracking-tight text-slate-800 dark:text-white">Streamify</h2>
+</div>
+<!-- Text Block -->
+<div class="flex flex-col items-center gap-2 text-center">
+<h1 class="text-slate-900 dark:text-white tracking-tight text-[32px] font-bold leading-tight">Upload your IPTV playlist</h1>
+<p class="text-slate-600 dark:text-slate-400 text-base font-normal leading-normal">Enter a link or choose a file to start watching</p>
+</div>
+<!-- Input Section -->
+<div class="flex w-full flex-col gap-4 pt-4">
+<!-- URL Input Field -->
+<label class="flex w-full flex-col">
+<p class="text-sm font-medium leading-normal pb-2 text-slate-700 dark:text-slate-300">Playlist URL</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/50 dark:border-slate-700 dark:bg-[#192730] dark:text-white dark:placeholder:text-slate-500 dark:focus:ring-primary h-12 p-3 text-base font-normal leading-normal" placeholder="https://..."/>
+</label>
+<!-- OR Separator -->
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+<span class="mx-4 flex-shrink text-xs font-medium uppercase text-slate-500 dark:text-slate-600">Or</span>
+<div class="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+</div>
+<!-- File Upload Button -->
+<button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-slate-200/80 text-slate-800 hover:bg-slate-200 dark:bg-primary/20 dark:text-primary dark:hover:bg-primary/30 text-base font-bold leading-normal tracking-[0.015em] transition-colors">
+<span class="truncate">Choose file</span>
+</button>
+</div>
+<!-- Primary CTA and Feedback -->
+<div class="flex w-full flex-col items-center gap-4 pt-4">
+<!-- Primary CTA Button -->
+<button class="flex min-w-[84px] w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors hover:bg-primary/90">
+<span class="truncate">Import playlist</span>
+</button>
+<!-- Feedback Area (Example: Loading) -->
+<div class="hidden h-6 w-full items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+<svg class="animate-spin h-4 w-4 text-primary" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+<path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor"></path>
+</svg>
+<span>Importing...</span>
+</div>
+<!-- Feedback Area (Example: Error) -->
+<div class="flex h-6 w-full items-center justify-center gap-2 text-sm text-red-500 dark:text-red-400">
+<span class="material-symbols-outlined text-base">error</span>
+<span>Invalid playlist format</span>
+</div>
+<!-- Tertiary Link -->
+<a class="text-sm font-medium text-primary hover:underline py-2" href="#">Use demo playlist</a>
+</div>
+</div>
+</div>
+</div>
+</body></html>
