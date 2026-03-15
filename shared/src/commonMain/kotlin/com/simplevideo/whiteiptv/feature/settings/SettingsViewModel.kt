@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.feature.settings
 
 import androidx.lifecycle.viewModelScope
+import com.simplevideo.whiteiptv.AppConfig
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
@@ -123,7 +124,7 @@ class SettingsViewModel(
     }
 
     companion object {
-        private const val APP_VERSION = "1.0"
+        private val APP_VERSION = AppConfig.VERSION_NAME
         private const val SUPPORT_EMAIL = "mailto:support@simplevideo.com"
         private const val PRIVACY_POLICY_URL = "https://simplevideo.com/privacy"
     }
