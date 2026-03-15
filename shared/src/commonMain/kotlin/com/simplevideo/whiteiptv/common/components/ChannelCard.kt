@@ -47,6 +47,7 @@ fun ChannelCardSquare(
     modifier: Modifier = Modifier,
     category: String? = null,
     showLiveBadge: Boolean = false,
+    showFavoriteButton: Boolean = true,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -99,19 +100,21 @@ fun ChannelCardSquare(
                 }
             }
 
-            IconButton(
-                onClick = onToggleFavorite,
-                modifier = Modifier.align(Alignment.TopEnd),
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                    tint = if (isFavorite) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color.White.copy(alpha = 0.7f)
-                    },
-                )
+            if (showFavoriteButton) {
+                IconButton(
+                    onClick = onToggleFavorite,
+                    modifier = Modifier.align(Alignment.TopEnd),
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                        tint = if (isFavorite) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.White.copy(alpha = 0.7f)
+                        },
+                    )
+                }
             }
 
             if (showLiveBadge) {
@@ -139,6 +142,7 @@ fun ChannelCardList(
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
+    showFavoriteButton: Boolean = true,
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -188,16 +192,18 @@ fun ChannelCardList(
                 }
             }
 
-            IconButton(onClick = onToggleFavorite) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                    contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                    tint = if (isFavorite) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                )
+            if (showFavoriteButton) {
+                IconButton(onClick = onToggleFavorite) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                        tint = if (isFavorite) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    )
+                }
             }
         }
     }

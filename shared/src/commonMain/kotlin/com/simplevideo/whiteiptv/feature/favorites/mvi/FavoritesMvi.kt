@@ -2,12 +2,14 @@ package com.simplevideo.whiteiptv.feature.favorites.mvi
 
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
+import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 
 data class FavoritesState(
     val channels: List<ChannelEntity> = emptyList(),
     val playlists: List<PlaylistEntity> = emptyList(),
     val selection: PlaylistSelection = PlaylistSelection.All,
+    val channelViewMode: ChannelViewMode = ChannelViewMode.List,
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
     val isLoading: Boolean = true,
