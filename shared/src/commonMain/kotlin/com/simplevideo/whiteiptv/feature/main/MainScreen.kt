@@ -21,6 +21,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.simplevideo.whiteiptv.common.LogRecomposition
+import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
 import com.simplevideo.whiteiptv.feature.home.HomeScreen
@@ -105,7 +107,8 @@ private fun BottomNavigationBar(
     currentDestination: androidx.navigation.NavDestination?,
     onItemClick: (MainTab) -> Unit,
 ) {
-    NavigationBar {
+    LogRecomposition("BottomNavigationBar")
+    NavigationBar(modifier = Modifier.trackRecomposition("BottomNavigationBar")) {
         items.forEach { item ->
             val isSelected = currentDestination?.hierarchy?.any {
                 it.hasRoute(item.route::class)

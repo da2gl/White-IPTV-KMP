@@ -34,12 +34,14 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.GroupDropdown
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
+import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
@@ -140,7 +142,8 @@ private fun ChannelsContent(
     val isInitialLoading = pagedItems.loadState.refresh is LoadState.Loading
     val isEmptyResult = pagedItems.loadState.refresh is LoadState.NotLoading && pagedItems.itemCount == 0
 
-    Column(modifier = modifier.fillMaxSize()) {
+    LogRecomposition("ChannelsContent")
+    Column(modifier = modifier.fillMaxSize().trackRecomposition("ChannelsContent")) {
         PlaylistDropdown(
             playlists = state.playlists,
             selection = state.selection,

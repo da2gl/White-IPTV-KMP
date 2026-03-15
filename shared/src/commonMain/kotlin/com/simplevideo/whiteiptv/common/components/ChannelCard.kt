@@ -31,6 +31,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.simplevideo.whiteiptv.common.LogRecomposition
+import com.simplevideo.whiteiptv.common.trackRecomposition
 
 /**
  * Square channel card for grid layouts (Home favorites, Favorites, Channels grid).
@@ -49,8 +51,9 @@ fun ChannelCardSquare(
     showLiveBadge: Boolean = false,
     showFavoriteButton: Boolean = true,
 ) {
+    LogRecomposition("ChannelCardSquare")
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().trackRecomposition("ChannelCardSquare"),
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -144,8 +147,9 @@ fun ChannelCardList(
     subtitle: String? = null,
     showFavoriteButton: Boolean = true,
 ) {
+    LogRecomposition("ChannelCardList")
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().trackRecomposition("ChannelCardList"),
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         color = MaterialTheme.colorScheme.surfaceContainer,

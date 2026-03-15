@@ -22,6 +22,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.simplevideo.whiteiptv.common.LogRecomposition
+import com.simplevideo.whiteiptv.common.trackRecomposition
 
 /**
  * Card for continue watching section on the Home screen.
@@ -36,8 +38,9 @@ fun ContinueWatchingCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LogRecomposition("ContinueWatchingCard")
     Card(
-        modifier = modifier.width(200.dp),
+        modifier = modifier.width(200.dp).trackRecomposition("ContinueWatchingCard"),
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(

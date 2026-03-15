@@ -40,6 +40,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.simplevideo.whiteiptv.common.LogRecomposition
+import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.domain.model.EpgProgram
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
 import com.simplevideo.whiteiptv.platform.AudioTrackInfo
@@ -66,7 +68,8 @@ fun PlayerControlsOverlay(
     onEnterPip: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    LogRecomposition("PlayerControlsOverlay")
+    Box(modifier = modifier.fillMaxSize().trackRecomposition("PlayerControlsOverlay")) {
         if (isBuffering) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),

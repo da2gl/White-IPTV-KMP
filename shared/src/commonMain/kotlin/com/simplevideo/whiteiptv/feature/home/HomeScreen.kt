@@ -53,11 +53,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.ContinueWatchingCard
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
+import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
@@ -370,9 +372,11 @@ private fun HomeContent(
     onChannelClick: (channelId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LogRecomposition("HomeContent")
     Column(
         modifier = modifier
             .fillMaxSize()
+            .trackRecomposition("HomeContent")
             .verticalScroll(rememberScrollState()),
     ) {
         // Continue Watching
