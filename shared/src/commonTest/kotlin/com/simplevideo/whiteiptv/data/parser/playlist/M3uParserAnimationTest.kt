@@ -3,7 +3,11 @@ package com.simplevideo.whiteiptv.data.parser.playlist
 import com.simplevideo.whiteiptv.data.parser.playlist.M3uParserTestResources.REAL_ANIMATION_PLAYLIST
 import com.simplevideo.whiteiptv.data.parser.playlist.M3uParserTestResources.REAL_SCIENCE_PLAYLIST
 import com.simplevideo.whiteiptv.data.parser.playlist.M3uParserTestResources.REAL_WEATHER_PLAYLIST
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Tests for M3U parser using real animation.m3u playlist from iptv-org

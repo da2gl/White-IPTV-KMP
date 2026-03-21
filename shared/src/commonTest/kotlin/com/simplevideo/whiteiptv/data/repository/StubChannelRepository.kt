@@ -13,11 +13,11 @@ class StubChannelRepository : ChannelRepository {
     override fun getChannelsByGroupId(groupId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override suspend fun getChannelsList(playlistId: Long): List<ChannelEntity> = emptyList()
     override suspend fun insertChannels(channels: List<ChannelEntity>): List<Long> = emptyList()
-    override suspend fun deleteChannelsByPlaylistId(playlistId: Long) {}
+    override suspend fun deleteChannelsByPlaylistId(playlistId: Long) = Unit
     override fun getFavoriteChannels(): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override fun getFavoriteChannelsByPlaylist(playlistId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())
-    override suspend fun toggleFavoriteStatus(channelId: Long) {}
-    override suspend fun clearAllFavorites() {}
+    override suspend fun toggleFavoriteStatus(channelId: Long) = Unit
+    override suspend fun clearAllFavorites() = Unit
     override fun searchChannels(query: String): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
         flowOf(emptyList())
@@ -32,7 +32,7 @@ class StubChannelRepository : ChannelRepository {
         flowOf(emptyList())
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> = emptyList()
     override suspend fun insertGroups(groups: List<ChannelGroupEntity>): List<Long> = emptyList()
-    override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) {}
+    override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) = Unit
 
     // Paged channels
     override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> = emptyList()

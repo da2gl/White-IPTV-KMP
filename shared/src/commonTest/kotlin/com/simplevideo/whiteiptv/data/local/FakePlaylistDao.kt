@@ -38,8 +38,8 @@ class FakePlaylistDao : PlaylistDao {
     override suspend fun insertPlaylist(playlist: PlaylistEntity): Long = 0L
     override suspend fun insertChannels(channels: List<ChannelEntity>): List<Long> = emptyList()
     override suspend fun upsertPlaylist(playlist: PlaylistEntity): Long = 0L
-    override suspend fun upsertChannels(channels: List<ChannelEntity>) {}
-    override suspend fun updatePlaylist(playlist: PlaylistEntity) {}
+    override suspend fun upsertChannels(channels: List<ChannelEntity>) = Unit
+    override suspend fun updatePlaylist(playlist: PlaylistEntity) = Unit
     override fun getPlaylists(): Flow<List<PlaylistEntity>> = flowOf(emptyList())
     override suspend fun getPlaylistsList(): List<PlaylistEntity> = emptyList()
     override suspend fun getPlaylistById(playlistId: Long): PlaylistEntity? = null
@@ -57,12 +57,12 @@ class FakePlaylistDao : PlaylistDao {
     override fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
         flowOf(emptyList())
-    override suspend fun toggleFavoriteStatus(channelId: Long) {}
-    override suspend fun clearAllFavorites() {}
-    override suspend fun deleteChannelsByPlaylistId(playlistId: Long) {}
-    override suspend fun deletePlaylist(playlistId: Long) {}
+    override suspend fun toggleFavoriteStatus(channelId: Long) = Unit
+    override suspend fun clearAllFavorites() = Unit
+    override suspend fun deleteChannelsByPlaylistId(playlistId: Long) = Unit
+    override suspend fun deletePlaylist(playlistId: Long) = Unit
     override suspend fun upsertGroups(groups: List<ChannelGroupEntity>): List<Long> = emptyList()
-    override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) {}
+    override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) = Unit
     override fun getGroupsByPlaylist(playlistId: Long): Flow<List<ChannelGroupEntity>> = flowOf(emptyList())
     override fun getAllGroups(): Flow<List<ChannelGroupEntity>> = flowOf(emptyList())
     override fun getTopGroups(limit: Int): Flow<List<ChannelGroupEntity>> = flowOf(emptyList())
@@ -73,9 +73,9 @@ class FakePlaylistDao : PlaylistDao {
     override fun getGroupWithChannels(groupId: Long): Flow<GroupWithChannels?> = flowOf(null)
     override fun getChannelsByGroupId(groupId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())
     override suspend fun getGroupsForChannel(channelId: Long): List<ChannelGroupEntity> = emptyList()
-    override suspend fun rebuildChannelFtsForPlaylist(playlistId: Long) {}
-    override suspend fun deleteAllChannelFts() {}
-    override suspend fun deleteChannelFtsByPlaylistId(playlistId: Long) {}
+    override suspend fun rebuildChannelFtsForPlaylist(playlistId: Long) = Unit
+    override suspend fun deleteAllChannelFts() = Unit
+    override suspend fun deleteChannelFtsByPlaylistId(playlistId: Long) = Unit
 
     // Paged channel stubs
     override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> = emptyList()

@@ -62,7 +62,7 @@ class HomeViewModelTest {
         stubChannelRepository = StubChannelRepository()
         stubWatchHistoryRepository = object : WatchHistoryRepository {
             override fun getRecentlyWatchedChannels(limit: Int): Flow<List<ChannelEntity>> = flowOf(emptyList())
-            override suspend fun recordWatchEvent(channelId: Long, playlistId: Long, durationMs: Long) {}
+            override suspend fun recordWatchEvent(channelId: Long, playlistId: Long, durationMs: Long) = Unit
             override suspend fun getWatchHistoryForChannel(channelId: Long): WatchHistoryEntity? = null
         }
     }
