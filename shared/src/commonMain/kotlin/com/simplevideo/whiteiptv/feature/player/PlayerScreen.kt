@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cast
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -39,6 +39,7 @@ import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.KeepScreenOn
 import com.simplevideo.whiteiptv.platform.PlayerListener
 import com.simplevideo.whiteiptv.platform.TracksInfo
+import com.simplevideo.whiteiptv.platform.VideoPlayer
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.rememberPipController
 import com.simplevideo.whiteiptv.platform.rememberSystemControls
@@ -47,6 +48,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+
+private const val LIVE_OFFSET_POLL_INTERVAL_MS = 1000L
 
 @Composable
 fun PlayerScreen(
@@ -95,6 +98,9 @@ private fun PlayerScreenContent(
     // Local state for volume and brightness to ensure proper updates
     var currentVolume by remember { mutableFloatStateOf(systemControls.getVolume()) }
     var currentBrightness by remember { mutableFloatStateOf(systemControls.getBrightness()) }
+
+    // Local state for live offset (polled, not MVI state)
+    var liveOffsetMs by remember { mutableLongStateOf(0L) }
 
     // Auto-hide controls after 3 seconds
     fun scheduleHideControls() {
@@ -147,6 +153,11 @@ private fun PlayerScreenContent(
             player.play()
             scheduleHideControls()
         }
+    }
+
+    // Poll live offset every second
+    PollLiveOffset(player = player, isPlaying = state.isPlaying) { offset ->
+        liveOffsetMs = offset
     }
 
     // When casting starts, pause local player and send stream to Cast device
@@ -207,12 +218,14 @@ private fun PlayerScreenContent(
                     scheduleHideControls()
                 }
             },
+            nextChannelName = state.nextChannelName,
+            previousChannelName = state.previousChannelName,
             modifier = Modifier.fillMaxSize(),
         )
 
         // Loading indicator
         if (state.isLoading) {
-            CircularProgressIndicator(
+            androidx.compose.material3.CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
                 color = Color.White,
             )
@@ -247,6 +260,8 @@ private fun PlayerScreenContent(
                 nextProgram = state.nextProgram,
                 sleepTimerRemainingMs = state.sleepTimerRemainingMs,
                 isPipSupported = pipController.isPipSupported(),
+                channelLogoUrl = state.channel.logoUrl,
+                liveOffsetMs = liveOffsetMs,
                 onBackClick = { onEvent(PlayerEvent.OnBackClick) },
                 onShowAudioTracks = {
                     onEvent(PlayerEvent.OnShowTrackSelection(TrackSelectionType.AUDIO))
@@ -259,6 +274,7 @@ private fun PlayerScreenContent(
                 },
                 onShowSleepTimer = { onEvent(PlayerEvent.OnShowSleepTimer) },
                 onEnterPip = { pipController.enterPipMode() },
+                onSeekToLive = { player.seekToLiveEdge() },
             )
         }
 
@@ -291,6 +307,22 @@ private fun PlayerScreenContent(
                 onSetTimer = { durationMs -> onEvent(PlayerEvent.OnSetSleepTimer(durationMs)) },
                 onCancelTimer = { onEvent(PlayerEvent.OnCancelSleepTimer) },
             )
+        }
+    }
+}
+
+@Composable
+private fun PollLiveOffset(
+    player: VideoPlayer,
+    isPlaying: Boolean,
+    onOffsetChanged: (Long) -> Unit,
+) {
+    LaunchedEffect(isPlaying) {
+        if (!isPlaying) return@LaunchedEffect
+        while (true) {
+            val offset = player.getCurrentLiveOffset()
+            onOffsetChanged(offset)
+            delay(LIVE_OFFSET_POLL_INTERVAL_MS)
         }
     }
 }

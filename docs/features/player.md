@@ -8,18 +8,33 @@ Provide smooth, uninterrupted playback with quick access to controls, track sele
 
 ## Controls
 
-Controls auto-hide after 3 seconds of inactivity. Tapping the screen toggles visibility.
+Controls auto-hide after 3 seconds of inactivity. Tapping the screen toggles visibility. Controls animate in/out with a combined fade + slide (top bar slides from top, bottom bar slides from bottom) over 350ms.
 
-### Playback Controls
-- Play/Pause
-- Channel info (name, group)
-- Back button (return to previous screen)
+### Top Bar
+- Back button (28dp icon)
+- Channel logo (32dp, circular, from channel entity `logoUrl`; hidden when no logo available)
+- Channel name (titleLarge, bold, with ellipsis for long names)
+- EPG program info (when available)
+- Semi-transparent gradient overlay (black 70% to transparent)
+
+### Bottom Bar
+- Labeled icon buttons (32dp icons with labelSmall text): Sleep, Audio, Subs, Quality, PiP
+- Buttons distributed with SpaceEvenly arrangement
+- Live indicator: red dot + "LIVE" text when at live edge (offset 1-5000ms), "Go to Live" clickable text when behind live edge (offset > 5000ms)
+- Sleep timer remaining time display
+- Semi-transparent gradient overlay (transparent to black 70%)
+- Streaming/Cast button
 
 ### Gesture Controls
-- **Vertical swipe (left side)** — adjust brightness
-- **Vertical swipe (right side)** — adjust volume
+- **Vertical swipe (left side)** — adjust brightness, shows indicator with percentage
+- **Vertical swipe (right side)** — adjust volume, shows indicator with percentage
 - **Horizontal swipe** — seek (for catchup/archive content)
-- **Swipe up/down (center)** — next/previous channel
+- **Swipe up/down (center)** — next/previous channel, shows actual channel name in indicator
+
+### Buffering Indicator
+- 56dp CircularProgressIndicator in primary (accent) color
+- Pulsing alpha animation (1.0 to 0.6, 1000ms cycle)
+- Always visible when buffering, independent of controls visibility
 
 ### Track Selection
 - **Audio tracks** — select audio language/track when multiple are available
@@ -49,7 +64,7 @@ See [EPG](./epg.md) for details.
 Watch in a floating window while using other apps. Platform-specific implementation (Android PiP API, iOS AVPictureInPictureController).
 
 ### Sleep Timer
-Auto-stop playback after a user-selected duration (15m, 30m, 45m, 1h, 2h).
+Auto-stop playback after a user-selected duration (15m, 30m, 45m, 1h, 2h). Presented in a polished bottom sheet with a large header icon, FilledTonalButton-style rows with rounded corners and consistent spacing.
 
 ### Chromecast / AirPlay
 Cast the stream to a TV. Platform-specific: Chromecast on Android, AirPlay on iOS.

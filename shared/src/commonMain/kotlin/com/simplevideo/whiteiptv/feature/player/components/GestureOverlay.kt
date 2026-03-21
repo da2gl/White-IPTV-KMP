@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /**
@@ -59,6 +61,8 @@ fun GestureOverlay(
     onVolumeChange: (Float) -> Unit,
     onChannelChange: (Int) -> Unit, // -1 for previous, +1 for next
     onTap: () -> Unit,
+    nextChannelName: String?,
+    previousChannelName: String?,
     modifier: Modifier = Modifier,
 ) {
     var activeIndicator by remember { mutableStateOf<GestureIndicator?>(null) }
@@ -81,7 +85,6 @@ fun GestureOverlay(
             .pointerInput(Unit) {
                 detectVerticalDragGestures(
                     onDragStart = { offset ->
-                        // TODO(human): Determine zone based on touch position
                         val zoneWidth = size.width / 3f
                         currentZone = when {
                             offset.x < zoneWidth -> GestureZone.LEFT
@@ -146,12 +149,20 @@ fun GestureOverlay(
 
                                 if (accumulatedDrag > channelSwitchThreshold) {
                                     // Swipe down = next channel
-                                    activeIndicator = GestureIndicators.channelNext
+                                    activeIndicator = GestureIndicator(
+                                        type = GestureIndicatorType.CHANNEL,
+                                        icon = Icons.Default.KeyboardArrowDown,
+                                        label = nextChannelName ?: "Next Channel",
+                                    )
                                     onChannelChange(1)
                                     accumulatedDrag = 0f
                                 } else if (accumulatedDrag < -channelSwitchThreshold) {
                                     // Swipe up = previous channel
-                                    activeIndicator = GestureIndicators.channelPrevious
+                                    activeIndicator = GestureIndicator(
+                                        type = GestureIndicatorType.CHANNEL,
+                                        icon = Icons.Default.KeyboardArrowUp,
+                                        label = previousChannelName ?: "Previous Channel",
+                                    )
                                     onChannelChange(-1)
                                     accumulatedDrag = 0f
                                 }
@@ -203,8 +214,9 @@ private fun GestureIndicatorView(
 ) {
     Box(
         modifier = modifier
+            .widthIn(min = 120.dp)
             .background(
-                Color.Black.copy(alpha = 0.7f),
+                Color.Black.copy(alpha = 0.8f),
                 RoundedCornerShape(12.dp),
             )
             .padding(16.dp),
@@ -217,7 +229,7 @@ private fun GestureIndicatorView(
                 imageVector = indicator.icon,
                 contentDescription = indicator.label,
                 tint = Color.White,
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(56.dp),
             )
             if (indicator.type != GestureIndicatorType.CHANNEL) {
                 LinearProgressIndicator(
@@ -226,11 +238,19 @@ private fun GestureIndicatorView(
                     color = Color.White,
                     trackColor = Color.White.copy(alpha = 0.3f),
                 )
+                Text(
+                    text = "${(value * 100).toInt()}%",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             } else {
                 Text(
                     text = indicator.label,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.White,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
@@ -252,17 +272,5 @@ object GestureIndicators {
         type = GestureIndicatorType.VOLUME,
         icon = Icons.AutoMirrored.Filled.VolumeUp,
         label = "Volume",
-    )
-
-    val channelNext = GestureIndicator(
-        type = GestureIndicatorType.CHANNEL,
-        icon = Icons.Default.KeyboardArrowDown,
-        label = "Next Channel",
-    )
-
-    val channelPrevious = GestureIndicator(
-        type = GestureIndicatorType.CHANNEL,
-        icon = Icons.Default.KeyboardArrowUp,
-        label = "Previous Channel",
     )
 }

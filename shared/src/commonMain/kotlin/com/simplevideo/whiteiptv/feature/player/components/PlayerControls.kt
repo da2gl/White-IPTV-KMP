@@ -1,8 +1,14 @@
 package com.simplevideo.whiteiptv.feature.player.components
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,13 +20,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.PictureInPicture
 import androidx.compose.material.icons.filled.Subtitles
@@ -34,12 +44,18 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.domain.model.EpgProgram
@@ -49,6 +65,11 @@ import com.simplevideo.whiteiptv.platform.StreamingButton
 import com.simplevideo.whiteiptv.platform.SubtitleTrackInfo
 import com.simplevideo.whiteiptv.platform.TracksInfo
 import com.simplevideo.whiteiptv.platform.VideoQualityInfo
+
+private const val ANIMATION_DURATION_MS = 350
+private const val LIVE_EDGE_THRESHOLD_MS = 5000L
+private const val BUFFERING_PULSE_MIN_ALPHA = 0.6f
+private const val BUFFERING_PULSE_DURATION_MS = 1000
 
 @Composable
 fun PlayerControlsOverlay(
@@ -60,54 +81,102 @@ fun PlayerControlsOverlay(
     nextProgram: EpgProgram?,
     sleepTimerRemainingMs: Long?,
     isPipSupported: Boolean,
+    channelLogoUrl: String?,
+    liveOffsetMs: Long,
     onBackClick: () -> Unit,
     onShowAudioTracks: () -> Unit,
     onShowSubtitles: () -> Unit,
     onShowQuality: () -> Unit,
     onShowSleepTimer: () -> Unit,
     onEnterPip: () -> Unit,
+    onSeekToLive: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LogRecomposition("PlayerControlsOverlay")
     Box(modifier = modifier.fillMaxSize().trackRecomposition("PlayerControlsOverlay")) {
+        // Buffering indicator - always visible when buffering, independent of controls
         if (isBuffering) {
-            CircularProgressIndicator(
+            PulsingBufferingIndicator(
                 modifier = Modifier.align(Alignment.Center),
-                color = Color.White,
             )
         }
 
+        // Top bar - slides from top
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
+            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION_MS)) + slideInVertically(
+                animationSpec = tween(ANIMATION_DURATION_MS),
+                initialOffsetY = { -it },
+            ),
+            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION_MS)) + slideOutVertically(
+                animationSpec = tween(ANIMATION_DURATION_MS),
+                targetOffsetY = { -it },
+            ),
         ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                PlayerTopBar(
-                    channelName = channelName,
-                    currentProgram = currentProgram,
-                    nextProgram = nextProgram,
-                    onBackClick = onBackClick,
-                )
-                PlayerBottomBar(
-                    tracksInfo = tracksInfo,
-                    sleepTimerRemainingMs = sleepTimerRemainingMs,
-                    isPipSupported = isPipSupported,
-                    onShowAudioTracks = onShowAudioTracks,
-                    onShowSubtitles = onShowSubtitles,
-                    onShowQuality = onShowQuality,
-                    onShowSleepTimer = onShowSleepTimer,
-                    onEnterPip = onEnterPip,
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                )
-            }
+            PlayerTopBar(
+                channelName = channelName,
+                channelLogoUrl = channelLogoUrl,
+                currentProgram = currentProgram,
+                nextProgram = nextProgram,
+                onBackClick = onBackClick,
+            )
+        }
+
+        // Bottom bar - slides from bottom
+        AnimatedVisibility(
+            visible = isVisible,
+            enter = fadeIn(animationSpec = tween(ANIMATION_DURATION_MS)) + slideInVertically(
+                animationSpec = tween(ANIMATION_DURATION_MS),
+                initialOffsetY = { it },
+            ),
+            exit = fadeOut(animationSpec = tween(ANIMATION_DURATION_MS)) + slideOutVertically(
+                animationSpec = tween(ANIMATION_DURATION_MS),
+                targetOffsetY = { it },
+            ),
+            modifier = Modifier.align(Alignment.BottomCenter),
+        ) {
+            PlayerBottomBar(
+                tracksInfo = tracksInfo,
+                sleepTimerRemainingMs = sleepTimerRemainingMs,
+                isPipSupported = isPipSupported,
+                liveOffsetMs = liveOffsetMs,
+                onShowAudioTracks = onShowAudioTracks,
+                onShowSubtitles = onShowSubtitles,
+                onShowQuality = onShowQuality,
+                onShowSleepTimer = onShowSleepTimer,
+                onEnterPip = onEnterPip,
+                onSeekToLive = onSeekToLive,
+            )
         }
     }
 }
 
 @Composable
+private fun PulsingBufferingIndicator(
+    modifier: Modifier = Modifier,
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "buffering_pulse")
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = BUFFERING_PULSE_MIN_ALPHA,
+        animationSpec = infiniteRepeatable(
+            animation = tween(BUFFERING_PULSE_DURATION_MS),
+        ),
+        label = "buffering_alpha",
+    )
+    CircularProgressIndicator(
+        modifier = modifier
+            .size(56.dp)
+            .alpha(alpha),
+        color = MaterialTheme.colorScheme.primary,
+        strokeWidth = 4.dp,
+    )
+}
+
+@Composable
 private fun PlayerTopBar(
     channelName: String,
+    channelLogoUrl: String?,
     currentProgram: EpgProgram?,
     nextProgram: EpgProgram?,
     onBackClick: () -> Unit,
@@ -123,7 +192,7 @@ private fun PlayerTopBar(
                     ),
                 ),
             )
-            .padding(8.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -135,14 +204,27 @@ private fun PlayerTopBar(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White,
+                        modifier = Modifier.size(28.dp),
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
+                if (channelLogoUrl != null) {
+                    AsyncImage(
+                        model = channelLogoUrl,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
                 Text(
                     text = channelName,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = Color.White,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             if (currentProgram != null) {
@@ -161,11 +243,13 @@ private fun PlayerBottomBar(
     tracksInfo: TracksInfo,
     sleepTimerRemainingMs: Long?,
     isPipSupported: Boolean,
+    liveOffsetMs: Long,
     onShowAudioTracks: () -> Unit,
     onShowSubtitles: () -> Unit,
     onShowQuality: () -> Unit,
     onShowSleepTimer: () -> Unit,
     onEnterPip: () -> Unit,
+    onSeekToLive: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -179,75 +263,147 @@ private fun PlayerBottomBar(
                     ),
                 ),
             )
-            .padding(16.dp),
+            .padding(horizontal = 8.dp, vertical = 12.dp),
     ) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Live indicator row
+            if (liveOffsetMs > 0) {
+                LiveIndicator(
+                    liveOffsetMs = liveOffsetMs,
+                    onSeekToLive = onSeekToLive,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 8.dp),
+                )
+            }
+
+            // Sleep timer remaining
             if (sleepTimerRemainingMs != null) {
                 Text(
                     text = formatRemainingTime(sleepTimerRemainingMs),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
+                    modifier = Modifier.padding(start = 12.dp, bottom = 4.dp),
                 )
-                Spacer(modifier = Modifier.width(4.dp))
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = onShowSleepTimer) {
-                    Icon(
-                        imageVector = Icons.Default.Timer,
-                        contentDescription = "Sleep timer",
-                        tint = if (sleepTimerRemainingMs != null) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            Color.White
-                        },
+                LabeledControlButton(
+                    icon = Icons.Default.Timer,
+                    label = "Sleep",
+                    onClick = onShowSleepTimer,
+                    tint = if (sleepTimerRemainingMs != null) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        Color.White
+                    },
+                )
+                if (tracksInfo.audioTracks.size > 1) {
+                    LabeledControlButton(
+                        icon = Icons.Default.Audiotrack,
+                        label = "Audio",
+                        onClick = onShowAudioTracks,
                     )
                 }
-                if (tracksInfo.audioTracks.size > 1) {
-                    IconButton(onClick = onShowAudioTracks) {
-                        Icon(
-                            imageVector = Icons.Default.Audiotrack,
-                            contentDescription = "Audio tracks",
-                            tint = Color.White,
-                        )
-                    }
-                }
                 if (tracksInfo.subtitleTracks.isNotEmpty()) {
-                    IconButton(onClick = onShowSubtitles) {
-                        Icon(
-                            imageVector = Icons.Default.Subtitles,
-                            contentDescription = "Subtitles",
-                            tint = Color.White,
-                        )
-                    }
+                    LabeledControlButton(
+                        icon = Icons.Default.Subtitles,
+                        label = "Subs",
+                        onClick = onShowSubtitles,
+                    )
                 }
                 if (tracksInfo.videoQualities.size > 1) {
-                    IconButton(onClick = onShowQuality) {
-                        Icon(
-                            imageVector = Icons.Default.HighQuality,
-                            contentDescription = "Quality",
-                            tint = Color.White,
-                        )
-                    }
+                    LabeledControlButton(
+                        icon = Icons.Default.HighQuality,
+                        label = "Quality",
+                        onClick = onShowQuality,
+                    )
                 }
                 if (isPipSupported) {
-                    IconButton(onClick = onEnterPip) {
-                        Icon(
-                            imageVector = Icons.Default.PictureInPicture,
-                            contentDescription = "Picture in Picture",
-                            tint = Color.White,
-                        )
-                    }
+                    LabeledControlButton(
+                        icon = Icons.Default.PictureInPicture,
+                        label = "PiP",
+                        onClick = onEnterPip,
+                    )
                 }
                 StreamingButton()
             }
         }
+    }
+}
+
+@Composable
+private fun LabeledControlButton(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    tint: Color = Color.White,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = tint,
+            modifier = Modifier.size(32.dp),
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = tint,
+        )
+    }
+}
+
+@Composable
+private fun LiveIndicator(
+    liveOffsetMs: Long,
+    onSeekToLive: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (liveOffsetMs in 1..LIVE_EDGE_THRESHOLD_MS) {
+        // At live edge - show red dot + LIVE
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier,
+        ) {
+            Icon(
+                imageVector = Icons.Default.FiberManualRecord,
+                contentDescription = null,
+                tint = Color.Red,
+                modifier = Modifier.size(8.dp),
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "LIVE",
+                style = MaterialTheme.typography.labelMedium,
+                color = Color.Red,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    } else if (liveOffsetMs > LIVE_EDGE_THRESHOLD_MS) {
+        // Behind live edge - show "Go to Live" button
+        Text(
+            text = "Go to Live",
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.Red,
+            fontWeight = FontWeight.Bold,
+            modifier = modifier
+                .clip(RoundedCornerShape(4.dp))
+                .clickable(onClick = onSeekToLive)
+                .padding(4.dp),
+        )
     }
 }
 
