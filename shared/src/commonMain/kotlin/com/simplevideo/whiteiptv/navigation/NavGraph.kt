@@ -41,6 +41,7 @@ fun AppNavGraph(
                 onNavigateToMain = {
                     navController.navigate(Route.Main) {
                         popUpTo(Route.Onboarding) { inclusive = true }
+                        launchSingleTop = true
                     }
                 },
             )
@@ -53,9 +54,7 @@ fun AppNavGraph(
                     navController.navigate(Route.Player(channelId))
                 },
                 onNavigateToOnboarding = {
-                    navController.navigate(Route.Onboarding) {
-                        popUpTo(Route.Main) { inclusive = true }
-                    }
+                    navController.navigate(Route.Onboarding)
                 },
             )
         }
