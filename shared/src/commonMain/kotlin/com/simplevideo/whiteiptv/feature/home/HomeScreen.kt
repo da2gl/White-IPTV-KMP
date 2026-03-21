@@ -1,6 +1,8 @@
 package com.simplevideo.whiteiptv.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -50,6 +53,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -380,17 +384,21 @@ private fun HomeContent(
             .verticalScroll(rememberScrollState()),
     ) {
         // Continue Watching
-        if (state.continueWatchingItems.isNotEmpty()) {
+        AnimatedVisibility(
+            visible = state.continueWatchingItems.isNotEmpty(),
+            enter = fadeIn(),
+        ) {
             Section(title = "Continue Watching") {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(state.continueWatchingItems) { item ->
                         ContinueWatchingCard(
                             name = item.channel.name,
                             logoUrl = item.channel.logoUrl,
                             onClick = { onChannelClick(item.channel.id) },
+                            progress = item.progress,
                         )
                     }
                 }
@@ -405,7 +413,7 @@ private fun HomeContent(
             ) {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(state.favoriteChannels) { channel ->
                         ChannelCardSquare(
@@ -414,7 +422,7 @@ private fun HomeContent(
                             isFavorite = channel.isFavorite,
                             onClick = { onChannelClick(channel.id) },
                             onToggleFavorite = {},
-                            modifier = Modifier.width(150.dp),
+                            modifier = Modifier.width(160.dp),
                         )
                     }
                 }
@@ -439,7 +447,7 @@ private fun HomeContent(
                                 isFavorite = channel.isFavorite,
                                 onClick = { onChannelClick(channel.id) },
                                 onToggleFavorite = {},
-                                modifier = Modifier.width(150.dp),
+                                modifier = Modifier.width(160.dp),
                             )
                         }
                     }
@@ -459,21 +467,33 @@ private fun Section(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
             )
             if (onViewAllClick != null) {
-                Text(
-                    text = "View All",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { onViewAllClick() },
-                )
+                TextButton(onClick = onViewAllClick) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Text(
+                            text = "View All",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
+                }
             }
         }
         content()
