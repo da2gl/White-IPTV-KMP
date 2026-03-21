@@ -13,6 +13,7 @@ import co.touchlab.kermit.Logger
  * Modifier that draws a red border around tracked composables when recomposition tracking is enabled.
  * No-op when [RecompositionConfig.isEnabled] is false.
  */
+@Suppress("UnusedParameter")
 fun Modifier.trackRecomposition(
     name: String,
     enabled: Boolean = RecompositionConfig.isEnabled,

@@ -140,5 +140,4 @@ class ChannelRepositoryImpl(
     override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) {
         playlistDao.insertChannelGroupCrossRefs(refs)
     }
-
 }

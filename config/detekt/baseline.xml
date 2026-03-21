@@ -12,8 +12,8 @@
     <ID>CyclomaticComplexMethod:PlayerViewModel.kt$PlayerViewModel$override fun obtainEvent(viewEvent: PlayerEvent)</ID>
     <ID>CyclomaticComplexMethod:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
-    <ID>LongMethod:ChannelCard.kt$@Composable fun ChannelCardList( name: String, logoUrl: String?, isFavorite: Boolean, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, modifier: Modifier = Modifier, subtitle: String? = null, )</ID>
-    <ID>LongMethod:ChannelCard.kt$@Composable fun ChannelCardSquare( name: String, logoUrl: String?, isFavorite: Boolean, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, modifier: Modifier = Modifier, category: String? = null, showLiveBadge: Boolean = false, )</ID>
+    <ID>LongMethod:ChannelCard.kt$@Composable fun ChannelCardList( name: String, logoUrl: String?, isFavorite: Boolean, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, modifier: Modifier = Modifier, subtitle: String? = null, showFavoriteButton: Boolean = true, )</ID>
+    <ID>LongMethod:ChannelCard.kt$@Composable fun ChannelCardSquare( name: String, logoUrl: String?, isFavorite: Boolean, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, modifier: Modifier = Modifier, category: String? = null, showLiveBadge: Boolean = false, showFavoriteButton: Boolean = true, )</ID>
     <ID>LongMethod:ChannelsScreen.kt$@Composable private fun ChannelsContent( state: ChannelsState, pagedItems: LazyPagingItems&lt;ChannelEntity&gt;, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onGroupSelect: (ChannelGroup?) -&gt; Unit, onChannelClick: (Long) -&gt; Unit, onToggleFavorite: (Long) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:Color.kt$fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme</ID>
     <ID>LongMethod:FavoritesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoritesScreen( onNavigateToPlayer: (Long) -&gt; Unit, )</ID>
