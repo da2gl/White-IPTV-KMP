@@ -38,7 +38,7 @@ Search is **contextual** — it respects the active filters on the screen where 
 
 - The FTS4 index uses the `unicode61` tokenizer, which splits text on word boundaries and is case-insensitive.
 - Search uses phrase-prefix matching: the user's query is wrapped in double quotes and appended with `*` to enable prefix matching on the last word.
-- Special characters in user input (FTS operators like `AND`, `OR`, `NEAR`, `NOT`, `*`, `"`) are treated as literals due to the double-quote escaping.
+- Special characters in user input (FTS operators like `AND`, `OR`, `NEAR`, `NOT`, `*`, `"`, `:`, `+`) are stripped by `FtsQuerySanitizer` before the MATCH expression. If only special characters are entered, the search returns no results.
 
 ### Behavioral Notes
 
