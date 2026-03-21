@@ -7,6 +7,7 @@ import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * Implementation of ChannelRepository
@@ -52,21 +53,24 @@ class ChannelRepositoryImpl(
         playlistDao.clearAllFavorites()
     }
 
-    // Search — all queries sanitized to prevent FTS MATCH crashes on special characters
+    // Search — all queries sanitized via FtsQuerySanitizer to prevent FTS MATCH crashes
     override fun searchChannels(query: String): Flow<List<ChannelEntity>> =
-        playlistDao.searchChannels(sanitizeFtsQuery(query))
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannels(it) } ?: flowOf(emptyList())
 
     override fun searchChannelsByPlaylistId(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
-        playlistDao.searchChannelsByPlaylistId(sanitizeFtsQuery(query), playlistId)
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsByPlaylistId(it, playlistId) }
+            ?: flowOf(emptyList())
 
     override fun searchChannelsByGroupId(query: String, groupId: Long): Flow<List<ChannelEntity>> =
-        playlistDao.searchChannelsByGroupId(sanitizeFtsQuery(query), groupId)
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsByGroupId(it, groupId) }
+            ?: flowOf(emptyList())
 
     override fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>> =
-        playlistDao.searchFavoriteChannels(sanitizeFtsQuery(query))
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchFavoriteChannels(it) } ?: flowOf(emptyList())
 
     override fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>> =
-        playlistDao.searchFavoriteChannelsByPlaylist(sanitizeFtsQuery(query), playlistId)
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchFavoriteChannelsByPlaylist(it, playlistId) }
+            ?: flowOf(emptyList())
 
     // Paged channels
     override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> =
@@ -88,10 +92,10 @@ class ChannelRepositoryImpl(
         playlistDao.getChannelsByGroupIdCount(groupId)
 
     override suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity> =
-        playlistDao.searchChannelsPaged(sanitizeFtsQuery(query), limit, offset)
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsPaged(it, limit, offset) } ?: emptyList()
 
     override suspend fun searchChannelsCount(query: String): Int =
-        playlistDao.searchChannelsCount(sanitizeFtsQuery(query))
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsCount(it) } ?: 0
 
     override suspend fun searchChannelsByPlaylistIdPaged(
         query: String,
@@ -99,10 +103,11 @@ class ChannelRepositoryImpl(
         limit: Int,
         offset: Int,
     ): List<ChannelEntity> =
-        playlistDao.searchChannelsByPlaylistIdPaged(sanitizeFtsQuery(query), playlistId, limit, offset)
+        FtsQuerySanitizer.sanitize(query)
+            ?.let { playlistDao.searchChannelsByPlaylistIdPaged(it, playlistId, limit, offset) } ?: emptyList()
 
     override suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int =
-        playlistDao.searchChannelsByPlaylistIdCount(sanitizeFtsQuery(query), playlistId)
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsByPlaylistIdCount(it, playlistId) } ?: 0
 
     override suspend fun searchChannelsByGroupIdPaged(
         query: String,
@@ -110,10 +115,11 @@ class ChannelRepositoryImpl(
         limit: Int,
         offset: Int,
     ): List<ChannelEntity> =
-        playlistDao.searchChannelsByGroupIdPaged(sanitizeFtsQuery(query), groupId, limit, offset)
+        FtsQuerySanitizer.sanitize(query)
+            ?.let { playlistDao.searchChannelsByGroupIdPaged(it, groupId, limit, offset) } ?: emptyList()
 
     override suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int =
-        playlistDao.searchChannelsByGroupIdCount(sanitizeFtsQuery(query), groupId)
+        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsByGroupIdCount(it, groupId) } ?: 0
 
     // Groups
     override fun getAllGroups(): Flow<List<ChannelGroupEntity>> =
@@ -135,10 +141,4 @@ class ChannelRepositoryImpl(
         playlistDao.insertChannelGroupCrossRefs(refs)
     }
 
-    /**
-     * Strips FTS4 special characters from search query to prevent SQL crashes.
-     * FTS MATCH syntax uses `"`, `*`, `(`, `)`, `OR`, `AND`, `NOT`, `NEAR` as operators.
-     */
-    private fun sanitizeFtsQuery(query: String): String =
-        query.replace(Regex("""["\*()\-^~]"""), "").trim()
 }
