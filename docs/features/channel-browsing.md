@@ -13,8 +13,8 @@ Let users browse all available channels, filter by category, and manage favorite
 
 ## Filtering
 
-- **Playlist dropdown** — select a specific playlist or "All".
-- **Group dropdown** — select a specific [channel group](../domain/channel-group.md) or "All". Groups are loaded based on the selected playlist.
+- **Playlist selector** — tapping the playlist name opens a bottom sheet to select a specific playlist or "All".
+- **Group filter chips** — horizontal scrollable row of filter chips for selecting a [channel group](../domain/channel-group.md). "All" chip is first, followed by individual group chips. Groups are loaded based on the selected playlist.
 
 Filters are combinable: selecting a playlist narrows the group list, and selecting a group narrows the channel list.
 

@@ -16,7 +16,7 @@ List layout — each row shows:
 
 ## Filtering
 
-- **Playlist dropdown** — filter favorites by a specific playlist or show all.
+- **Playlist selector** — tapping the playlist name opens a bottom sheet to filter favorites by a specific playlist or show all.
 - **Search** — text search within favorites, scoped to the current playlist filter. See [Search](./search.md).
 
 ## Behavior

@@ -8,7 +8,7 @@ Give the user a quick overview of their channels — what they were watching, wh
 
 ## Header
 
-- **Playlist selector** — dropdown showing all imported playlists with a checkmark on the active one. Includes "+ Add new playlist" action at the bottom, separated by a divider.
+- **Playlist selector** — tapping the playlist name opens a bottom sheet showing all imported playlists with a radio button on the active one. Includes "Add new playlist" action at the bottom, separated by a divider.
 - **Search icon** — opens [search](./search.md) scoped to the current playlist.
 - **Playlist settings icon** (gear) — opens settings for the active playlist: rename, delete, update, view URL. See [Playlist Settings](./playlist-settings.md).
 
