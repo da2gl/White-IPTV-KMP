@@ -18,8 +18,11 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.outlined.Hd
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -38,11 +41,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import com.simplevideo.whiteiptv.designsystem.SettingsAboutGradient
+import com.simplevideo.whiteiptv.designsystem.SettingsAppBehaviorGradient
+import com.simplevideo.whiteiptv.designsystem.SettingsAppearanceGradient
+import com.simplevideo.whiteiptv.designsystem.SettingsDataStorageGradient
+import com.simplevideo.whiteiptv.designsystem.SettingsPlaybackGradient
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.domain.model.ThemeMode
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsActionRow
-import com.simplevideo.whiteiptv.feature.settings.components.SettingsCard
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsDropdownRow
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsInfoRow
 import com.simplevideo.whiteiptv.feature.settings.components.SettingsSectionHeader
@@ -153,45 +160,48 @@ private fun AppearanceSection(
     state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
 ) {
-    SettingsSectionHeader(title = "Appearance")
-    SettingsCard {
-        SettingsDropdownRow(
-            icon = Icons.Filled.Palette,
-            title = "Theme",
-            subtitle = themeModeLabel(state.themeMode),
-            options = listOf(ThemeMode.System, ThemeMode.Light, ThemeMode.Dark),
-            selectedOption = state.themeMode,
-            onOptionSelected = { onEvent(SettingsEvent.OnThemeModeChanged(it)) },
-            optionLabel = ::themeModeLabel,
-        )
-        SettingsDropdownRow(
-            icon = Icons.Filled.Star,
-            title = "Accent Color",
-            subtitle = state.accentColor.name,
-            options = AccentColor.entries.toList(),
-            selectedOption = state.accentColor,
-            onOptionSelected = { onEvent(SettingsEvent.OnAccentColorChanged(it)) },
-            optionLabel = { it.name },
-            optionLeadingContent = { color ->
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(accentColorPreview(color)),
-                )
-            },
-        )
-        SettingsDropdownRow(
-            icon = Icons.AutoMirrored.Filled.ViewList,
-            title = "Channel View",
-            subtitle = state.channelViewMode.name,
-            options = ChannelViewMode.entries.toList(),
-            selectedOption = state.channelViewMode,
-            onOptionSelected = { onEvent(SettingsEvent.OnChannelViewModeChanged(it)) },
-            optionLabel = { it.name },
-            showDivider = false,
-        )
-    }
+    SettingsSectionHeader(
+        title = "Appearance",
+        icon = Icons.Filled.Palette,
+        gradientColors = SettingsAppearanceGradient,
+    )
+    SettingsDropdownRow(
+        icon = Icons.Filled.Palette,
+        title = "Theme",
+        subtitle = themeModeLabel(state.themeMode),
+        options = listOf(ThemeMode.System, ThemeMode.Light, ThemeMode.Dark),
+        selectedOption = state.themeMode,
+        onOptionSelected = { onEvent(SettingsEvent.OnThemeModeChanged(it)) },
+        optionLabel = ::themeModeLabel,
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsDropdownRow(
+        icon = Icons.Filled.Star,
+        title = "Accent Color",
+        subtitle = accentColorLabel(state.accentColor),
+        options = AccentColor.entries.toList(),
+        selectedOption = state.accentColor,
+        onOptionSelected = { onEvent(SettingsEvent.OnAccentColorChanged(it)) },
+        optionLabel = ::accentColorLabel,
+        optionLeadingContent = { color ->
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(accentColorPreview(color)),
+            )
+        },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsDropdownRow(
+        icon = Icons.AutoMirrored.Filled.ViewList,
+        title = "Channel View",
+        subtitle = state.channelViewMode.name,
+        options = ChannelViewMode.entries.toList(),
+        selectedOption = state.channelViewMode,
+        onOptionSelected = { onEvent(SettingsEvent.OnChannelViewModeChanged(it)) },
+        optionLabel = { it.name },
+    )
 }
 
 @Composable
@@ -199,29 +209,30 @@ private fun PlaybackSection(
     @Suppress("UNUSED_PARAMETER") state: SettingsState,
     @Suppress("UNUSED_PARAMETER") onEvent: (SettingsEvent) -> Unit,
 ) {
-    SettingsSectionHeader(title = "Playback")
-    SettingsCard {
-        SettingsDropdownRow(
-            icon = Icons.Filled.PlayCircle,
-            title = "Default Player",
-            subtitle = "ExoPlayer",
-            options = listOf("ExoPlayer"),
-            selectedOption = "ExoPlayer",
-            onOptionSelected = {},
-            optionLabel = { it },
-            showDivider = true,
-        )
-        SettingsDropdownRow(
-            icon = Icons.Outlined.Hd,
-            title = "Preferred Quality",
-            subtitle = "Auto",
-            options = listOf("Auto", "HD", "SD"),
-            selectedOption = "Auto",
-            onOptionSelected = {},
-            optionLabel = { it },
-            showDivider = false,
-        )
-    }
+    SettingsSectionHeader(
+        title = "Playback",
+        icon = Icons.Filled.PlayCircle,
+        gradientColors = SettingsPlaybackGradient,
+    )
+    SettingsDropdownRow(
+        icon = Icons.Filled.PlayCircle,
+        title = "Default Player",
+        subtitle = "ExoPlayer",
+        options = listOf("ExoPlayer"),
+        selectedOption = "ExoPlayer",
+        onOptionSelected = {},
+        optionLabel = { it },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsDropdownRow(
+        icon = Icons.Outlined.Hd,
+        title = "Preferred Quality",
+        subtitle = "Auto",
+        options = listOf("Auto", "HD", "SD"),
+        selectedOption = "Auto",
+        onOptionSelected = {},
+        optionLabel = { it },
+    )
 }
 
 @Composable
@@ -229,52 +240,57 @@ private fun AppBehaviorSection(
     state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
 ) {
-    SettingsSectionHeader(title = "App Behavior")
-    SettingsCard {
-        SettingsDropdownRow(
-            icon = Icons.Filled.Language,
-            title = "Language",
-            subtitle = "System",
-            options = listOf("System"),
-            selectedOption = "System",
-            onOptionSelected = {},
-            optionLabel = { it },
-        )
-        SettingsSwitchRow(
-            icon = Icons.Filled.Refresh,
-            title = "Auto-Update Playlists",
-            subtitle = "Automatically refresh playlists on app start",
-            checked = state.autoUpdateEnabled,
-            onCheckedChange = { onEvent(SettingsEvent.OnAutoUpdateChanged(it)) },
-            showDivider = false,
-        )
-    }
+    SettingsSectionHeader(
+        title = "App Behavior",
+        icon = Icons.Filled.Settings,
+        gradientColors = SettingsAppBehaviorGradient,
+    )
+    SettingsDropdownRow(
+        icon = Icons.Filled.Language,
+        title = "Language",
+        subtitle = "System",
+        options = listOf("System"),
+        selectedOption = "System",
+        onOptionSelected = {},
+        optionLabel = { it },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsSwitchRow(
+        icon = Icons.Filled.Refresh,
+        title = "Auto-Update Playlists",
+        subtitle = "Automatically refresh playlists on app start",
+        checked = state.autoUpdateEnabled,
+        onCheckedChange = { onEvent(SettingsEvent.OnAutoUpdateChanged(it)) },
+    )
 }
 
 @Composable
 private fun DataStorageSection(
     onEvent: (SettingsEvent) -> Unit,
 ) {
-    SettingsSectionHeader(title = "Data & Storage")
-    SettingsCard {
-        SettingsActionRow(
-            icon = Icons.Filled.Cached,
-            title = "Clear Cache",
-            onClick = { onEvent(SettingsEvent.OnClearCacheClick) },
-        )
-        SettingsActionRow(
-            icon = Icons.Filled.Delete,
-            title = "Clear Favorites",
-            onClick = { onEvent(SettingsEvent.OnClearFavoritesClick) },
-        )
-        SettingsActionRow(
-            icon = Icons.Filled.RestartAlt,
-            title = "Reset to Defaults",
-            onClick = { onEvent(SettingsEvent.OnResetClick) },
-            isDestructive = true,
-            showDivider = false,
-        )
-    }
+    SettingsSectionHeader(
+        title = "Data & Storage",
+        icon = Icons.Filled.Storage,
+        gradientColors = SettingsDataStorageGradient,
+    )
+    SettingsActionRow(
+        icon = Icons.Filled.Cached,
+        title = "Clear Cache",
+        onClick = { onEvent(SettingsEvent.OnClearCacheClick) },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsActionRow(
+        icon = Icons.Filled.Delete,
+        title = "Clear Favorites",
+        onClick = { onEvent(SettingsEvent.OnClearFavoritesClick) },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsActionRow(
+        icon = Icons.Filled.RestartAlt,
+        title = "Reset to Defaults",
+        onClick = { onEvent(SettingsEvent.OnResetClick) },
+        isDestructive = true,
+    )
 }
 
 @Composable
@@ -282,22 +298,25 @@ private fun AboutSection(
     state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
 ) {
-    SettingsSectionHeader(title = "About")
-    SettingsCard {
-        SettingsInfoRow(
-            title = "App Version",
-            value = "v${state.appVersion}",
-        )
-        SettingsInfoRow(
-            title = "Contact Support",
-            onClick = { onEvent(SettingsEvent.OnContactSupportClick) },
-        )
-        SettingsInfoRow(
-            title = "Privacy Policy",
-            onClick = { onEvent(SettingsEvent.OnPrivacyPolicyClick) },
-            showDivider = false,
-        )
-    }
+    SettingsSectionHeader(
+        title = "About",
+        icon = Icons.Outlined.Info,
+        gradientColors = SettingsAboutGradient,
+    )
+    SettingsInfoRow(
+        title = "App Version",
+        value = "v${state.appVersion}",
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsInfoRow(
+        title = "Contact Support",
+        onClick = { onEvent(SettingsEvent.OnContactSupportClick) },
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    SettingsInfoRow(
+        title = "Privacy Policy",
+        onClick = { onEvent(SettingsEvent.OnPrivacyPolicyClick) },
+    )
 }
 
 private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
@@ -306,7 +325,13 @@ private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
     ThemeMode.Dark -> "Dark"
 }
 
-private val tealPreview = Color(0xFF0284C7)
+private fun accentColorLabel(color: AccentColor): String = when (color) {
+    AccentColor.Teal -> "Cyan"
+    AccentColor.Blue -> "Blue"
+    AccentColor.Red -> "Red"
+}
+
+private val tealPreview = Color(0xFF00d4ff)
 private val bluePreview = Color(0xFF1a73e8)
 private val redPreview = Color(0xFFc62828)
 

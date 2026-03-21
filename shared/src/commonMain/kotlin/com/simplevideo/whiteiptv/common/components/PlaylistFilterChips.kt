@@ -21,17 +21,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
 import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
-import com.simplevideo.whiteiptv.domain.model.ChannelGroup
+import com.simplevideo.whiteiptv.designsystem.FavoritePink
+import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 
 private val ChipShape = RoundedCornerShape(12.dp)
+private val PinkGradient = listOf(FavoritePink, Color(0xFFd41359))
 
 @Composable
-fun GroupFilterChips(
-    groups: List<ChannelGroup>,
-    selectedGroup: ChannelGroup?,
-    onGroupSelect: (ChannelGroup?) -> Unit,
+fun PlaylistFilterChips(
+    playlists: List<PlaylistEntity>,
+    selection: PlaylistSelection,
+    onPlaylistSelect: (PlaylistSelection) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -40,26 +43,30 @@ fun GroupFilterChips(
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
         item {
-            FilterPillChip(
-                text = "All",
-                isSelected = selectedGroup == null,
-                onClick = { onGroupSelect(null) },
+            PlaylistPillChip(
+                text = "All Playlists",
+                isSelected = selection is PlaylistSelection.All,
+                gradientColors = PinkGradient,
+                onClick = { onPlaylistSelect(PlaylistSelection.All) },
             )
         }
-        items(groups) { group ->
-            FilterPillChip(
-                text = group.displayName,
-                isSelected = group == selectedGroup,
-                onClick = { onGroupSelect(group) },
+        items(playlists) { playlist ->
+            val isSelected = selection is PlaylistSelection.Selected && selection.id == playlist.id
+            PlaylistPillChip(
+                text = playlist.name,
+                isSelected = isSelected,
+                gradientColors = listOf(CyanGradientStart, CyanGradientEnd),
+                onClick = { onPlaylistSelect(PlaylistSelection.Selected(playlist.id)) },
             )
         }
     }
 }
 
 @Composable
-private fun FilterPillChip(
+private fun PlaylistPillChip(
     text: String,
     isSelected: Boolean,
+    gradientColors: List<Color>,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,7 +76,7 @@ private fun FilterPillChip(
             .clip(ChipShape)
             .then(
                 if (isSelected) {
-                    Modifier.background(Brush.horizontalGradient(listOf(CyanGradientStart, CyanGradientEnd)))
+                    Modifier.background(Brush.horizontalGradient(gradientColors))
                 } else if (isDark) {
                     Modifier
                         .background(Color.White.copy(alpha = 0.05f))

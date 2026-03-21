@@ -134,14 +134,14 @@ private val bottomNavItems = persistentListOf(
         route = MainTab.Home,
     ),
     BottomNavItem(
-        title = "Favorites",
-        icon = Icons.Outlined.FavoriteBorder,
-        route = MainTab.Favorites,
-    ),
-    BottomNavItem(
         title = "Channels",
         icon = Icons.Outlined.Tv,
         route = MainTab.Channels(),
+    ),
+    BottomNavItem(
+        title = "Favorites",
+        icon = Icons.Outlined.FavoriteBorder,
+        route = MainTab.Favorites,
     ),
     BottomNavItem(
         title = "Settings",

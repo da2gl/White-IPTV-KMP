@@ -3,6 +3,9 @@ package com.simplevideo.whiteiptv.feature.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,8 +26,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,14 +54,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.ContinueWatchingCard
-import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
+import com.simplevideo.whiteiptv.common.components.GradientBackground
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.common.components.SectionHeader
@@ -65,6 +72,9 @@ import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
+import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
+import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
+import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
@@ -145,15 +155,11 @@ fun HomeScreen(
                 HomeTopAppBar(
                     playlists = state.playlists,
                     selection = state.selection,
-                    onPlaylistSelect = { selection ->
-                        viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(selection))
-                    },
                     onAddPlaylistClick = { viewModel.obtainEvent(HomeEvent.OnAddPlaylistClick) },
                     onSearchClick = { viewModel.obtainEvent(HomeEvent.OnToggleSearch) },
                     onPlaylistSettingsClick = {
                         viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
                     },
-                    isPlaylistSettingsEnabled = state.selection is PlaylistSelection.Selected,
                 )
             }
         },
@@ -162,44 +168,47 @@ fun HomeScreen(
                 Snackbar(snackbarData = data)
             }
         },
+        containerColor = Color.Transparent,
     ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            if (state.isSearchActive) {
-                HomeSearchResults(
-                    searchResults = state.searchResults,
-                    searchQuery = state.searchQuery,
-                    onChannelClick = { channelId ->
-                        viewModel.obtainEvent(HomeEvent.OnSearchResultClick(channelId))
-                    },
-                )
-            } else if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            } else {
-                HomeContent(
-                    state = state,
-                    onFavoritesViewAllClick = {
-                        viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
-                    },
-                    onGroupViewAllClick = { groupId ->
-                        viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
-                    },
-                    onChannelClick = { channelId ->
-                        viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
-                    },
-                    onToggleFavorite = { channelId ->
-                        viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
-                    },
-                )
-            }
+        GradientBackground {
+            Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+                if (state.isSearchActive) {
+                    HomeSearchResults(
+                        searchResults = state.searchResults,
+                        searchQuery = state.searchQuery,
+                        onChannelClick = { channelId ->
+                            viewModel.obtainEvent(HomeEvent.OnSearchResultClick(channelId))
+                        },
+                    )
+                } else if (state.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                    )
+                } else {
+                    HomeContent(
+                        state = state,
+                        onFavoritesViewAllClick = {
+                            viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
+                        },
+                        onGroupViewAllClick = { groupId ->
+                            viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
+                        },
+                        onChannelClick = { channelId ->
+                            viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
+                        },
+                        onToggleFavorite = { channelId ->
+                            viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
+                        },
+                    )
+                }
 
-            if (state.isUpdatingPlaylist) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
+                if (state.isUpdatingPlaylist) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
@@ -244,50 +253,94 @@ fun HomeScreen(
 private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
-    onPlaylistSelect: (PlaylistSelection) -> Unit,
     onAddPlaylistClick: () -> Unit,
     onSearchClick: () -> Unit,
     onPlaylistSettingsClick: () -> Unit,
-    isPlaylistSettingsEnabled: Boolean,
 ) {
+    val isDark = isSystemInDarkTheme()
+    val selectedText = when (selection) {
+        is PlaylistSelection.Selected -> playlists.find { it.id == selection.id }?.name ?: "All Playlists"
+        PlaylistSelection.All -> "All Playlists"
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
+            .background(
+                if (isDark) HeaderDarkBg.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
+            )
             .statusBarsPadding()
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        PlaylistDropdown(
-            playlists = playlists,
-            selection = selection,
-            onPlaylistSelect = onPlaylistSelect,
-            onAddPlaylistClick = onAddPlaylistClick,
-        )
-        Spacer(modifier = Modifier.weight(1f))
+        // Styled playlist selector button
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(12.dp))
+                .background(CyanGradientStart.copy(alpha = 0.1f))
+                .border(1.dp, CyanGradientStart.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                .clickable { onPlaylistSettingsClick() }
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = selectedText,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false),
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowDown,
+                contentDescription = "Select Playlist",
+                tint = CyanGradientStart,
+                modifier = Modifier.size(20.dp),
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        // Search button
         IconButton(
             onClick = onSearchClick,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .then(
+                    if (isDark) {
+                        Modifier
+                            .background(Color.White.copy(alpha = 0.05f))
+                            .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                    } else {
+                        Modifier
+                            .background(Color.White)
+                            .border(1.dp, Color(0xFFe5e7eb), RoundedCornerShape(12.dp))
+                    },
+                ),
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(20.dp),
             )
         }
+        Spacer(modifier = Modifier.width(8.dp))
+        // Add playlist button with cyan gradient
         IconButton(
-            onClick = onPlaylistSettingsClick,
-            enabled = isPlaylistSettingsEnabled,
-            modifier = Modifier.size(48.dp),
+            onClick = onAddPlaylistClick,
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Brush.horizontalGradient(listOf(CyanGradientStart, CyanGradientEnd))),
         ) {
             Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "Playlist Settings",
-                tint = if (isPlaylistSettingsEnabled) {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-                },
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add Playlist",
+                tint = Color.White,
+                modifier = Modifier.size(20.dp),
             )
         }
     }
@@ -390,7 +443,7 @@ private fun HomeContent(
             .trackRecomposition("HomeContent")
             .verticalScroll(rememberScrollState()),
     ) {
-        // Continue Watching
+        // Continue Watching - full-width stacked cards
         AnimatedVisibility(
             visible = state.continueWatchingItems.isNotEmpty(),
             enter = fadeIn(),
@@ -400,11 +453,11 @@ private fun HomeContent(
                     title = "Continue Watching",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                Column(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(state.continueWatchingItems) { item ->
+                    state.continueWatchingItems.forEach { item ->
                         ContinueWatchingCard(
                             name = item.channel.name,
                             logoUrl = item.channel.logoUrl,

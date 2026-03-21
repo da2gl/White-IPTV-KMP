@@ -29,12 +29,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FiberManualRecord
-import androidx.compose.material.icons.filled.HighQuality
 import androidx.compose.material.icons.filled.PictureInPicture
-import androidx.compose.material.icons.filled.Subtitles
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -56,9 +55,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.trackRecomposition
+import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
+import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
+import com.simplevideo.whiteiptv.designsystem.FavoritePink
 import com.simplevideo.whiteiptv.domain.model.EpgProgram
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
 import com.simplevideo.whiteiptv.platform.AudioTrackInfo
@@ -82,7 +83,6 @@ fun PlayerControlsOverlay(
     nextProgram: EpgProgram?,
     sleepTimerRemainingMs: Long?,
     isPipSupported: Boolean,
-    channelLogoUrl: String?,
     liveOffsetMs: Long,
     onBackClick: () -> Unit,
     onShowAudioTracks: () -> Unit,
@@ -95,14 +95,13 @@ fun PlayerControlsOverlay(
 ) {
     LogRecomposition("PlayerControlsOverlay")
     Box(modifier = modifier.fillMaxSize().trackRecomposition("PlayerControlsOverlay")) {
-        // Buffering indicator - always visible when buffering, independent of controls
         if (isBuffering) {
             PulsingBufferingIndicator(
                 modifier = Modifier.align(Alignment.Center),
             )
         }
 
-        // Top bar - slides from top
+        // Top bar
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(ANIMATION_DURATION_MS)) + slideInVertically(
@@ -116,14 +115,14 @@ fun PlayerControlsOverlay(
         ) {
             PlayerTopBar(
                 channelName = channelName,
-                channelLogoUrl = channelLogoUrl,
                 currentProgram = currentProgram,
                 nextProgram = nextProgram,
+                liveOffsetMs = liveOffsetMs,
                 onBackClick = onBackClick,
             )
         }
 
-        // Bottom bar - slides from bottom
+        // Bottom bar
         AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(animationSpec = tween(ANIMATION_DURATION_MS)) + slideInVertically(
@@ -137,12 +136,9 @@ fun PlayerControlsOverlay(
             modifier = Modifier.align(Alignment.BottomCenter),
         ) {
             PlayerBottomBar(
-                tracksInfo = tracksInfo,
                 sleepTimerRemainingMs = sleepTimerRemainingMs,
                 isPipSupported = isPipSupported,
                 liveOffsetMs = liveOffsetMs,
-                onShowAudioTracks = onShowAudioTracks,
-                onShowSubtitles = onShowSubtitles,
                 onShowQuality = onShowQuality,
                 onShowSleepTimer = onShowSleepTimer,
                 onEnterPip = onEnterPip,
@@ -177,9 +173,9 @@ private fun PulsingBufferingIndicator(
 @Composable
 private fun PlayerTopBar(
     channelName: String,
-    channelLogoUrl: String?,
     currentProgram: EpgProgram?,
     nextProgram: EpgProgram?,
+    liveOffsetMs: Long,
     onBackClick: () -> Unit,
 ) {
     Box(
@@ -200,25 +196,22 @@ private fun PlayerTopBar(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                IconButton(onClick = onBackClick) {
+                // Circular back button
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = Color.White,
-                        modifier = Modifier.size(28.dp),
+                        modifier = Modifier.size(24.dp),
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                if (channelLogoUrl != null) {
-                    AsyncImage(
-                        model = channelLogoUrl,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(CircleShape),
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
+                Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = channelName,
                     style = MaterialTheme.typography.titleLarge,
@@ -226,13 +219,47 @@ private fun PlayerTopBar(
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
                 )
+                // Pink LIVE badge
+                if (liveOffsetMs in 1..LIVE_EDGE_THRESHOLD_MS) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        shape = RoundedCornerShape(50),
+                        color = FavoritePink,
+                    ) {
+                        Text(
+                            text = "LIVE",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                StreamingButton()
+                // Settings button (circular)
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.4f)),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings",
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
             }
             if (currentProgram != null) {
                 EpgProgramInfo(
                     currentProgram = currentProgram,
                     nextProgram = nextProgram,
-                    modifier = Modifier.padding(start = 56.dp),
+                    modifier = Modifier.padding(start = 60.dp),
                 )
             }
         }
@@ -241,12 +268,9 @@ private fun PlayerTopBar(
 
 @Composable
 private fun PlayerBottomBar(
-    tracksInfo: TracksInfo,
     sleepTimerRemainingMs: Long?,
     isPipSupported: Boolean,
     liveOffsetMs: Long,
-    onShowAudioTracks: () -> Unit,
-    onShowSubtitles: () -> Unit,
     onShowQuality: () -> Unit,
     onShowSleepTimer: () -> Unit,
     onEnterPip: () -> Unit,
@@ -264,7 +288,7 @@ private fun PlayerBottomBar(
                     ),
                 ),
             )
-            .padding(horizontal = 8.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp, vertical = 12.dp),
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -288,12 +312,20 @@ private fun PlayerBottomBar(
                 )
             }
 
+            // Pill-shaped action buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                LabeledControlButton(
+                if (isPipSupported) {
+                    PillButton(
+                        icon = Icons.Default.PictureInPicture,
+                        label = "PiP",
+                        onClick = onEnterPip,
+                    )
+                }
+                PillButton(
                     icon = Icons.Default.Timer,
                     label = "Sleep",
                     onClick = onShowSleepTimer,
@@ -303,67 +335,68 @@ private fun PlayerBottomBar(
                         Color.White
                     },
                 )
-                if (tracksInfo.audioTracks.size > 1) {
-                    LabeledControlButton(
-                        icon = Icons.Default.Audiotrack,
-                        label = "Audio",
-                        onClick = onShowAudioTracks,
-                    )
+                // Channels button with cyan gradient
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(Brush.horizontalGradient(listOf(CyanGradientStart, CyanGradientEnd)))
+                        .clickable(onClick = onShowQuality)
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Tracks",
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp),
+                        )
+                        Text(
+                            text = "Tracks",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
-                if (tracksInfo.subtitleTracks.isNotEmpty()) {
-                    LabeledControlButton(
-                        icon = Icons.Default.Subtitles,
-                        label = "Subs",
-                        onClick = onShowSubtitles,
-                    )
-                }
-                if (tracksInfo.videoQualities.size > 1) {
-                    LabeledControlButton(
-                        icon = Icons.Default.HighQuality,
-                        label = "Quality",
-                        onClick = onShowQuality,
-                    )
-                }
-                if (isPipSupported) {
-                    LabeledControlButton(
-                        icon = Icons.Default.PictureInPicture,
-                        label = "PiP",
-                        onClick = onEnterPip,
-                    )
-                }
-                StreamingButton()
             }
         }
     }
 }
 
 @Composable
-private fun LabeledControlButton(
+private fun PillButton(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     tint: Color = Color.White,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Box(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(50))
+            .background(Color.Black.copy(alpha = 0.4f))
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = label,
-            tint = tint,
-            modifier = Modifier.size(32.dp),
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = tint,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = tint,
+                modifier = Modifier.size(18.dp),
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelMedium,
+                color = tint,
+            )
+        }
     }
 }
 
@@ -374,7 +407,6 @@ private fun LiveIndicator(
     modifier: Modifier = Modifier,
 ) {
     if (liveOffsetMs in 1..LIVE_EDGE_THRESHOLD_MS) {
-        // At live edge - show red dot + LIVE
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier,
@@ -382,23 +414,22 @@ private fun LiveIndicator(
             Icon(
                 imageVector = Icons.Default.FiberManualRecord,
                 contentDescription = null,
-                tint = Color.Red,
+                tint = FavoritePink,
                 modifier = Modifier.size(8.dp),
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = "LIVE",
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.Red,
+                color = FavoritePink,
                 fontWeight = FontWeight.Bold,
             )
         }
     } else if (liveOffsetMs > LIVE_EDGE_THRESHOLD_MS) {
-        // Behind live edge - show "Go to Live" button
         Text(
             text = "Go to Live",
             style = MaterialTheme.typography.labelMedium,
-            color = Color.Red,
+            color = FavoritePink,
             fontWeight = FontWeight.Bold,
             modifier = modifier
                 .clip(RoundedCornerShape(4.dp))
@@ -491,7 +522,6 @@ private fun SubtitleTrackList(
     onSelect: (String?) -> Unit,
 ) {
     LazyColumn {
-        // Off option
         item {
             TrackItem(
                 label = "Off",

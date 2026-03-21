@@ -23,13 +23,12 @@ fun SectionHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = title.uppercase(),
-            style = MaterialTheme.typography.labelSmall.copy(
+            text = title,
+            style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
-                fontSize = 12.sp,
-                letterSpacing = 1.sp,
+                fontSize = 20.sp,
             ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         if (action != null) {
             Spacer(modifier = Modifier.weight(1f))
@@ -50,11 +49,11 @@ fun SectionHeaderWithViewAll(
         action = {
             TextButton(onClick = onViewAllClick) {
                 Text(
-                    text = "View All",
-                    style = MaterialTheme.typography.labelSmall.copy(
+                    text = "See all",
+                    style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = FontWeight.Medium,
                     ),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         },

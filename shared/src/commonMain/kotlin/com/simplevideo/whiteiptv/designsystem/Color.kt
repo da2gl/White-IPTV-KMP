@@ -6,18 +6,17 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 
-val Primary = Color(0xFF2badee)
-val PrimaryLight = Color(0xFF0284C7) // Higher contrast for light theme (5.2:1 vs white)
-val BackgroundLight = Color(0xFFf6f7f8)
-val BackgroundDark = Color(0xFF101c22)
+val Primary = Color(0xFF00d4ff)
+val PrimaryLight = Color(0xFF0088ff)
+val BackgroundLight = Color(0xFFf8f9fa)
+val BackgroundDark = Color(0xFF0a0f14)
 val OnPrimary = Color.White
 val OnBackgroundLight = Color(0xFF101c22)
 val OnBackgroundDark = Color(0xFFf6f7f8)
 
-// Settings card colors (Stitch design tokens)
-val CardDark = Color(0xFF1e2e38) // Increased contrast vs BackgroundDark (~10% luminance diff)
-val CardLight = Color(0xFFFFFFFF)
-val BorderDark = Color(0xFF374151)
+val CardDark = Color(0x0DFFFFFF)
+val CardLight = Color.White
+val BorderDark = Color(0x1AFFFFFF)
 val BorderLight = Color(0xFFe5e7eb)
 val TextPrimaryDark = Color(0xFFe5e7eb)
 val TextPrimaryLight = Color(0xFF111827)
@@ -25,10 +24,22 @@ val TextSecondaryDark = Color(0xFF9ca3af)
 val TextSecondaryLight = Color(0xFF6b7280)
 val DestructiveRed = Color(0xFFef4444)
 
-// Card/border/text colors mapped to MaterialTheme surface roles for theme-awareness
-// Use these via settingsCardColor() etc. in SettingsComponents.kt
+val FavoritePink = Color(0xFFff006e)
+val LiveCyan = Color(0xFF00d4ff)
+val CyanGradientStart = Color(0xFF00d4ff)
+val CyanGradientEnd = Color(0xFF0088ff)
+val BackgroundDarkGradientEnd = Color(0xFF0f1419)
+val BackgroundLightGradientEnd = Color(0xFFe9ecef)
+val HeaderDarkBg = Color(0xFF0a0f14)
+val HeaderBorderDark = Color(0xFF1a2026)
 
-// Slate color variants for text hierarchy and borders (matching Tailwind slate scale)
+val SettingsAppearanceGradient = listOf(Color(0xFF8b5cf6), Color(0xFF7c3aed))
+val SettingsPlaybackGradient = listOf(Color(0xFF00d4ff), Color(0xFF0088ff))
+val SettingsAppBehaviorGradient = listOf(Color(0xFF10b981), Color(0xFF059669))
+val SettingsDataStorageGradient = listOf(Color(0xFFf59e0b), Color(0xFFd97706))
+val SettingsPreferencesGradient = listOf(Color(0xFFec4899), Color(0xFFbe185d))
+val SettingsAboutGradient = listOf(Color(0xFF64748b), Color(0xFF475569))
+
 val Slate200 = Color(0xFFe2e8f0)
 val Slate300 = Color(0xFFcbd5e1)
 val Slate400 = Color(0xFF94a3b8)
@@ -38,17 +49,16 @@ val Slate700 = Color(0xFF334155)
 val Slate800 = Color(0xFF1e293b)
 
 val PlaceholderColors = listOf(
-    Color(0xFF5C6BC0), // Indigo
-    Color(0xFF26A69A), // Teal
-    Color(0xFFEF5350), // Red
-    Color(0xFFAB47BC), // Purple
-    Color(0xFF42A5F5), // Blue
-    Color(0xFFFF7043), // Deep Orange
-    Color(0xFF66BB6A), // Green
-    Color(0xFFFFCA28), // Amber
+    Color(0xFF5C6BC0),
+    Color(0xFF26A69A),
+    Color(0xFFEF5350),
+    Color(0xFFAB47BC),
+    Color(0xFF42A5F5),
+    Color(0xFFFF7043),
+    Color(0xFF66BB6A),
+    Color(0xFFFFCA28),
 )
 
-// Keeping other colors from the original file for a complete theme
 val LightPrimaryContainer = Color(0xFFEADDFF)
 val LightOnPrimaryContainer = Color(0xFF21005D)
 val LightSecondary = Color(0xFF625B71)
@@ -117,8 +127,8 @@ val AppDarkColorScheme = darkColorScheme(
     onSurfaceVariant = Slate400,
     outline = Slate700,
     surfaceVariant = Slate800,
-    surfaceContainer = Color(0xFF1a2830),
-    surfaceContainerHigh = Color(0xFF213038),
+    surfaceContainer = Color(0x0DFFFFFF),
+    surfaceContainerHigh = Color(0x1AFFFFFF),
     primaryContainer = DarkPrimaryContainer,
     onPrimaryContainer = DarkOnPrimaryContainer,
     secondary = DarkSecondary,
@@ -241,6 +251,8 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onSurfaceVariant = Slate400,
             outline = Slate700,
             surfaceVariant = Slate800,
+            surfaceContainer = Color(0x0DFFFFFF),
+            surfaceContainerHigh = Color(0x1AFFFFFF),
             error = DarkError,
             onError = DarkOnError,
             errorContainer = DarkErrorContainer,
@@ -266,6 +278,8 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onSurfaceVariant = Slate400,
             outline = Slate700,
             surfaceVariant = Slate800,
+            surfaceContainer = Color(0x0DFFFFFF),
+            surfaceContainerHigh = Color(0x1AFFFFFF),
             error = DarkError,
             onError = DarkOnError,
             errorContainer = DarkErrorContainer,
@@ -291,6 +305,8 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onSurfaceVariant = Slate400,
             outline = Slate700,
             surfaceVariant = Slate800,
+            surfaceContainer = Color(0x0DFFFFFF),
+            surfaceContainerHigh = Color(0x1AFFFFFF),
             error = DarkError,
             onError = DarkOnError,
             errorContainer = DarkErrorContainer,
@@ -313,7 +329,7 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onTertiaryContainer = TealLightOnTertiaryContainer,
             background = BackgroundLight,
             surface = BackgroundLight,
-            surfaceContainer = Color(0xFFF0F1F3),
+            surfaceContainer = CardLight,
             surfaceContainerHigh = Color(0xFFE8E9EB),
             onBackground = OnBackgroundLight,
             onSurface = OnBackgroundLight,
@@ -340,7 +356,7 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onTertiaryContainer = BlueLightOnTertiaryContainer,
             background = BackgroundLight,
             surface = BackgroundLight,
-            surfaceContainer = Color(0xFFF0F1F3),
+            surfaceContainer = CardLight,
             surfaceContainerHigh = Color(0xFFE8E9EB),
             onBackground = OnBackgroundLight,
             onSurface = OnBackgroundLight,
@@ -367,7 +383,7 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onTertiaryContainer = RedLightOnTertiaryContainer,
             background = BackgroundLight,
             surface = BackgroundLight,
-            surfaceContainer = Color(0xFFF0F1F3),
+            surfaceContainer = CardLight,
             surfaceContainerHigh = Color(0xFFE8E9EB),
             onBackground = OnBackgroundLight,
             onSurface = OnBackgroundLight,

@@ -1,11 +1,12 @@
 package com.simplevideo.whiteiptv.feature.settings.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -32,78 +31,90 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.simplevideo.whiteiptv.common.components.SectionHeader
+import androidx.compose.ui.unit.sp
 import com.simplevideo.whiteiptv.common.components.SelectionBottomSheet
 import com.simplevideo.whiteiptv.designsystem.DestructiveRed
+
+private val ItemCardShape = RoundedCornerShape(16.dp)
+private val SectionBadgeShape = RoundedCornerShape(8.dp)
 
 @Composable
 fun SettingsSectionHeader(
     title: String,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    gradientColors: List<Color> = emptyList(),
 ) {
-    SectionHeader(title = title, modifier = modifier.padding(start = 4.dp, bottom = 8.dp))
-}
-
-@Composable
-fun SettingsCard(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer,
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp, bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(content = content)
+        if (icon != null && gradientColors.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(SectionBadgeShape)
+                    .background(Brush.linearGradient(gradientColors)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+            Spacer(modifier = Modifier.width(10.dp))
+        }
+        Text(
+            text = title.uppercase(),
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                letterSpacing = 1.sp,
+            ),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+        )
     }
 }
 
 @Composable
-fun IconContainer(
-    icon: ImageVector,
+fun SettingsItemCard(
     modifier: Modifier = Modifier,
-    tint: Color = MaterialTheme.colorScheme.primary,
-    hasBackground: Boolean = true,
+    content: @Composable () -> Unit,
 ) {
-    if (hasBackground) {
-        Box(
-            modifier = modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = tint,
-                modifier = Modifier.size(24.dp),
-            )
-        }
-    } else {
-        Box(
-            modifier = modifier.size(48.dp),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = tint,
-                modifier = Modifier.size(24.dp),
-            )
-        }
+    val isDark = isSystemInDarkTheme()
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(ItemCardShape)
+            .then(
+                if (isDark) {
+                    Modifier
+                        .background(Color.White.copy(alpha = 0.05f))
+                        .border(1.dp, Color.White.copy(alpha = 0.1f), ItemCardShape)
+                } else {
+                    Modifier
+                        .background(Color.White)
+                        .border(1.dp, Color(0xFFe5e7eb), ItemCardShape)
+                },
+            ),
+    ) {
+        content()
     }
 }
 
 /**
  * Settings row that opens a [SelectionBottomSheet] for single-option selection.
- * Displays an icon, title/subtitle, and a chevron-right trailing icon.
- * Min height 72dp, matching Stitch Appearance/Playback/App Behavior rows.
+ * Each row is wrapped in its own individual card.
  */
 @Composable
 fun <T> SettingsDropdownRow(
@@ -115,22 +126,26 @@ fun <T> SettingsDropdownRow(
     onOptionSelected: (T) -> Unit,
     optionLabel: (T) -> String,
     modifier: Modifier = Modifier,
-    showDivider: Boolean = true,
+    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
     optionLeadingContent: (@Composable (T) -> Unit)? = null,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outlineVariant
     var showSheet by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
+    SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 72.dp)
+                .heightIn(min = 64.dp)
                 .clickable { showSheet = true }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconContainer(icon = icon)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp),
+            )
             Spacer(modifier = Modifier.width(16.dp))
             Column(
                 modifier = Modifier.weight(1f),
@@ -147,7 +162,7 @@ fun <T> SettingsDropdownRow(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -158,13 +173,6 @@ fun <T> SettingsDropdownRow(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp),
-            )
-        }
-        if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 80.dp),
-                color = borderColor,
-                thickness = 0.5.dp,
             )
         }
     }
@@ -183,8 +191,7 @@ fun <T> SettingsDropdownRow(
 }
 
 /**
- * Action row with icon (no background), title only, and chevron_right trailing icon.
- * Min height 60dp, matching Stitch Data & Storage rows.
+ * Action row wrapped in individual card. Icon (no background), title, and chevron_right.
  */
 @Composable
 fun SettingsActionRow(
@@ -193,25 +200,25 @@ fun SettingsActionRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isDestructive: Boolean = false,
-    showDivider: Boolean = true,
+    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outlineVariant
     val contentColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.onSurface
-    val iconColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.primary
+    val iconColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.onSurfaceVariant
 
-    Column(modifier = modifier) {
+    SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 60.dp)
+                .heightIn(min = 56.dp)
                 .clickable(onClick = onClick)
                 .padding(horizontal = 16.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconContainer(
-                icon = icon,
-                hasBackground = false,
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
                 tint = iconColor,
+                modifier = Modifier.size(24.dp),
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
@@ -230,19 +237,11 @@ fun SettingsActionRow(
                 modifier = Modifier.size(24.dp),
             )
         }
-        if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 80.dp),
-                color = borderColor,
-                thickness = 0.5.dp,
-            )
-        }
     }
 }
 
 /**
- * Info row with title + value text or title + chevron_right. No icon.
- * Min height 60dp, matching Stitch About section rows.
+ * Info row wrapped in individual card. Title + value text or title + chevron_right.
  */
 @Composable
 fun SettingsInfoRow(
@@ -250,15 +249,13 @@ fun SettingsInfoRow(
     modifier: Modifier = Modifier,
     value: String? = null,
     onClick: (() -> Unit)? = null,
-    showDivider: Boolean = true,
+    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outlineVariant
-
-    Column(modifier = modifier) {
+    SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 60.dp)
+                .heightIn(min = 56.dp)
                 .then(
                     if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
                 )
@@ -278,7 +275,7 @@ fun SettingsInfoRow(
                 Text(
                     text = value,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             } else if (onClick != null) {
                 Icon(
@@ -289,19 +286,11 @@ fun SettingsInfoRow(
                 )
             }
         }
-        if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 16.dp),
-                color = borderColor,
-                thickness = 0.5.dp,
-            )
-        }
     }
 }
 
 /**
- * Switch row with icon-in-circle, title/subtitle, and a trailing Switch.
- * Min height 72dp, same visual treatment as dropdown rows.
+ * Switch row wrapped in individual card with icon, title/subtitle, and trailing Switch.
  */
 @Composable
 fun SettingsSwitchRow(
@@ -311,20 +300,23 @@ fun SettingsSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    showDivider: Boolean = true,
+    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
 ) {
-    val borderColor = MaterialTheme.colorScheme.outlineVariant
-
-    Column(modifier = modifier) {
+    SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 72.dp)
+                .heightIn(min = 64.dp)
                 .clickable { onCheckedChange(!checked) }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconContainer(icon = icon)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp),
+            )
             Spacer(modifier = Modifier.width(16.dp))
             Column(
                 modifier = Modifier.weight(1f),
@@ -354,13 +346,6 @@ fun SettingsSwitchRow(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = MaterialTheme.colorScheme.primary,
                 ),
-            )
-        }
-        if (showDivider) {
-            HorizontalDivider(
-                modifier = Modifier.padding(start = 80.dp),
-                color = borderColor,
-                thickness = 0.5.dp,
             )
         }
     }

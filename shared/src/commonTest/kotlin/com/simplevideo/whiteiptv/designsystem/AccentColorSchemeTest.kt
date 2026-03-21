@@ -10,7 +10,7 @@ class AccentColorSchemeTest {
     @Test
     fun `teal light scheme has expected primary color`() {
         val scheme = accentColorScheme(AccentColor.Teal, darkTheme = false)
-        assertEquals(Primary, scheme.primary)
+        assertEquals(PrimaryLight, scheme.primary)
     }
 
     @Test

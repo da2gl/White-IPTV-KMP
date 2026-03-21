@@ -260,7 +260,6 @@ private fun PlayerScreenContent(
                 nextProgram = state.nextProgram,
                 sleepTimerRemainingMs = state.sleepTimerRemainingMs,
                 isPipSupported = pipController.isPipSupported(),
-                channelLogoUrl = state.channel.logoUrl,
                 liveOffsetMs = liveOffsetMs,
                 onBackClick = { onEvent(PlayerEvent.OnBackClick) },
                 onShowAudioTracks = {
