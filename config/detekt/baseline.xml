@@ -3,7 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexCondition:M3uParser.kt$M3uParser$key != null &amp;&amp; value != null &amp;&amp; key.isNotEmpty() &amp;&amp; value.isNotEmpty()</ID>
-    <ID>CyclomaticComplexMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>CyclomaticComplexMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, nextChannelName: String?, previousChannelName: String?, modifier: Modifier = Modifier, )</ID>
     <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
     <ID>CyclomaticComplexMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
     <ID>CyclomaticComplexMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
@@ -17,14 +17,14 @@
     <ID>LongMethod:ChannelsScreen.kt$@Composable private fun ChannelsContent( state: ChannelsState, pagedItems: LazyPagingItems&lt;ChannelEntity&gt;, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onGroupSelect: (ChannelGroup?) -&gt; Unit, onChannelClick: (Long) -&gt; Unit, onToggleFavorite: (Long) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:Color.kt$fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme</ID>
     <ID>LongMethod:FavoritesScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun FavoritesScreen( onNavigateToPlayer: (Long) -&gt; Unit, )</ID>
-    <ID>LongMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, nextChannelName: String?, previousChannelName: String?, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
     <ID>LongMethod:HomeScreen.kt$@Composable private fun HomeContent( state: HomeState, onFavoritesViewAllClick: () -&gt; Unit, onGroupViewAllClick: (groupId: String) -&gt; Unit, onChannelClick: (channelId: Long) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
     <ID>LongMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>LongMethod:MainScreen.kt$@Composable fun MainScreen( onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
     <ID>LongMethod:OnboardingScreen.kt$@Composable private fun OnboardingContent( state: OnboardingState, onEvent: (OnboardingEvent) -&gt; Unit, )</ID>
-    <ID>LongMethod:PlayerControls.kt$@Composable private fun PlayerBottomBar( tracksInfo: TracksInfo, sleepTimerRemainingMs: Long?, isPipSupported: Boolean, onShowAudioTracks: () -&gt; Unit, onShowSubtitles: () -&gt; Unit, onShowQuality: () -&gt; Unit, onShowSleepTimer: () -&gt; Unit, onEnterPip: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:PlayerControls.kt$@Composable private fun PlayerBottomBar( tracksInfo: TracksInfo, sleepTimerRemainingMs: Long?, isPipSupported: Boolean, liveOffsetMs: Long, onShowAudioTracks: () -&gt; Unit, onShowSubtitles: () -&gt; Unit, onShowQuality: () -&gt; Unit, onShowSleepTimer: () -&gt; Unit, onEnterPip: () -&gt; Unit, onSeekToLive: () -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlaylistDropdown.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun PlaylistDropdown( playlists: List&lt;PlaylistEntity&gt;, selection: PlaylistSelection, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onAddPlaylistClick: (() -&gt; Unit)? = null, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:SettingsComponents.kt$@Composable fun &lt;T&gt; SettingsDropdownRow( icon: ImageVector, title: String, subtitle: String, options: List&lt;T&gt;, selectedOption: T, onOptionSelected: (T) -&gt; Unit, optionLabel: (T) -&gt; String, modifier: Modifier = Modifier, showDivider: Boolean = true, optionLeadingContent: (@Composable (T) -&gt; Unit)? = null, )</ID>
@@ -57,6 +57,7 @@
     <ID>TooManyFunctions:ChannelRepository.kt$ChannelRepository</ID>
     <ID>TooManyFunctions:ChannelRepositoryImpl.kt$ChannelRepositoryImpl : ChannelRepository</ID>
     <ID>TooManyFunctions:ExoVideoPlayer.kt$ExoVideoPlayer : VideoPlayer</ID>
+    <ID>TooManyFunctions:PlayerControls.kt$com.simplevideo.whiteiptv.feature.player.components.PlayerControls.kt</ID>
     <ID>TooManyFunctions:PlaylistDao.kt$PlaylistDao</ID>
     <ID>TooManyFunctions:SettingsComponents.kt$com.simplevideo.whiteiptv.feature.settings.components.SettingsComponents.kt</ID>
     <ID>TooManyFunctions:VideoPlayerFactory.kt$VideoPlayer</ID>

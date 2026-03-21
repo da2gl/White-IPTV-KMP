@@ -20,6 +20,8 @@ data class PlayerState(
     val showSleepTimerSheet: Boolean = false,
     val isInPipMode: Boolean = false,
     val isCasting: Boolean = false,
+    val nextChannelName: String? = null,
+    val previousChannelName: String? = null,
 )
 
 sealed interface PlayerEvent {

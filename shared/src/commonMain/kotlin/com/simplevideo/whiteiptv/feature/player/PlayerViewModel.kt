@@ -69,6 +69,7 @@ class PlayerViewModel(
                 viewState = if (channel != null) {
                     recordInitialWatchEvent(channel.id, channel.playlistId)
                     loadEpgAndFetchProgram(channel.playlistId, channel.tvgId)
+                    fetchAdjacentChannelNames(channel.playlistId, channel.id)
                     viewState.copy(
                         channel = channel,
                         isLoading = false,
@@ -257,6 +258,17 @@ class PlayerViewModel(
                     isCasting = viewEvent.state == CastConnectionState.CONNECTED,
                 )
             }
+        }
+    }
+
+    private fun fetchAdjacentChannelNames(playlistId: Long, channelId: Long) {
+        viewModelScope.launch {
+            val nextChannel = getAdjacentChannel.getNext(playlistId, channelId)
+            val previousChannel = getAdjacentChannel.getPrevious(playlistId, channelId)
+            viewState = viewState.copy(
+                nextChannelName = nextChannel?.name,
+                previousChannelName = previousChannel?.name,
+            )
         }
     }
 
