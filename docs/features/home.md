@@ -19,7 +19,8 @@ Give the user a quick overview of their channels — what they were watching, wh
 Horizontal scrollable row of recently watched channels. Each card shows:
 - Channel logo/thumbnail
 - Channel name
-- Group name
+- "Continue" badge
+- Watch progress bar
 
 Hidden when no watch history exists.
 

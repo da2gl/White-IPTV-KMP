@@ -36,6 +36,17 @@ val Slate600 = Color(0xFF475569)
 val Slate700 = Color(0xFF334155)
 val Slate800 = Color(0xFF1e293b)
 
+val PlaceholderColors = listOf(
+    Color(0xFF5C6BC0), // Indigo
+    Color(0xFF26A69A), // Teal
+    Color(0xFFEF5350), // Red
+    Color(0xFFAB47BC), // Purple
+    Color(0xFF42A5F5), // Blue
+    Color(0xFFFF7043), // Deep Orange
+    Color(0xFF66BB6A), // Green
+    Color(0xFFFFCA28), // Amber
+)
+
 // Keeping other colors from the original file for a complete theme
 val LightPrimaryContainer = Color(0xFFEADDFF)
 val LightOnPrimaryContainer = Color(0xFF21005D)
