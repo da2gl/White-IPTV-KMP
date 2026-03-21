@@ -58,7 +58,7 @@ fun ContinueWatchingCard(
                 model = logoUrl,
                 contentDescription = name,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
             )
 
             Box(
@@ -67,8 +67,8 @@ fun ContinueWatchingCard(
                     .background(
                         Brush.verticalGradient(
                             0f to Color.Transparent,
-                            0.5f to Color.Black.copy(alpha = 0.15f),
-                            1.0f to Color.Black.copy(alpha = 0.75f),
+                            0.5f to Color.Black.copy(alpha = 0.1f),
+                            1.0f to Color.Black.copy(alpha = 0.6f),
                         ),
                     ),
             )

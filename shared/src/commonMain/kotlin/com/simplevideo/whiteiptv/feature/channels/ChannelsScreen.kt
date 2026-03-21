@@ -184,7 +184,7 @@ private fun ChannelsContent(
             when (state.channelViewMode) {
                 ChannelViewMode.Grid -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                        columns = GridCells.Adaptive(minSize = 160.dp),
                         contentPadding = PaddingValues(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -206,7 +206,7 @@ private fun ChannelsContent(
                         }
 
                         if (pagedItems.loadState.append is LoadState.Loading) {
-                            item(span = { GridItemSpan(2) }) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -222,7 +222,7 @@ private fun ChannelsContent(
                 ChannelViewMode.List -> {
                     LazyColumn(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
                             count = pagedItems.itemCount,

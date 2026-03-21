@@ -92,8 +92,8 @@ fun ChannelCardSquare(
                     .background(
                         Brush.verticalGradient(
                             0f to Color.Transparent,
-                            0.5f to Color.Black.copy(alpha = 0.15f),
-                            1.0f to Color.Black.copy(alpha = 0.75f),
+                            0.5f to Color.Black.copy(alpha = 0.1f),
+                            1.0f to Color.Black.copy(alpha = 0.6f),
                         ),
                     )
                     .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -119,20 +119,21 @@ fun ChannelCardSquare(
             }
 
             if (showFavoriteButton) {
-                Box(
+                IconButton(
+                    onClick = onToggleFavorite,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(6.dp)
-                        .size(32.dp)
-                        .background(
-                            color = Color.Black.copy(alpha = 0.4f),
-                            shape = CircleShape,
-                        ),
-                    contentAlignment = Alignment.Center,
+                        .padding(4.dp)
+                        .size(48.dp),
                 ) {
-                    IconButton(
-                        onClick = onToggleFavorite,
-                        modifier = Modifier.size(32.dp),
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(
+                                color = Color.Black.copy(alpha = 0.4f),
+                                shape = CircleShape,
+                            ),
+                        contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -142,7 +143,7 @@ fun ChannelCardSquare(
                             } else {
                                 Color.White.copy(alpha = 0.7f)
                             },
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(20.dp),
                         )
                     }
                 }

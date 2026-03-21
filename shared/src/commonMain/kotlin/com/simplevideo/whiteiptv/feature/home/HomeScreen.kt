@@ -1,9 +1,8 @@
 package com.simplevideo.whiteiptv.feature.home
 
-import androidx.compose.foundation.background
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -265,7 +264,7 @@ private fun HomeTopAppBar(
         Spacer(modifier = Modifier.weight(1f))
         IconButton(
             onClick = onSearchClick,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(48.dp),
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -276,7 +275,7 @@ private fun HomeTopAppBar(
         IconButton(
             onClick = onPlaylistSettingsClick,
             enabled = isPlaylistSettingsEnabled,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(48.dp),
         ) {
             Icon(
                 imageVector = Icons.Default.Settings,
@@ -438,7 +437,7 @@ private fun HomeContent(
                 ) {
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         items(channels) { channel ->
                             ChannelCardSquare(

@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import com.simplevideo.whiteiptv.domain.model.AccentColor
 
 val Primary = Color(0xFF2badee)
+val PrimaryLight = Color(0xFF0284C7) // Higher contrast for light theme (5.2:1 vs white)
 val BackgroundLight = Color(0xFFf6f7f8)
 val BackgroundDark = Color(0xFF101c22)
 val OnPrimary = Color.White
@@ -14,7 +15,7 @@ val OnBackgroundLight = Color(0xFF101c22)
 val OnBackgroundDark = Color(0xFFf6f7f8)
 
 // Settings card colors (Stitch design tokens)
-val CardDark = Color(0xFF18262d)
+val CardDark = Color(0xFF1e2e38) // Increased contrast vs BackgroundDark (~10% luminance diff)
 val CardLight = Color(0xFFFFFFFF)
 val BorderDark = Color(0xFF374151)
 val BorderLight = Color(0xFFe5e7eb)
@@ -79,10 +80,12 @@ val DarkErrorContainer = Color(0xFF8C1D18)
 val DarkOnErrorContainer = Color(0xFFF9DEDC)
 
 val AppLightColorScheme = lightColorScheme(
-    primary = Primary,
+    primary = PrimaryLight,
     onPrimary = OnPrimary,
     background = BackgroundLight,
     surface = BackgroundLight,
+    surfaceContainer = Color(0xFFF0F1F3),
+    surfaceContainerHigh = Color(0xFFE8E9EB),
     onBackground = OnBackgroundLight,
     onSurface = OnBackgroundLight,
     onSurfaceVariant = Slate600,
@@ -296,7 +299,7 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
     }
     else -> when (accentColor) {
         AccentColor.Teal -> lightColorScheme(
-            primary = Primary,
+            primary = PrimaryLight,
             onPrimary = OnPrimary,
             primaryContainer = TealLightPrimaryContainer,
             onPrimaryContainer = TealLightOnPrimaryContainer,
@@ -310,6 +313,8 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onTertiaryContainer = TealLightOnTertiaryContainer,
             background = BackgroundLight,
             surface = BackgroundLight,
+            surfaceContainer = Color(0xFFF0F1F3),
+            surfaceContainerHigh = Color(0xFFE8E9EB),
             onBackground = OnBackgroundLight,
             onSurface = OnBackgroundLight,
             onSurfaceVariant = Slate600,
@@ -335,6 +340,8 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onTertiaryContainer = BlueLightOnTertiaryContainer,
             background = BackgroundLight,
             surface = BackgroundLight,
+            surfaceContainer = Color(0xFFF0F1F3),
+            surfaceContainerHigh = Color(0xFFE8E9EB),
             onBackground = OnBackgroundLight,
             onSurface = OnBackgroundLight,
             onSurfaceVariant = Slate600,
@@ -360,6 +367,8 @@ fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme
             onTertiaryContainer = RedLightOnTertiaryContainer,
             background = BackgroundLight,
             surface = BackgroundLight,
+            surfaceContainer = Color(0xFFF0F1F3),
+            surfaceContainerHigh = Color(0xFFE8E9EB),
             onBackground = OnBackgroundLight,
             onSurface = OnBackgroundLight,
             onSurfaceVariant = Slate600,

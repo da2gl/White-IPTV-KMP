@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.simplevideo.whiteiptv.designsystem.AppTheme
-import com.simplevideo.whiteiptv.designsystem.AppTypography
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.ImportError
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingAction
 import com.simplevideo.whiteiptv.feature.onboarding.mvi.OnboardingEvent
@@ -128,7 +127,7 @@ private fun OnboardingContent(
                 )
                 Text(
                     text = stringResource(Res.string.app_name),
-                    style = AppTypography.headlineSmall,
+                    style = MaterialTheme.typography.headlineSmall,
                 )
             }
 
@@ -141,12 +140,12 @@ private fun OnboardingContent(
             ) {
                 Text(
                     text = stringResource(Res.string.onboarding_title),
-                    style = AppTypography.headlineLarge,
+                    style = MaterialTheme.typography.headlineLarge,
                     textAlign = TextAlign.Center,
                 )
                 Text(
                     text = stringResource(Res.string.onboarding_subtitle),
-                    style = AppTypography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
@@ -179,7 +178,7 @@ private fun OnboardingContent(
                     HorizontalDivider(modifier = Modifier.weight(1f))
                     Text(
                         text = stringResource(Res.string.or_separator),
-                        style = AppTypography.bodySmall,
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     HorizontalDivider(modifier = Modifier.weight(1f))

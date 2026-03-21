@@ -306,7 +306,7 @@ private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
     ThemeMode.Dark -> "Dark"
 }
 
-private val tealPreview = Color(0xFF2badee)
+private val tealPreview = Color(0xFF0284C7)
 private val bluePreview = Color(0xFF1a73e8)
 private val redPreview = Color(0xFFc62828)
 

@@ -33,42 +33,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.simplevideo.whiteiptv.common.components.SelectionBottomSheet
-import com.simplevideo.whiteiptv.designsystem.BorderDark
-import com.simplevideo.whiteiptv.designsystem.BorderLight
-import com.simplevideo.whiteiptv.designsystem.CardDark
-import com.simplevideo.whiteiptv.designsystem.CardLight
 import com.simplevideo.whiteiptv.designsystem.DestructiveRed
-import com.simplevideo.whiteiptv.designsystem.TextPrimaryDark
-import com.simplevideo.whiteiptv.designsystem.TextPrimaryLight
-import com.simplevideo.whiteiptv.designsystem.TextSecondaryDark
-import com.simplevideo.whiteiptv.designsystem.TextSecondaryLight
-
-/**
- * Checks if the current MaterialTheme is dark by testing background luminance.
- * This respects the app's theme setting, not the system theme.
- */
-@Composable
-private fun isAppDarkTheme(): Boolean =
-    MaterialTheme.colorScheme.background.luminance() < 0.5f
-
-@Composable
-fun settingsCardColor(): Color = if (isAppDarkTheme()) CardDark else CardLight
-
-@Composable
-fun settingsBorderColor(): Color = if (isAppDarkTheme()) BorderDark else BorderLight
-
-@Composable
-fun settingsTextPrimary(): Color = if (isAppDarkTheme()) TextPrimaryDark else TextPrimaryLight
-
-@Composable
-fun settingsTextSecondary(): Color = if (isAppDarkTheme()) TextSecondaryDark else TextSecondaryLight
 
 @Composable
 fun SettingsSectionHeader(
@@ -82,7 +53,7 @@ fun SettingsSectionHeader(
             fontSize = 12.sp,
             letterSpacing = 1.sp,
         ),
-        color = settingsTextSecondary(),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.padding(start = 4.dp, bottom = 8.dp),
     )
 }
@@ -95,7 +66,7 @@ fun SettingsCard(
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = settingsCardColor(),
+        color = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(content = content)
     }
@@ -156,7 +127,7 @@ fun <T> SettingsDropdownRow(
     showDivider: Boolean = true,
     optionLeadingContent: (@Composable (T) -> Unit)? = null,
 ) {
-    val borderColor = settingsBorderColor()
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
     var showSheet by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
@@ -177,7 +148,7 @@ fun <T> SettingsDropdownRow(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                    color = settingsTextPrimary(),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -185,7 +156,7 @@ fun <T> SettingsDropdownRow(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = settingsTextSecondary(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -194,7 +165,7 @@ fun <T> SettingsDropdownRow(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = settingsTextSecondary(),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp),
             )
         }
@@ -233,8 +204,8 @@ fun SettingsActionRow(
     isDestructive: Boolean = false,
     showDivider: Boolean = true,
 ) {
-    val borderColor = settingsBorderColor()
-    val contentColor = if (isDestructive) DestructiveRed else settingsTextPrimary()
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
+    val contentColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.onSurface
     val iconColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.primary
 
     Column(modifier = modifier) {
@@ -264,7 +235,7 @@ fun SettingsActionRow(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = settingsTextSecondary(),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp),
             )
         }
@@ -290,7 +261,7 @@ fun SettingsInfoRow(
     onClick: (() -> Unit)? = null,
     showDivider: Boolean = true,
 ) {
-    val borderColor = settingsBorderColor()
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
 
     Column(modifier = modifier) {
         Row(
@@ -306,7 +277,7 @@ fun SettingsInfoRow(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                color = settingsTextPrimary(),
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -316,13 +287,13 @@ fun SettingsInfoRow(
                 Text(
                     text = value,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = settingsTextSecondary(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             } else if (onClick != null) {
                 Icon(
                     imageVector = Icons.Filled.ChevronRight,
                     contentDescription = null,
-                    tint = settingsTextSecondary(),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -351,7 +322,7 @@ fun SettingsSwitchRow(
     modifier: Modifier = Modifier,
     showDivider: Boolean = true,
 ) {
-    val borderColor = settingsBorderColor()
+    val borderColor = MaterialTheme.colorScheme.outlineVariant
 
     Column(modifier = modifier) {
         Row(
@@ -371,7 +342,7 @@ fun SettingsSwitchRow(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                    color = settingsTextPrimary(),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -379,7 +350,7 @@ fun SettingsSwitchRow(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = settingsTextSecondary(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
