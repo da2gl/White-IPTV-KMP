@@ -3,6 +3,7 @@ package com.simplevideo.whiteiptv.common.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -71,63 +72,75 @@ fun ChannelCardSquare(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
             )
+            ChannelCardSquareOverlay(
+                name = name,
+                category = category,
+                isFavorite = isFavorite,
+                showFavoriteButton = showFavoriteButton,
+                showLiveBadge = showLiveBadge,
+                onToggleFavorite = onToggleFavorite,
+            )
+        }
+    }
+}
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
-                        ),
-                    )
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-            ) {
-                Column {
-                    if (category != null) {
-                        Text(
-                            text = category,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White.copy(alpha = 0.7f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                    Text(
-                        text = name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-
-            if (showFavoriteButton) {
-                IconButton(
-                    onClick = onToggleFavorite,
-                    modifier = Modifier.align(Alignment.TopEnd),
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            Color.White.copy(alpha = 0.7f)
-                        },
-                    )
-                }
-            }
-
-            if (showLiveBadge) {
-                LiveBadge(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(8.dp),
+@Composable
+private fun BoxScope.ChannelCardSquareOverlay(
+    name: String,
+    category: String?,
+    isFavorite: Boolean,
+    showFavoriteButton: Boolean,
+    showLiveBadge: Boolean,
+    onToggleFavorite: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.BottomCenter)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f)),
+                ),
+            )
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+    ) {
+        Column {
+            if (category != null) {
+                Text(
+                    text = category,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = Color.White.copy(alpha = 0.7f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
+    }
+    if (showFavoriteButton) {
+        IconButton(
+            onClick = onToggleFavorite,
+            modifier = Modifier.align(Alignment.TopEnd),
+        ) {
+            Icon(
+                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.7f),
+            )
+        }
+    }
+    if (showLiveBadge) {
+        LiveBadge(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(8.dp),
+        )
     }
 }
 
@@ -159,57 +172,66 @@ fun ChannelCardList(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                contentAlignment = Alignment.Center,
-            ) {
-                AsyncImage(
-                    model = logoUrl,
-                    contentDescription = name,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit,
-                )
-            }
-
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                if (subtitle != null) {
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
-
+            ChannelListLogo(logoUrl = logoUrl, name = name)
+            ChannelListInfo(name = name, subtitle = subtitle, modifier = Modifier.weight(1f))
             if (showFavoriteButton) {
-                IconButton(onClick = onToggleFavorite) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                        contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    )
-                }
+                ChannelListFavoriteButton(isFavorite = isFavorite, onToggleFavorite = onToggleFavorite)
             }
         }
+    }
+}
+
+@Composable
+private fun ChannelListLogo(logoUrl: String?, name: String) {
+    Box(
+        modifier = Modifier
+            .size(56.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+        contentAlignment = Alignment.Center,
+    ) {
+        AsyncImage(
+            model = logoUrl,
+            contentDescription = name,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Fit,
+        )
+    }
+}
+
+@Composable
+private fun ChannelListInfo(name: String, subtitle: String?, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChannelListFavoriteButton(isFavorite: Boolean, onToggleFavorite: () -> Unit) {
+    IconButton(onClick = onToggleFavorite) {
+        Icon(
+            imageVector = if (isFavorite) Icons.Filled.Star else Icons.Outlined.StarOutline,
+            contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
+            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
