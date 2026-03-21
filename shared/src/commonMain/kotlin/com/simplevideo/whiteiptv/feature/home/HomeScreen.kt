@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -52,7 +51,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -62,6 +60,8 @@ import com.simplevideo.whiteiptv.common.components.ContinueWatchingCard
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
+import com.simplevideo.whiteiptv.common.components.SectionHeader
+import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
@@ -188,6 +188,9 @@ fun HomeScreen(
                     onChannelClick = { channelId ->
                         viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
                     },
+                    onToggleFavorite = { channelId ->
+                        viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
+                    },
                 )
             }
 
@@ -280,7 +283,11 @@ private fun HomeTopAppBar(
             Icon(
                 imageVector = Icons.Default.Settings,
                 contentDescription = "Playlist Settings",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = if (isPlaylistSettingsEnabled) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                },
             )
         }
     }
@@ -373,6 +380,7 @@ private fun HomeContent(
     onFavoritesViewAllClick: () -> Unit,
     onGroupViewAllClick: (groupId: String) -> Unit,
     onChannelClick: (channelId: Long) -> Unit,
+    onToggleFavorite: (channelId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LogRecomposition("HomeContent")
@@ -387,7 +395,11 @@ private fun HomeContent(
             visible = state.continueWatchingItems.isNotEmpty(),
             enter = fadeIn(),
         ) {
-            Section(title = "Continue Watching") {
+            Column {
+                SectionHeader(
+                    title = "Continue Watching",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -406,24 +418,24 @@ private fun HomeContent(
 
         // Favorites
         if (state.favoriteChannels.isNotEmpty()) {
-            Section(
+            SectionHeaderWithViewAll(
                 title = "Favorites",
                 onViewAllClick = onFavoritesViewAllClick,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            )
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(state.favoriteChannels) { channel ->
-                        ChannelCardSquare(
-                            name = channel.name,
-                            logoUrl = channel.logoUrl,
-                            isFavorite = channel.isFavorite,
-                            onClick = { onChannelClick(channel.id) },
-                            onToggleFavorite = {},
-                            modifier = Modifier.width(160.dp),
-                        )
-                    }
+                items(state.favoriteChannels) { channel ->
+                    ChannelCardSquare(
+                        name = channel.name,
+                        logoUrl = channel.logoUrl,
+                        isFavorite = channel.isFavorite,
+                        onClick = { onChannelClick(channel.id) },
+                        onToggleFavorite = { onToggleFavorite(channel.id) },
+                        modifier = Modifier.width(160.dp),
+                    )
                 }
             }
         }
@@ -431,71 +443,28 @@ private fun HomeContent(
         // Dynamic Groups
         state.categories.forEach { (group, channels) ->
             if (channels.isNotEmpty()) {
-                Section(
+                SectionHeaderWithViewAll(
                     title = group.displayName,
                     onViewAllClick = { onGroupViewAllClick(group.id) },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(channels) { channel ->
-                            ChannelCardSquare(
-                                name = channel.name,
-                                logoUrl = channel.logoUrl,
-                                isFavorite = channel.isFavorite,
-                                onClick = { onChannelClick(channel.id) },
-                                onToggleFavorite = {},
-                                modifier = Modifier.width(160.dp),
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun Section(
-    title: String,
-    onViewAllClick: (() -> Unit)? = null,
-    content: @Composable () -> Unit,
-) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-            )
-            if (onViewAllClick != null) {
-                TextButton(onClick = onViewAllClick) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text(
-                            text = "View All",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(16.dp),
+                    items(channels) { channel ->
+                        ChannelCardSquare(
+                            name = channel.name,
+                            logoUrl = channel.logoUrl,
+                            isFavorite = channel.isFavorite,
+                            onClick = { onChannelClick(channel.id) },
+                            onToggleFavorite = { onToggleFavorite(channel.id) },
+                            modifier = Modifier.width(160.dp),
                         )
                     }
                 }
             }
         }
-        content()
     }
 }
 

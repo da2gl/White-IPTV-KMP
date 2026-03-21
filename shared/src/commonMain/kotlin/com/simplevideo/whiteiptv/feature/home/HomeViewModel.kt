@@ -15,6 +15,7 @@ import com.simplevideo.whiteiptv.domain.usecase.GetHomeCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RenamePlaylistUseCase
+import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
@@ -41,6 +42,7 @@ class HomeViewModel(
     private val renamePlaylistUseCase: RenamePlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
     private val importPlaylistUseCase: ImportPlaylistUseCase,
+    private val toggleFavorite: ToggleFavoriteUseCase,
 ) : BaseViewModel<HomeState, HomeAction, HomeEvent>(initialState = HomeState()) {
 
     private val searchQuery = MutableStateFlow("")
@@ -171,6 +173,10 @@ class HomeViewModel(
 
             is HomeEvent.OnAddPlaylistClick -> {
                 viewAction = HomeAction.NavigateToOnboarding
+            }
+
+            is HomeEvent.OnToggleFavorite -> {
+                viewModelScope.launch { toggleFavorite(viewEvent.channelId) }
             }
         }
     }

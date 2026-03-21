@@ -37,7 +37,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.simplevideo.whiteiptv.common.components.SectionHeader
 import com.simplevideo.whiteiptv.common.components.SelectionBottomSheet
 import com.simplevideo.whiteiptv.designsystem.DestructiveRed
 
@@ -46,16 +46,7 @@ fun SettingsSectionHeader(
     title: String,
     modifier: Modifier = Modifier,
 ) {
-    Text(
-        text = title.uppercase(),
-        style = MaterialTheme.typography.labelSmall.copy(
-            fontWeight = FontWeight.Bold,
-            fontSize = 12.sp,
-            letterSpacing = 1.sp,
-        ),
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = modifier.padding(start = 4.dp, bottom = 8.dp),
-    )
+    SectionHeader(title = title, modifier = modifier.padding(start = 4.dp, bottom = 8.dp))
 }
 
 @Composable

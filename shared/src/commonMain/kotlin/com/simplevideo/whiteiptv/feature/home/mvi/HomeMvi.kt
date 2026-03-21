@@ -45,6 +45,7 @@ sealed interface HomeEvent {
     data object OnToggleSearch : HomeEvent
     data class OnSearchResultClick(val channelId: Long) : HomeEvent
     data object OnAddPlaylistClick : HomeEvent
+    data class OnToggleFavorite(val channelId: Long) : HomeEvent
 }
 
 sealed interface HomeAction {

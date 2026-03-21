@@ -199,7 +199,7 @@ private fun ChannelsList(
                         isFavorite = true,
                         onClick = { onEvent(FavoritesEvent.OnChannelClick(channel.id)) },
                         onToggleFavorite = { onEvent(FavoritesEvent.OnToggleFavorite(channel.id)) },
-                        showFavoriteButton = false,
+                        showFavoriteButton = true,
                     )
                 }
             }
@@ -216,7 +216,7 @@ private fun ChannelsList(
                         isFavorite = true,
                         onClick = { onEvent(FavoritesEvent.OnChannelClick(channel.id)) },
                         onToggleFavorite = { onEvent(FavoritesEvent.OnToggleFavorite(channel.id)) },
-                        showFavoriteButton = false,
+                        showFavoriteButton = true,
                     )
                 }
             }

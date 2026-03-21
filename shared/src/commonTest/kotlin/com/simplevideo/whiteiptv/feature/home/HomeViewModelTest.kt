@@ -20,6 +20,7 @@ import com.simplevideo.whiteiptv.domain.usecase.GetHomeCategoriesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RenamePlaylistUseCase
+import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.platform.FileReader
@@ -96,6 +97,7 @@ class HomeViewModelTest {
                 channelMapper = ChannelMapper(),
                 playlistMapper = PlaylistMapper(),
             ),
+            toggleFavorite = ToggleFavoriteUseCase(stubChannelRepository),
         )
     }
 
