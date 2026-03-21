@@ -1,7 +1,7 @@
 package com.simplevideo.whiteiptv.feature.favorites
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -114,7 +114,7 @@ private fun FavoritesHeader(
     state: FavoritesState,
     onPlaylistSelect: (com.simplevideo.whiteiptv.domain.model.PlaylistSelection) -> Unit,
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isDarkTheme()
     Column(
         modifier = Modifier
             .fillMaxWidth()

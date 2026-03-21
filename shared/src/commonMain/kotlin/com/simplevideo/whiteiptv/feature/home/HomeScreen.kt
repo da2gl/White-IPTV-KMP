@@ -5,7 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -257,7 +257,7 @@ private fun HomeTopAppBar(
     onSearchClick: () -> Unit,
     onPlaylistSettingsClick: () -> Unit,
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isDarkTheme()
     val selectedText = when (selection) {
         is PlaylistSelection.Selected -> playlists.find { it.id == selection.id }?.name ?: "All Playlists"
         PlaylistSelection.All -> "All Playlists"

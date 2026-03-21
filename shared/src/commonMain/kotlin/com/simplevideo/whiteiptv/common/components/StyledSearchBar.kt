@@ -2,7 +2,6 @@ package com.simplevideo.whiteiptv.common.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,7 +29,7 @@ fun StyledSearchBar(
     placeholder: String = "Search channels...",
     modifier: Modifier = Modifier,
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isDarkTheme()
     TextField(
         value = query,
         onValueChange = onQueryChange,

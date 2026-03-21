@@ -1,23 +1,31 @@
 package com.simplevideo.whiteiptv.common.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.luminance
 import com.simplevideo.whiteiptv.designsystem.BackgroundDark
 import com.simplevideo.whiteiptv.designsystem.BackgroundDarkGradientEnd
 import com.simplevideo.whiteiptv.designsystem.BackgroundLight
 import com.simplevideo.whiteiptv.designsystem.BackgroundLightGradientEnd
+
+/**
+ * Detects whether the current MaterialTheme is dark, respecting the app's theme override
+ * (not just the system setting). Uses background color luminance as the indicator.
+ */
+@Composable
+fun isDarkTheme(): Boolean = MaterialTheme.colorScheme.background.luminance() < 0.5f
 
 @Composable
 fun GradientBackground(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isDarkTheme()
     Box(
         modifier = modifier
             .fillMaxSize()

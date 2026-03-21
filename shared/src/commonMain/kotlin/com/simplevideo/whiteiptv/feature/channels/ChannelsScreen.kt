@@ -1,7 +1,7 @@
 package com.simplevideo.whiteiptv.feature.channels
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -110,7 +110,7 @@ private fun ChannelsHeader(
     selectedGroup: ChannelGroup?,
     onGroupSelect: (ChannelGroup?) -> Unit,
 ) {
-    val isDark = isSystemInDarkTheme()
+    val isDark = isDarkTheme()
     Column(
         modifier = Modifier
             .fillMaxWidth()
