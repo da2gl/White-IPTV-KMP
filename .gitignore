@@ -70,3 +70,4 @@ compose-desktop.jar
 *.swp
 *~
 *.preferences_pb
+.claude/worktrees/
