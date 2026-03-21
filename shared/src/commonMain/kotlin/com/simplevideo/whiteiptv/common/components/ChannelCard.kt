@@ -81,7 +81,7 @@ fun ChannelCardSquare(
                     model = logoUrl,
                     contentDescription = name,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
+                    contentScale = ContentScale.Fit,
                 )
             }
 
