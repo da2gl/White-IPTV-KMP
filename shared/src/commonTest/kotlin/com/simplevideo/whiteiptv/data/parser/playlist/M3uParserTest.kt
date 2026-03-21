@@ -1,7 +1,11 @@
 package com.simplevideo.whiteiptv.data.parser.playlist
 
 import com.simplevideo.whiteiptv.data.parser.playlist.model.CatchupType
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /**
  * Basic tests for M3U/M3U8 IPTV playlist parser

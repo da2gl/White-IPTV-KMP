@@ -17,9 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.simplevideo.whiteiptv.common.components.SelectionBottomSheet
 import com.simplevideo.whiteiptv.designsystem.BorderDark
 import com.simplevideo.whiteiptv.designsystem.BorderLight
 import com.simplevideo.whiteiptv.designsystem.CardDark
@@ -141,7 +139,8 @@ fun IconContainer(
 }
 
 /**
- * Dropdown row with icon-in-circle, title/subtitle, and expand_more trailing icon.
+ * Settings row that opens a [SelectionBottomSheet] for single-option selection.
+ * Displays an icon, title/subtitle, and a chevron-right trailing icon.
  * Min height 72dp, matching Stitch Appearance/Playback/App Behavior rows.
  */
 @Composable
@@ -155,16 +154,17 @@ fun <T> SettingsDropdownRow(
     optionLabel: (T) -> String,
     modifier: Modifier = Modifier,
     showDivider: Boolean = true,
+    optionLeadingContent: (@Composable (T) -> Unit)? = null,
 ) {
     val borderColor = settingsBorderColor()
-    var expanded by remember { mutableStateOf(false) }
+    var showSheet by remember { mutableStateOf(false) }
 
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 72.dp)
-                .clickable { expanded = true }
+                .clickable { showSheet = true }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -191,33 +191,12 @@ fun <T> SettingsDropdownRow(
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Box {
-                Icon(
-                    imageVector = Icons.Filled.ExpandMore,
-                    contentDescription = null,
-                    tint = settingsTextSecondary(),
-                    modifier = Modifier.size(24.dp),
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    options.forEach { option ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = optionLabel(option),
-                                    fontWeight = if (option == selectedOption) FontWeight.Bold else FontWeight.Normal,
-                                )
-                            },
-                            onClick = {
-                                onOptionSelected(option)
-                                expanded = false
-                            },
-                        )
-                    }
-                }
-            }
+            Icon(
+                imageVector = Icons.Filled.ChevronRight,
+                contentDescription = null,
+                tint = settingsTextSecondary(),
+                modifier = Modifier.size(24.dp),
+            )
         }
         if (showDivider) {
             HorizontalDivider(
@@ -226,6 +205,18 @@ fun <T> SettingsDropdownRow(
                 thickness = 0.5.dp,
             )
         }
+    }
+
+    if (showSheet) {
+        SelectionBottomSheet(
+            title = title,
+            options = options,
+            selectedOption = selectedOption,
+            onOptionSelected = onOptionSelected,
+            onDismiss = { showSheet = false },
+            optionLabel = optionLabel,
+            leadingContent = optionLeadingContent,
+        )
     }
 }
 

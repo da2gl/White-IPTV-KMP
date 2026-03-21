@@ -37,7 +37,7 @@ import androidx.paging.compose.itemKey
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
-import com.simplevideo.whiteiptv.common.components.GroupDropdown
+import com.simplevideo.whiteiptv.common.components.GroupFilterChips
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
@@ -151,11 +151,11 @@ private fun ChannelsContent(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
 
-        GroupDropdown(
+        GroupFilterChips(
             groups = state.groups,
             selectedGroup = state.selectedGroup,
             onGroupSelect = onGroupSelect,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 8.dp),
         )
 
         if (isInitialLoading) {
