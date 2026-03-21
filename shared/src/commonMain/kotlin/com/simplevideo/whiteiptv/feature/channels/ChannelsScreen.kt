@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -185,10 +184,10 @@ private fun ChannelsContent(
             when (state.channelViewMode) {
                 ChannelViewMode.Grid -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 160.dp),
-                        contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        columns = GridCells.Fixed(2),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
                             count = pagedItems.itemCount,
@@ -223,6 +222,7 @@ private fun ChannelsContent(
                 ChannelViewMode.List -> {
                     LazyColumn(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
                             count = pagedItems.itemCount,
@@ -238,13 +238,6 @@ private fun ChannelsContent(
                                     onToggleFavorite = { onToggleFavorite(channel.id) },
                                     subtitle = channel.tvgLanguage ?: channel.tvgCountry,
                                 )
-                                if (index < pagedItems.itemCount - 1) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(start = 76.dp),
-                                        color = MaterialTheme.colorScheme.outlineVariant,
-                                        thickness = 0.5.dp,
-                                    )
-                                }
                             }
                         }
 
