@@ -149,6 +149,9 @@ interface PlaylistDao {
     @Query("DELETE FROM channels WHERE playlistId = :playlistId")
     suspend fun deleteChannelsByPlaylistId(playlistId: Long)
 
+    @Query("DELETE FROM channel_groups WHERE playlistId = :playlistId")
+    suspend fun deleteGroupsByPlaylistId(playlistId: Long)
+
     @Query("DELETE FROM playlists WHERE id = :playlistId")
     suspend fun deletePlaylist(playlistId: Long)
 

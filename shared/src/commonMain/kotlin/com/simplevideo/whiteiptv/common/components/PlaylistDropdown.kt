@@ -85,7 +85,7 @@ fun PlaylistDropdown(
             if (onAddPlaylistClick != null) {
                 HorizontalDivider()
                 DropdownMenuItem(
-                    text = { Text("+ Add new playlist") },
+                    text = { Text("Add new playlist") },
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Default.Add,

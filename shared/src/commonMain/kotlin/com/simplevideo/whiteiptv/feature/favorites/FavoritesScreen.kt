@@ -89,7 +89,7 @@ fun FavoritesScreen(
                 )
             } else {
                 TopAppBar(
-                    title = { Text("⭐ Favorites") },
+                    title = { Text("Favorites") },
                     actions = {
                         IconButton(onClick = { viewModel.obtainEvent(FavoritesEvent.OnToggleSearch) }) {
                             Icon(Icons.Default.Search, contentDescription = "Search")

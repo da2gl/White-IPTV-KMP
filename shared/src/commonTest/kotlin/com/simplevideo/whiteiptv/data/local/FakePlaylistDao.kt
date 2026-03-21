@@ -60,6 +60,7 @@ class FakePlaylistDao : PlaylistDao {
     override suspend fun toggleFavoriteStatus(channelId: Long) {}
     override suspend fun clearAllFavorites() {}
     override suspend fun deleteChannelsByPlaylistId(playlistId: Long) {}
+    override suspend fun deleteGroupsByPlaylistId(playlistId: Long) {}
     override suspend fun deletePlaylist(playlistId: Long) {}
     override suspend fun upsertGroups(groups: List<ChannelGroupEntity>): List<Long> = emptyList()
     override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) {}

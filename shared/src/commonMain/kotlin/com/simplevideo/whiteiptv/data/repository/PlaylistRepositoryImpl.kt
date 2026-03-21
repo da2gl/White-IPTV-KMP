@@ -92,14 +92,15 @@ class PlaylistRepositoryImpl(
         // Update playlist metadata
         playlistDao.updatePlaylist(playlist)
 
-        // Delete old channels (cascade will delete cross-refs)
+        // Delete old channels and groups (cascade deletes cross-refs)
         playlistDao.deleteChannelsByPlaylistId(playlist.id)
+        playlistDao.deleteGroupsByPlaylistId(playlist.id)
 
         // Ensure entities have correct playlistId
         val groupsWithId = groups.map { it.copy(playlistId = playlist.id) }
         val channelsWithId = channels.map { it.copy(playlistId = playlist.id) }
 
-        // Get group IDs after upsert
+        // Insert fresh groups (old ones deleted above, so upsert = insert, returns real IDs)
         val groupIds = if (groupsWithId.isNotEmpty()) {
             playlistDao.upsertGroups(groupsWithId)
         } else {
