@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
+import com.simplevideo.whiteiptv.common.components.PlaylistFilterChips
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.common.components.channelSubtitle
@@ -111,6 +112,16 @@ fun FavoritesScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
+            if (state.playlists.size > 1) {
+                PlaylistFilterChips(
+                    playlists = state.playlists,
+                    selection = state.selection,
+                    onPlaylistSelect = { selection ->
+                        viewModel.obtainEvent(FavoritesEvent.OnPlaylistSelected(selection))
+                    },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                )
+            }
             if (state.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -125,12 +136,6 @@ fun FavoritesScreen(
                     FavoritesEmptyState()
                 }
             } else {
-                Text(
-                    text = "${state.channels.size} favorites",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                )
                 ChannelsList(state = state, onEvent = viewModel::obtainEvent)
             }
         }
@@ -192,10 +197,10 @@ private fun ChannelsList(
     when (state.channelViewMode) {
         ChannelViewMode.Grid -> {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Fixed(3),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(state.channels, key = { it.id }) { channel ->
                     ChannelCardSquare(

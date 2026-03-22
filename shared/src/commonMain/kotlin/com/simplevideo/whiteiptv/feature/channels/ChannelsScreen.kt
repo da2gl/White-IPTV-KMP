@@ -146,7 +146,7 @@ private fun ChannelsBody(
             when (state.channelViewMode) {
                 ChannelViewMode.Grid -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                        columns = GridCells.Fixed(3),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),

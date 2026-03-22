@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,37 +67,46 @@ fun ChannelCardSquare(
 ) {
     LogRecomposition("ChannelCardSquare")
     val isDark = isDarkTheme()
-    Column(modifier = modifier.fillMaxWidth().trackRecomposition("ChannelCardSquare")) {
+    Column(
+        modifier = modifier.fillMaxWidth().trackRecomposition("ChannelCardSquare"),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Card(
             onClick = onClick,
-            shape = CardShape,
+            shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                containerColor = if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFF3F4F6),
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = if (isDark) 0.dp else 1.dp,
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .border(
                     1.dp,
                     if (isDark) Color.White.copy(alpha = 0.1f) else Color(0xFFE5E7EB),
-                    CardShape,
+                    RoundedCornerShape(20.dp),
                 ),
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f),
+                contentAlignment = Alignment.Center,
             ) {
                 if (logoUrl.isNullOrBlank()) {
                     ChannelPlaceholder(
                         name = name,
-                        textStyle = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.fillMaxSize(),
+                        textStyle = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.size(80.dp).clip(RoundedCornerShape(12.dp)),
+                        showName = true,
                     )
                 } else {
                     AsyncImage(
                         model = logoUrl,
                         contentDescription = name,
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .size(80.dp),
                         contentScale = ContentScale.Fit,
                     )
                 }
@@ -107,24 +117,30 @@ fun ChannelCardSquare(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(4.dp)
-                            .size(48.dp),
+                            .size(36.dp),
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(36.dp)
+                                .size(32.dp)
                                 .background(
-                                    color = Color.Black.copy(alpha = 0.4f),
+                                    color = Color.Black.copy(alpha = 0.3f),
                                     shape = CircleShape,
                                 ),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                                contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                                tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.White.copy(
-                                    alpha = 0.7f
-                                ),
-                                modifier = Modifier.size(20.dp),
+                                imageVector = if (isFavorite) {
+                                    Icons.Filled.Favorite
+                                } else {
+                                    Icons.Outlined.FavoriteBorder
+                                },
+                                contentDescription = null,
+                                tint = if (isFavorite) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    Color.White
+                                },
+                                modifier = Modifier.size(18.dp),
                             )
                         }
                     }
@@ -134,7 +150,7 @@ fun ChannelCardSquare(
                     LiveBadge(
                         modifier = Modifier
                             .align(Alignment.TopStart)
-                            .padding(8.dp),
+                            .padding(4.dp),
                     )
                 }
             }
@@ -143,10 +159,12 @@ fun ChannelCardSquare(
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = name,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
         if (category != null) {
             Text(
@@ -202,7 +220,7 @@ fun ChannelCardList(
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(
-                        if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFF3F4F6),
+                        if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFEEF0F3),
                     ),
                 contentAlignment = Alignment.Center,
             ) {
@@ -295,8 +313,8 @@ private fun ChannelPlaceholder(
     name: String,
     textStyle: TextStyle,
     modifier: Modifier = Modifier,
+    showName: Boolean = false,
 ) {
-    val letter = name.firstOrNull()?.uppercase() ?: "?"
     val colorIndex = abs(name.hashCode()) % PlaceholderColors.size
     val backgroundColor = PlaceholderColors[colorIndex]
 
@@ -304,10 +322,23 @@ private fun ChannelPlaceholder(
         modifier = modifier.background(backgroundColor),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = letter,
-            style = textStyle,
-            color = Color.White,
-        )
+        if (showName) {
+            Text(
+                text = name.take(10),
+                style = textStyle,
+                color = Color.White,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(4.dp),
+            )
+        } else {
+            val letter = name.firstOrNull()?.uppercase() ?: "?"
+            Text(
+                text = letter,
+                style = textStyle,
+                color = Color.White,
+            )
+        }
     }
 }
