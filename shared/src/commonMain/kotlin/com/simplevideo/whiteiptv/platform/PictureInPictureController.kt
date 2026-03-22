@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.platform
 
 import androidx.compose.runtime.Composable
+import org.koin.compose.koinInject
 
 /**
  * Platform-specific Picture-in-Picture controller.
@@ -16,9 +17,6 @@ interface PictureInPictureController {
     fun enterPipMode()
 }
 
-/**
- * Creates platform-specific PictureInPictureController instance.
- * Must be called from Composable context on Android (needs Activity reference).
- */
+/** Provides platform-specific PictureInPictureController via Koin DI. */
 @Composable
-expect fun rememberPipController(): PictureInPictureController
+fun rememberPipController(): PictureInPictureController = koinInject<PictureInPictureController>()

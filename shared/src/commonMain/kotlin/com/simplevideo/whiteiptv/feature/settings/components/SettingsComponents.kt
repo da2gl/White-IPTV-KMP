@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -45,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.simplevideo.whiteiptv.common.components.isDarkTheme
+import com.simplevideo.whiteiptv.platform.FullscreenSheetEffect
 
 private val ItemCardShape = RoundedCornerShape(16.dp)
 private val SectionBadgeShape = RoundedCornerShape(10.dp)
@@ -224,7 +224,6 @@ private fun <T> SettingsSelectionBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(),
-        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         containerColor = if (isDark) Color(0xFF0F1419) else Color.White,
         dragHandle = {
             Box(
@@ -242,6 +241,8 @@ private fun <T> SettingsSelectionBottomSheet(
             }
         },
     ) {
+        FullscreenSheetEffect()
+
         // Header: Title + subtitle on left, close button on right
         Row(
             modifier = Modifier

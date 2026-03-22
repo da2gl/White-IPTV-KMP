@@ -33,7 +33,7 @@ class AndroidSystemControls(
         audioManager.setStreamVolume(
             AudioManager.STREAM_MUSIC,
             volumeIndex,
-            0, // No UI flag — we show our own indicator
+            0, // No UI flag -- we show our own indicator
         )
     }
 
@@ -73,12 +73,18 @@ class AndroidSystemControls(
     }
 }
 
-@Composable
-actual fun rememberSystemControls(): SystemControls {
-    val context = LocalContext.current
-    return remember {
-        val activity = context as? Activity
-        checkNotNull(activity) { "SystemControls requires Activity context" }
-        AndroidSystemControls(activity)
+/**
+ * Android implementation of SystemControlsFactory
+ * Uses LocalContext to obtain Activity reference at composition time
+ */
+class AndroidSystemControlsFactory : SystemControlsFactory {
+    @Composable
+    override fun createSystemControls(): SystemControls {
+        val context = LocalContext.current
+        return remember {
+            val activity = context as? Activity
+            checkNotNull(activity) { "SystemControls requires Activity context" }
+            AndroidSystemControls(activity)
+        }
     }
 }

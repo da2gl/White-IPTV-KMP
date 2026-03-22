@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.asStateFlow
 /**
  * No-op CastManager for iOS. AirPlay is handled natively by AVPlayer via AVRoutePickerView.
  */
-actual class CastManager {
+class IOSCastManager : CastManager {
 
     private val _castState = MutableStateFlow(CastConnectionState.NOT_CONNECTED)
-    actual val castState: StateFlow<CastConnectionState> = _castState.asStateFlow()
+    override val castState: StateFlow<CastConnectionState> = _castState.asStateFlow()
 
-    actual fun startCasting(url: String, title: String?, logoUrl: String?) {
+    override fun startCasting(url: String, title: String?, logoUrl: String?) {
         // No-op: AirPlay is handled by AVPlayer
     }
 
-    actual fun stopCasting() {
+    override fun stopCasting() {
         // No-op
     }
 
-    actual fun isAvailable(): Boolean = false
+    override fun isAvailable(): Boolean = false
 }

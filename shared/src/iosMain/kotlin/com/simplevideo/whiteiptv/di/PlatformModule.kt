@@ -12,10 +12,21 @@ import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
+import com.simplevideo.whiteiptv.platform.FullscreenSheetController
 import com.simplevideo.whiteiptv.platform.IOSBackgroundScheduler
+import com.simplevideo.whiteiptv.platform.IOSCastManager
 import com.simplevideo.whiteiptv.platform.IOSFilePickerFactory
 import com.simplevideo.whiteiptv.platform.IOSFileReader
+import com.simplevideo.whiteiptv.platform.IOSFullscreenSheetController
+import com.simplevideo.whiteiptv.platform.IOSKeepScreenOnController
+import com.simplevideo.whiteiptv.platform.IOSPictureInPictureController
+import com.simplevideo.whiteiptv.platform.IOSStreamingButtonFactory
+import com.simplevideo.whiteiptv.platform.IOSSystemControlsFactory
 import com.simplevideo.whiteiptv.platform.IOSVideoPlayerFactory
+import com.simplevideo.whiteiptv.platform.KeepScreenOnController
+import com.simplevideo.whiteiptv.platform.PictureInPictureController
+import com.simplevideo.whiteiptv.platform.StreamingButtonFactory
+import com.simplevideo.whiteiptv.platform.SystemControlsFactory
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.core.module.Module
@@ -63,7 +74,19 @@ actual fun platformModule(): Module = module {
         com.simplevideo.whiteiptv.data.cache.CoilCacheManager(PlatformContext.INSTANCE)
     }
 
-    single { CastManager() }
+    single<StreamingButtonFactory> {
+        IOSStreamingButtonFactory()
+    }
+
+    single<FullscreenSheetController> { IOSFullscreenSheetController() }
+    single<KeepScreenOnController> { IOSKeepScreenOnController() }
+    single<SystemControlsFactory> { IOSSystemControlsFactory() }
+    factory<PictureInPictureController> {
+        val playerFactory = get<VideoPlayerFactory>() as IOSVideoPlayerFactory
+        IOSPictureInPictureController(playerFactory.lastCreatedPlayer)
+    }
+
+    single<CastManager> { IOSCastManager() }
 }
 
 @OptIn(ExperimentalForeignApi::class)

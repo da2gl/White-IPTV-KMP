@@ -19,10 +19,10 @@ import kotlinx.coroutines.flow.asStateFlow
  * Android Chromecast session manager using the Cast SDK.
  * Observes session lifecycle and exposes connection state as a [StateFlow].
  */
-actual class CastManager(context: Context) {
+class AndroidCastManager(context: Context) : CastManager {
 
     private val _castState = MutableStateFlow(CastConnectionState.NOT_CONNECTED)
-    actual val castState: StateFlow<CastConnectionState> = _castState.asStateFlow()
+    override val castState: StateFlow<CastConnectionState> = _castState.asStateFlow()
 
     private val castContext: CastContext? = try {
         CastContext.getSharedInstance(context)
@@ -79,7 +79,7 @@ actual class CastManager(context: Context) {
         }
     }
 
-    actual fun startCasting(url: String, title: String?, logoUrl: String?) {
+    override fun startCasting(url: String, title: String?, logoUrl: String?) {
         val session = sessionManager?.currentCastSession ?: return
         val remoteMediaClient = session.remoteMediaClient ?: return
 
@@ -101,11 +101,11 @@ actual class CastManager(context: Context) {
         remoteMediaClient.load(loadRequest)
     }
 
-    actual fun stopCasting() {
+    override fun stopCasting() {
         sessionManager?.currentCastSession?.remoteMediaClient?.stop()
     }
 
-    actual fun isAvailable(): Boolean {
+    override fun isAvailable(): Boolean {
         return castContext != null
     }
 

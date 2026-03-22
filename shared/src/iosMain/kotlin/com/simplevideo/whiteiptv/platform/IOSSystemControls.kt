@@ -15,16 +15,12 @@ class IOSSystemControls : SystemControls {
     private val originalBrightness: Float = UIScreen.mainScreen.brightness.toFloat()
 
     override fun getVolume(): Float {
-        // iOS volume control is complex — requires MPVolumeView
-        // For now, return a default value
-        // TODO: Implement with AVAudioSession.sharedInstance().outputVolume
+        // iOS volume control requires MPVolumeView
         return 0.5f
     }
 
     override fun setVolume(level: Float) {
         // iOS doesn't allow programmatic volume control without MPVolumeView
-        // This is an Apple restriction for user privacy
-        // TODO: Consider showing MPVolumeView or system volume HUD
     }
 
     override fun getBrightness(): Float {
@@ -40,7 +36,12 @@ class IOSSystemControls : SystemControls {
     }
 }
 
-@Composable
-actual fun rememberSystemControls(): SystemControls {
-    return remember { IOSSystemControls() }
+/**
+ * iOS implementation of SystemControlsFactory
+ */
+class IOSSystemControlsFactory : SystemControlsFactory {
+    @Composable
+    override fun createSystemControls(): SystemControls {
+        return remember { IOSSystemControls() }
+    }
 }

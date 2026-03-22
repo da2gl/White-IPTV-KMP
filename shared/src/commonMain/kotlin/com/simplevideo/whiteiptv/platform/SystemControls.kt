@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.platform
 
 import androidx.compose.runtime.Composable
+import org.koin.compose.koinInject
 
 /**
  * Platform-specific system controls for volume and brightness
@@ -37,8 +38,21 @@ interface SystemControls {
 }
 
 /**
- * Creates platform-specific SystemControls instance
+ * Platform-specific factory for creating SystemControls instances
+ * Android: requires Compose context to access Activity for brightness control
+ * iOS: creates IOSSystemControls directly
+ */
+interface SystemControlsFactory {
+    @Composable
+    fun createSystemControls(): SystemControls
+}
+
+/**
+ * Creates platform-specific SystemControls instance via DI
  * Must be called from Composable context on Android (needs Activity reference)
  */
 @Composable
-expect fun rememberSystemControls(): SystemControls
+fun rememberSystemControls(): SystemControls {
+    val factory = koinInject<SystemControlsFactory>()
+    return factory.createSystemControls()
+}

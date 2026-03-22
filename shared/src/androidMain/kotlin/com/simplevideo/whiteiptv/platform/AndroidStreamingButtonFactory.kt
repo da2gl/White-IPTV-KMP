@@ -16,15 +16,18 @@ import com.simplevideo.whiteiptv.shared.R
  * Uses [ContextThemeWrapper] with [R.style.CastButtonTheme] to provide an opaque
  * `android:colorBackground` required by `MediaRouterThemeHelper.calculateContrast()`.
  */
-@Composable
-actual fun StreamingButton(modifier: Modifier) {
-    AndroidView(
-        factory = { context ->
-            val themedContext = ContextThemeWrapper(context, R.style.CastButtonTheme)
-            MediaRouteButton(themedContext).also { button ->
-                CastButtonFactory.setUpMediaRouteButton(themedContext, button)
-            }
-        },
-        modifier = modifier.size(48.dp),
-    )
+class AndroidStreamingButtonFactory : StreamingButtonFactory {
+
+    @Composable
+    override fun StreamingButton(modifier: Modifier) {
+        AndroidView(
+            factory = { context ->
+                val themedContext = ContextThemeWrapper(context, R.style.CastButtonTheme)
+                MediaRouteButton(themedContext).also { button ->
+                    CastButtonFactory.setUpMediaRouteButton(themedContext, button)
+                }
+            },
+            modifier = modifier.size(48.dp),
+        )
+    }
 }

@@ -11,12 +11,23 @@ import com.simplevideo.whiteiptv.data.local.DATA_STORE_FILE_NAME
 import com.simplevideo.whiteiptv.data.local.createDataStore
 import com.simplevideo.whiteiptv.data.local.getRoomDatabase
 import com.simplevideo.whiteiptv.platform.AndroidBackgroundScheduler
+import com.simplevideo.whiteiptv.platform.AndroidCastManager
 import com.simplevideo.whiteiptv.platform.AndroidFilePickerFactory
 import com.simplevideo.whiteiptv.platform.AndroidFileReader
+import com.simplevideo.whiteiptv.platform.AndroidFullscreenSheetController
+import com.simplevideo.whiteiptv.platform.AndroidKeepScreenOnController
+import com.simplevideo.whiteiptv.platform.AndroidPictureInPictureController
+import com.simplevideo.whiteiptv.platform.AndroidStreamingButtonFactory
+import com.simplevideo.whiteiptv.platform.AndroidSystemControlsFactory
 import com.simplevideo.whiteiptv.platform.BackgroundScheduler
 import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.FilePickerFactory
 import com.simplevideo.whiteiptv.platform.FileReader
+import com.simplevideo.whiteiptv.platform.FullscreenSheetController
+import com.simplevideo.whiteiptv.platform.KeepScreenOnController
+import com.simplevideo.whiteiptv.platform.PictureInPictureController
+import com.simplevideo.whiteiptv.platform.StreamingButtonFactory
+import com.simplevideo.whiteiptv.platform.SystemControlsFactory
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.exoplayer.ExoPlayerFactory
 import org.koin.android.ext.koin.androidContext
@@ -62,5 +73,14 @@ actual fun platformModule(): Module = module {
 
     single<CacheManager> { CoilCacheManager(androidContext()) }
 
-    single { CastManager(get()) }
+    single<StreamingButtonFactory> {
+        AndroidStreamingButtonFactory()
+    }
+
+    single<FullscreenSheetController> { AndroidFullscreenSheetController() }
+    single<KeepScreenOnController> { AndroidKeepScreenOnController() }
+    single<SystemControlsFactory> { AndroidSystemControlsFactory() }
+    factory<PictureInPictureController> { AndroidPictureInPictureController(get()) }
+
+    single<CastManager> { AndroidCastManager(get()) }
 }
