@@ -87,7 +87,7 @@ interface PlaylistDao {
         """
         SELECT c.* FROM channels c
         INNER JOIN channels_fts fts ON c.id = fts.rowid
-        WHERE channels_fts MATCH '"' || :query || '*'
+        WHERE channels_fts MATCH '"' || :query || '"*'
         ORDER BY c.name ASC
         """,
     )
@@ -97,7 +97,7 @@ interface PlaylistDao {
         """
         SELECT c.* FROM channels c
         INNER JOIN channels_fts fts ON c.id = fts.rowid
-        WHERE channels_fts MATCH '"' || :query || '*' AND c.playlistId = :playlistId
+        WHERE channels_fts MATCH '"' || :query || '"*' AND c.playlistId = :playlistId
         ORDER BY c.name ASC
         """,
     )
@@ -108,7 +108,7 @@ interface PlaylistDao {
         SELECT c.* FROM channels c
         INNER JOIN channels_fts fts ON c.id = fts.rowid
         INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
-        WHERE channels_fts MATCH '"' || :query || '*' AND cgr.groupId = :groupId
+        WHERE channels_fts MATCH '"' || :query || '"*' AND cgr.groupId = :groupId
         ORDER BY c.name ASC
         """,
     )
@@ -118,7 +118,7 @@ interface PlaylistDao {
         """
         SELECT c.* FROM channels c
         INNER JOIN channels_fts fts ON c.id = fts.rowid
-        WHERE channels_fts MATCH '"' || :query || '*' AND c.isFavorite = 1
+        WHERE channels_fts MATCH '"' || :query || '"*' AND c.isFavorite = 1
         ORDER BY c.name ASC
         """,
     )
@@ -128,7 +128,7 @@ interface PlaylistDao {
         """
         SELECT c.* FROM channels c
         INNER JOIN channels_fts fts ON c.id = fts.rowid
-        WHERE channels_fts MATCH '"' || :query || '*' AND c.isFavorite = 1 AND c.playlistId = :playlistId
+        WHERE channels_fts MATCH '"' || :query || '"*' AND c.isFavorite = 1 AND c.playlistId = :playlistId
         ORDER BY c.name ASC
         """,
     )
