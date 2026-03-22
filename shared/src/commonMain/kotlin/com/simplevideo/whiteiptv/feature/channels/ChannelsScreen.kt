@@ -4,17 +4,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,8 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -34,8 +38,9 @@ import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.GroupFilterChips
+import com.simplevideo.whiteiptv.common.components.PlaylistFilterChips
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
-import com.simplevideo.whiteiptv.common.components.StyledSearchBar
+import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.common.components.channelSubtitle
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
@@ -65,31 +70,40 @@ fun ChannelsScreen(
         }
     }
 
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(state.isSearchActive) {
+        if (state.isSearchActive) {
+            focusRequester.requestFocus()
+        }
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     Scaffold(
         topBar = {
-            Column {
-                TopAppBar(title = { Text("Channels") })
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    StyledSearchBar(
-                        query = state.searchQuery,
-                        onQueryChange = {
-                            viewModel.obtainEvent(ChannelsEvent.OnSearchQueryChanged(it))
-                        },
-                        placeholder = "Search channels...",
-                    )
-                    if (state.groups.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        GroupFilterChips(
-                            groups = state.groups,
-                            selectedGroup = state.selectedGroup,
-                            onGroupSelect = {
-                                viewModel.obtainEvent(ChannelsEvent.OnGroupSelected(it))
+            if (state.isSearchActive) {
+                SearchTopBar(
+                    query = state.searchQuery,
+                    onQueryChange = {
+                        viewModel.obtainEvent(ChannelsEvent.OnSearchQueryChanged(it))
+                    },
+                    onClose = { viewModel.obtainEvent(ChannelsEvent.OnToggleSearch) },
+                    focusRequester = focusRequester,
+                    placeholder = "Search channels...",
+                )
+            } else {
+                TopAppBar(
+                    title = { Text("Channels") },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                viewModel.obtainEvent(ChannelsEvent.OnToggleSearch)
                             },
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+                        ) {
+                            Icon(Icons.Default.Search, contentDescription = "Search")
+                        }
+                    },
+                )
             }
         },
     ) { paddingValues ->
@@ -98,6 +112,26 @@ fun ChannelsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
         ) {
+            if (state.playlists.size > 1) {
+                PlaylistFilterChips(
+                    playlists = state.playlists,
+                    selection = state.selection,
+                    onPlaylistSelect = { selection ->
+                        viewModel.obtainEvent(ChannelsEvent.OnPlaylistSelected(selection))
+                    },
+                    modifier = Modifier.padding(vertical = 8.dp),
+                )
+            }
+            if (state.groups.isNotEmpty()) {
+                GroupFilterChips(
+                    groups = state.groups,
+                    selectedGroup = state.selectedGroup,
+                    onGroupSelect = {
+                        viewModel.obtainEvent(ChannelsEvent.OnGroupSelected(it))
+                    },
+                    modifier = Modifier.padding(vertical = 4.dp),
+                )
+            }
             ChannelsBody(
                 state = state,
                 pagedItems = pagedItems,

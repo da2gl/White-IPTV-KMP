@@ -128,7 +128,7 @@ class ChannelsViewModel(
                 DataState(params.playlists, params.selection, groups, selectedGroup, params.query)
             }
         }.onEach { data ->
-            viewState = ChannelsState(
+            viewState = viewState.copy(
                 playlists = data.playlists,
                 selection = data.selection,
                 groups = data.groups,
