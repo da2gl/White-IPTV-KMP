@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.feature.favorites
 
 import androidx.compose.foundation.background
-import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +42,7 @@ import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.GradientBackground
 import com.simplevideo.whiteiptv.common.components.PlaylistFilterChips
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import com.simplevideo.whiteiptv.designsystem.FavoritePink
 import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode

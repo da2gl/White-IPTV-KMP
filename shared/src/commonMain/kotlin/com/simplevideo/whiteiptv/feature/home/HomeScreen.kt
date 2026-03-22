@@ -5,7 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,6 +68,7 @@ import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.common.components.SectionHeader
 import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity

@@ -125,7 +125,6 @@ class SettingsViewModelTest {
         assertFalse(state.autoUpdateEnabled)
         assertEquals(AppConfig.VERSION_NAME, state.appVersion)
         assertFalse(state.showClearFavoritesDialog)
-        assertFalse(state.showResetDialog)
     }
 
     @Test
@@ -267,6 +266,29 @@ class SettingsViewModelTest {
         assertFalse(settingsPreferences.getAutoUpdateEnabled())
     }
 
+    // --- Notifications ---
+
+    @Test
+    fun `OnNotificationsChanged updates state`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.obtainEvent(SettingsEvent.OnNotificationsChanged(true))
+
+        assertTrue(viewModel.viewStates().value.notificationsEnabled)
+    }
+
+    @Test
+    fun `OnNotificationsChanged false after true updates state`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.obtainEvent(SettingsEvent.OnNotificationsChanged(true))
+
+        viewModel.obtainEvent(SettingsEvent.OnNotificationsChanged(false))
+
+        assertFalse(viewModel.viewStates().value.notificationsEnabled)
+    }
+
     // --- Clear Cache ---
 
     @Test
@@ -307,54 +329,6 @@ class SettingsViewModelTest {
         assertIs<SettingsAction.ShowFavoritesCleared>(action)
     }
 
-    // --- Reset ---
-
-    @Test
-    fun `OnResetClick shows confirmation dialog`() = runTest {
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.obtainEvent(SettingsEvent.OnResetClick)
-
-        assertTrue(viewModel.viewStates().value.showResetDialog)
-    }
-
-    @Test
-    fun `OnResetConfirm closes dialog and resets all settings`() = runTest {
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
-        viewModel.obtainEvent(SettingsEvent.OnAccentColorChanged(AccentColor.Red))
-        viewModel.obtainEvent(SettingsEvent.OnChannelViewModeChanged(ChannelViewMode.Grid))
-        viewModel.obtainEvent(SettingsEvent.OnAutoUpdateChanged(true))
-        viewModel.obtainEvent(SettingsEvent.OnResetClick)
-        advanceUntilIdle()
-
-        viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
-        advanceUntilIdle()
-
-        val state = viewModel.viewStates().value
-        assertFalse(state.showResetDialog)
-        assertEquals(ThemeMode.System, state.themeMode)
-        assertEquals(AccentColor.Teal, state.accentColor)
-        assertEquals(ChannelViewMode.List, state.channelViewMode)
-        assertFalse(state.autoUpdateEnabled)
-        assertEquals(ThemeMode.System, themeRepository.themeMode.value)
-    }
-
-    @Test
-    fun `OnResetConfirm emits ShowSettingsReset action`() = runTest {
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.obtainEvent(SettingsEvent.OnResetClick)
-
-        viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
-        advanceUntilIdle()
-
-        val action = viewModel.viewActions().first()
-        assertIs<SettingsAction.ShowSettingsReset>(action)
-    }
-
     // --- Dismiss Dialog ---
 
     @Test
@@ -367,32 +341,6 @@ class SettingsViewModelTest {
         viewModel.obtainEvent(SettingsEvent.OnDismissDialog)
 
         assertFalse(viewModel.viewStates().value.showClearFavoritesDialog)
-    }
-
-    @Test
-    fun `OnDismissDialog closes reset dialog`() = runTest {
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.obtainEvent(SettingsEvent.OnResetClick)
-        assertTrue(viewModel.viewStates().value.showResetDialog)
-
-        viewModel.obtainEvent(SettingsEvent.OnDismissDialog)
-
-        assertFalse(viewModel.viewStates().value.showResetDialog)
-    }
-
-    // --- Contact Support ---
-
-    @Test
-    fun `OnContactSupportClick emits OpenEmail action`() = runTest {
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.obtainEvent(SettingsEvent.OnContactSupportClick)
-
-        val action = viewModel.viewActions().first()
-        assertIs<SettingsAction.OpenEmail>(action)
-        assertEquals("mailto:support@simplevideo.com", (action as SettingsAction.OpenEmail).email)
     }
 
     // --- Privacy Policy ---
@@ -409,22 +357,21 @@ class SettingsViewModelTest {
         assertEquals("https://simplevideo.com/privacy", (action as SettingsAction.OpenUrl).url)
     }
 
-    // --- Edge Cases ---
+    // --- Terms of Service ---
 
     @Test
-    fun `reset from Dark theme reverts to System`() = runTest {
+    fun `OnTermsOfServiceClick emits OpenUrl action`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
-        viewModel.obtainEvent(SettingsEvent.OnThemeModeChanged(ThemeMode.Dark))
-        advanceUntilIdle()
-        assertEquals(ThemeMode.Dark, viewModel.viewStates().value.themeMode)
 
-        viewModel.obtainEvent(SettingsEvent.OnResetConfirm)
-        advanceUntilIdle()
+        viewModel.obtainEvent(SettingsEvent.OnTermsOfServiceClick)
 
-        assertEquals(ThemeMode.System, viewModel.viewStates().value.themeMode)
-        assertEquals(ThemeMode.System, themeRepository.themeMode.value)
+        val action = viewModel.viewActions().first()
+        assertIs<SettingsAction.OpenUrl>(action)
+        assertEquals("https://simplevideo.com/terms", (action as SettingsAction.OpenUrl).url)
     }
+
+    // --- Edge Cases ---
 
     @Test
     fun `multiple rapid theme switches preserve last value`() = runTest {

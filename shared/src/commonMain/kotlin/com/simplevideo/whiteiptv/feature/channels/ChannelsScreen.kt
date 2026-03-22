@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.feature.channels
 
 import androidx.compose.foundation.background
-import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +39,7 @@ import com.simplevideo.whiteiptv.common.components.GradientBackground
 import com.simplevideo.whiteiptv.common.components.GroupFilterChips
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.StyledSearchBar
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg

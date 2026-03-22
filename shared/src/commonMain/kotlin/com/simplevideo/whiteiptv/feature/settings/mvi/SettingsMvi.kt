@@ -9,6 +9,7 @@ data class SettingsState(
     val accentColor: AccentColor = AccentColor.Teal,
     val channelViewMode: ChannelViewMode = ChannelViewMode.List,
     val autoUpdateEnabled: Boolean = false,
+    val notificationsEnabled: Boolean = false,
     val appVersion: String = "",
     val showClearFavoritesDialog: Boolean = false,
     val showResetDialog: Boolean = false,
@@ -19,14 +20,16 @@ sealed interface SettingsEvent {
     data class OnAccentColorChanged(val color: AccentColor) : SettingsEvent
     data class OnChannelViewModeChanged(val mode: ChannelViewMode) : SettingsEvent
     data class OnAutoUpdateChanged(val enabled: Boolean) : SettingsEvent
+    data class OnNotificationsChanged(val enabled: Boolean) : SettingsEvent
     data object OnClearCacheClick : SettingsEvent
     data object OnClearFavoritesClick : SettingsEvent
     data object OnClearFavoritesConfirm : SettingsEvent
+    data object OnDismissDialog : SettingsEvent
     data object OnResetClick : SettingsEvent
     data object OnResetConfirm : SettingsEvent
-    data object OnDismissDialog : SettingsEvent
     data object OnContactSupportClick : SettingsEvent
     data object OnPrivacyPolicyClick : SettingsEvent
+    data object OnTermsOfServiceClick : SettingsEvent
 }
 
 sealed interface SettingsAction {

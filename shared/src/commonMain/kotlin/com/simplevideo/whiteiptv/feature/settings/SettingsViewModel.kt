@@ -5,7 +5,6 @@ import com.simplevideo.whiteiptv.AppConfig
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.scheduler.BackgroundRefreshCoordinator
-import com.simplevideo.whiteiptv.domain.model.ThemeMode
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
 import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
 import com.simplevideo.whiteiptv.feature.settings.mvi.SettingsAction
@@ -74,6 +73,10 @@ class SettingsViewModel(
                 }
             }
 
+            is SettingsEvent.OnNotificationsChanged -> {
+                viewState = viewState.copy(notificationsEnabled = viewEvent.enabled)
+            }
+
             is SettingsEvent.OnClearCacheClick -> {
                 viewAction = SettingsAction.ShowCacheCleared
             }
@@ -90,6 +93,13 @@ class SettingsViewModel(
                 }
             }
 
+            is SettingsEvent.OnDismissDialog -> {
+                viewState = viewState.copy(
+                    showClearFavoritesDialog = false,
+                    showResetDialog = false,
+                )
+            }
+
             is SettingsEvent.OnResetClick -> {
                 viewState = viewState.copy(showResetDialog = true)
             }
@@ -98,19 +108,17 @@ class SettingsViewModel(
                 viewState = viewState.copy(showResetDialog = false)
                 viewModelScope.launch {
                     settingsPreferences.resetAll()
-                    themeRepository.setThemeMode(ThemeMode.System)
+                    themeRepository.setThemeMode(
+                        com.simplevideo.whiteiptv.domain.model.ThemeMode.System,
+                    )
+                    viewState = viewState.copy(
+                        themeMode = com.simplevideo.whiteiptv.domain.model.ThemeMode.System,
+                        accentColor = com.simplevideo.whiteiptv.domain.model.AccentColor.Teal,
+                        channelViewMode = com.simplevideo.whiteiptv.domain.model.ChannelViewMode.List,
+                        autoUpdateEnabled = false,
+                    )
+                    viewAction = SettingsAction.ShowSettingsReset
                 }
-                viewState = SettingsState(
-                    appVersion = APP_VERSION,
-                )
-                viewAction = SettingsAction.ShowSettingsReset
-            }
-
-            is SettingsEvent.OnDismissDialog -> {
-                viewState = viewState.copy(
-                    showClearFavoritesDialog = false,
-                    showResetDialog = false,
-                )
             }
 
             is SettingsEvent.OnContactSupportClick -> {
@@ -120,12 +128,17 @@ class SettingsViewModel(
             is SettingsEvent.OnPrivacyPolicyClick -> {
                 viewAction = SettingsAction.OpenUrl(PRIVACY_POLICY_URL)
             }
+
+            is SettingsEvent.OnTermsOfServiceClick -> {
+                viewAction = SettingsAction.OpenUrl(TERMS_OF_SERVICE_URL)
+            }
         }
     }
 
     companion object {
         private val APP_VERSION = AppConfig.VERSION_NAME
-        private const val SUPPORT_EMAIL = "mailto:support@simplevideo.com"
+        private const val SUPPORT_EMAIL = "support@simplevideo.com"
         private const val PRIVACY_POLICY_URL = "https://simplevideo.com/privacy"
+        private const val TERMS_OF_SERVICE_URL = "https://simplevideo.com/terms"
     }
 }

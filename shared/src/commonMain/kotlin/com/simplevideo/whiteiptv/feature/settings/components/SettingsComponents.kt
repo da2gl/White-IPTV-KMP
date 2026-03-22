@@ -3,26 +3,32 @@ package com.simplevideo.whiteiptv.feature.settings.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,11 +44,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.simplevideo.whiteiptv.common.components.SelectionBottomSheet
-import com.simplevideo.whiteiptv.designsystem.DestructiveRed
+import com.simplevideo.whiteiptv.common.components.isDarkTheme
 
 private val ItemCardShape = RoundedCornerShape(16.dp)
-private val SectionBadgeShape = RoundedCornerShape(8.dp)
+private val SectionBadgeShape = RoundedCornerShape(10.dp)
+
+private val LightSectionLabel = Color(0xFF6A7282)
+private val LightTitleText = Color(0xFF101828)
+private val LightSubtitleText = Color(0xFF6A7282)
+private val LightCardBorder = Color(0xFFE5E7EB)
 
 @Composable
 fun SettingsSectionHeader(
@@ -51,10 +61,11 @@ fun SettingsSectionHeader(
     icon: ImageVector? = null,
     gradientColors: List<Color> = emptyList(),
 ) {
+    val isDark = isDarkTheme()
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 4.dp, bottom = 8.dp),
+            .padding(start = 8.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null && gradientColors.isNotEmpty()) {
@@ -76,12 +87,10 @@ fun SettingsSectionHeader(
         }
         Text(
             text = title.uppercase(),
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 12.sp,
-                letterSpacing = 1.sp,
-            ),
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.5.sp,
+            color = if (isDark) Color.White.copy(alpha = 0.5f) else LightSectionLabel,
         )
     }
 }
@@ -104,7 +113,7 @@ fun SettingsItemCard(
                 } else {
                     Modifier
                         .background(Color.White)
-                        .border(1.dp, Color(0xFFe5e7eb), ItemCardShape)
+                        .border(1.dp, LightCardBorder, ItemCardShape)
                 },
             ),
     ) {
@@ -113,8 +122,8 @@ fun SettingsItemCard(
 }
 
 /**
- * Settings row that opens a [SelectionBottomSheet] for single-option selection.
- * Each row is wrapped in its own individual card.
+ * Settings row that opens a rich selection bottom sheet.
+ * Displays icon, title, cyan value text, and chevron right.
  */
 @Composable
 fun <T> SettingsDropdownRow(
@@ -126,16 +135,18 @@ fun <T> SettingsDropdownRow(
     onOptionSelected: (T) -> Unit,
     optionLabel: (T) -> String,
     modifier: Modifier = Modifier,
-    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
-    optionLeadingContent: (@Composable (T) -> Unit)? = null,
+    sheetSubtitle: String = "Choose your ${title.lowercase()}",
+    optionDescription: ((T) -> String)? = null,
+    optionIcon: (@Composable (T) -> Unit)? = null,
 ) {
     var showSheet by remember { mutableStateOf(false) }
+    val isDark = isDarkTheme()
 
     SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 64.dp)
+                .heightIn(min = 56.dp)
                 .clickable { showSheet = true }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -143,55 +154,248 @@ fun <T> SettingsDropdownRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
+                tint = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                modifier = Modifier.size(20.dp),
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (isDark) Color.White else LightTitleText,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            )
+            Text(
+                text = subtitle,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
+                tint = if (isDark) Color.White.copy(alpha = 0.3f) else LightSubtitleText,
+                modifier = Modifier.size(16.dp),
             )
         }
     }
 
     if (showSheet) {
-        SelectionBottomSheet(
+        SettingsSelectionBottomSheet(
             title = title,
+            subtitle = sheetSubtitle,
             options = options,
             selectedOption = selectedOption,
-            onOptionSelected = onOptionSelected,
+            onOptionSelected = {
+                onOptionSelected(it)
+                showSheet = false
+            },
             onDismiss = { showSheet = false },
             optionLabel = optionLabel,
-            leadingContent = optionLeadingContent,
+            optionDescription = optionDescription,
+            optionIcon = optionIcon,
         )
     }
 }
 
 /**
- * Action row wrapped in individual card. Icon (no background), title, and chevron_right.
+ * Rich bottom sheet for settings selection with cards, icons, descriptions, and cyan checkmark.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun <T> SettingsSelectionBottomSheet(
+    title: String,
+    subtitle: String,
+    options: List<T>,
+    selectedOption: T,
+    onOptionSelected: (T) -> Unit,
+    onDismiss: () -> Unit,
+    optionLabel: (T) -> String,
+    optionDescription: ((T) -> String)? = null,
+    optionIcon: (@Composable (T) -> Unit)? = null,
+) {
+    val isDark = isDarkTheme()
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(),
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
+        containerColor = if (isDark) Color(0xFF0F1419) else Color.White,
+        dragHandle = {
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 48.dp, height = 6.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(
+                            if (isDark) Color.White.copy(alpha = 0.2f) else Color(0xFFD1D5DC),
+                        ),
+                )
+            }
+        },
+    ) {
+        // Header: Title + subtitle on left, close button on right
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isDark) Color.White else LightTitleText,
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    fontSize = 14.sp,
+                    color = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(
+                        if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFF3F4F6),
+                    )
+                    .clickable(onClick = onDismiss),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Close",
+                    tint = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
+
+        // Option cards
+        Column(
+            modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            options.forEach { option ->
+                val isSelected = option == selectedOption
+                SettingsOptionCard(
+                    label = optionLabel(option),
+                    description = optionDescription?.invoke(option),
+                    isSelected = isSelected,
+                    isDark = isDark,
+                    onClick = { onOptionSelected(option) },
+                    icon = if (optionIcon != null) {
+                        { optionIcon(option) }
+                    } else {
+                        null
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SettingsOptionCard(
+    label: String,
+    description: String?,
+    isSelected: Boolean,
+    isDark: Boolean,
+    onClick: () -> Unit,
+    icon: (@Composable () -> Unit)? = null,
+) {
+    val primary = MaterialTheme.colorScheme.primary
+    val selectedBorderBrush = Brush.linearGradient(
+        listOf(primary.copy(alpha = 0.5f), primary.copy(alpha = 0.5f)),
+    )
+    val selectedBgBrush = Brush.horizontalGradient(
+        listOf(primary.copy(alpha = 0.2f), primary.copy(alpha = 0.15f)),
+    )
+
+    val shape = RoundedCornerShape(16.dp)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .then(
+                if (isSelected) {
+                    Modifier
+                        .background(selectedBgBrush, shape)
+                        .border(1.dp, selectedBorderBrush, shape)
+                } else if (isDark) {
+                    Modifier
+                        .background(Color.White.copy(alpha = 0.05f), shape)
+                        .border(1.dp, Color.White.copy(alpha = 0.1f), shape)
+                } else {
+                    Modifier
+                        .background(Color(0xFFF9FAFB), shape)
+                        .border(1.dp, LightCardBorder, shape)
+                },
+            )
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            if (icon != null) {
+                icon()
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = label,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isDark) Color.White else LightTitleText,
+                )
+                if (description != null) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = description,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                    )
+                }
+            }
+            if (isSelected) {
+                Spacer(modifier = Modifier.width(12.dp))
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Action row with icon, title, and chevron right (no value text).
  */
 @Composable
 fun SettingsActionRow(
@@ -199,11 +403,8 @@ fun SettingsActionRow(
     title: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isDestructive: Boolean = false,
-    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
 ) {
-    val contentColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.onSurface
-    val iconColor = if (isDestructive) DestructiveRed else MaterialTheme.colorScheme.onSurfaceVariant
+    val isDark = isDarkTheme()
 
     SettingsItemCard(modifier = modifier) {
         Row(
@@ -211,20 +412,21 @@ fun SettingsActionRow(
                 .fillMaxWidth()
                 .heightIn(min = 56.dp)
                 .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(24.dp),
+                tint = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                modifier = Modifier.size(20.dp),
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                color = contentColor,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (isDark) Color.White else LightTitleText,
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -233,24 +435,26 @@ fun SettingsActionRow(
             Icon(
                 imageVector = Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
+                tint = if (isDark) Color.White.copy(alpha = 0.3f) else LightSubtitleText,
+                modifier = Modifier.size(16.dp),
             )
         }
     }
 }
 
 /**
- * Info row wrapped in individual card. Title + value text or title + chevron_right.
+ * Info row for App Version: title + value text (gray), no icon, no chevron.
  */
 @Composable
 fun SettingsInfoRow(
     title: String,
     modifier: Modifier = Modifier,
     value: String? = null,
+    icon: ImageVector? = null,
     onClick: (() -> Unit)? = null,
-    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
 ) {
+    val isDark = isDarkTheme()
+
     SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -259,13 +463,23 @@ fun SettingsInfoRow(
                 .then(
                     if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
                 )
-                .padding(horizontal = 16.dp, vertical = 10.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+            }
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = if (isDark) Color.White else LightTitleText,
                 modifier = Modifier.weight(1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -274,15 +488,15 @@ fun SettingsInfoRow(
             if (value != null) {
                 Text(
                     text = value,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    fontSize = 14.sp,
+                    color = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
                 )
             } else if (onClick != null) {
                 Icon(
                     imageVector = Icons.Filled.ChevronRight,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp),
+                    tint = if (isDark) Color.White.copy(alpha = 0.3f) else LightSubtitleText,
+                    modifier = Modifier.size(16.dp),
                 )
             }
         }
@@ -290,7 +504,7 @@ fun SettingsInfoRow(
 }
 
 /**
- * Switch row wrapped in individual card with icon, title/subtitle, and trailing Switch.
+ * Switch row with icon, title, subtitle, and trailing toggle switch.
  */
 @Composable
 fun SettingsSwitchRow(
@@ -300,13 +514,14 @@ fun SettingsSwitchRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    @Suppress("UNUSED_PARAMETER") showDivider: Boolean = true,
 ) {
+    val isDark = isDarkTheme()
+
     SettingsItemCard(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 64.dp)
+                .heightIn(min = 75.dp)
                 .clickable { onCheckedChange(!checked) }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -314,26 +529,27 @@ fun SettingsSwitchRow(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(24.dp),
+                tint = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
+                modifier = Modifier.size(20.dp),
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = if (isDark) Color.White else LightTitleText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = subtitle,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.sp,
+                    color = if (isDark) Color.White.copy(alpha = 0.5f) else LightSubtitleText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -345,6 +561,9 @@ fun SettingsSwitchRow(
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color.White,
                     checkedTrackColor = MaterialTheme.colorScheme.primary,
+                    uncheckedThumbColor = Color.White,
+                    uncheckedTrackColor = if (isDark) Color.White.copy(alpha = 0.1f) else LightCardBorder,
+                    uncheckedBorderColor = Color.Transparent,
                 ),
             )
         }
