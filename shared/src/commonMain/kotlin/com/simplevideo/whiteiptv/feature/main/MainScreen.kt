@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
@@ -84,6 +85,15 @@ fun MainScreen(
                     },
                     onNavigateToPlayer = onNavigateToPlayer,
                     onNavigateToOnboarding = onNavigateToOnboarding,
+                    onNavigateToSearch = {
+                        navController.navigate(MainTab.Channels(openSearch = true)) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    },
                 )
             }
             composable<MainTab.Favorites> {
@@ -91,9 +101,11 @@ fun MainScreen(
                     onNavigateToPlayer = onNavigateToPlayer,
                 )
             }
-            composable<MainTab.Channels> {
+            composable<MainTab.Channels> { backStackEntry ->
+                val route = backStackEntry.toRoute<MainTab.Channels>()
                 ChannelsScreen(
                     onNavigateToPlayer = onNavigateToPlayer,
+                    openSearch = route.openSearch,
                 )
             }
             composable<MainTab.Settings> { SettingsScreen() }

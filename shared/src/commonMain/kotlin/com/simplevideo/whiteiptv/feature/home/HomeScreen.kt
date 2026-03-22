@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -25,12 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,28 +47,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.ContinueWatchingCard
 import com.simplevideo.whiteiptv.common.components.GradientBackground
-import com.simplevideo.whiteiptv.common.components.SearchEmptyState
-import com.simplevideo.whiteiptv.common.components.SearchTopBar
+import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SectionHeader
 import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
 import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import com.simplevideo.whiteiptv.common.trackRecomposition
-import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
-import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
-import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
 import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
@@ -88,6 +73,7 @@ fun HomeScreen(
     onNavigateToChannels: (String?) -> Unit,
     onNavigateToPlayer: (Long) -> Unit,
     onNavigateToOnboarding: () -> Unit,
+    onNavigateToSearch: () -> Unit = {},
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.viewStates().collectAsState()
@@ -133,35 +119,18 @@ fun HomeScreen(
         }
     }
 
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(state.isSearchActive) {
-        if (state.isSearchActive) {
-            focusRequester.requestFocus()
-        }
-    }
-
     Scaffold(
         topBar = {
-            if (state.isSearchActive) {
-                SearchTopBar(
-                    query = state.searchQuery,
-                    onQueryChange = { viewModel.obtainEvent(HomeEvent.OnSearchQueryChanged(it)) },
-                    onClose = { viewModel.obtainEvent(HomeEvent.OnToggleSearch) },
-                    focusRequester = focusRequester,
-                    placeholder = "Search channels...",
-                )
-            } else {
-                HomeTopAppBar(
-                    playlists = state.playlists,
-                    selection = state.selection,
-                    onAddPlaylistClick = { viewModel.obtainEvent(HomeEvent.OnAddPlaylistClick) },
-                    onSearchClick = { viewModel.obtainEvent(HomeEvent.OnToggleSearch) },
-                    onPlaylistSettingsClick = {
-                        viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
-                    },
-                )
-            }
+            HomeTopAppBar(
+                playlists = state.playlists,
+                selection = state.selection,
+                onPlaylistSelect = { viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(it)) },
+                onAddPlaylistClick = { viewModel.obtainEvent(HomeEvent.OnAddPlaylistClick) },
+                onSearchClick = onNavigateToSearch,
+                onPlaylistSettingsClick = {
+                    viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsClick)
+                },
+            )
         },
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
@@ -172,15 +141,7 @@ fun HomeScreen(
     ) { paddingValues ->
         GradientBackground {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-                if (state.isSearchActive) {
-                    HomeSearchResults(
-                        searchResults = state.searchResults,
-                        searchQuery = state.searchQuery,
-                        onChannelClick = { channelId ->
-                            viewModel.obtainEvent(HomeEvent.OnSearchResultClick(channelId))
-                        },
-                    )
-                } else if (state.isLoading) {
+                if (state.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
                     )
@@ -253,15 +214,12 @@ fun HomeScreen(
 private fun HomeTopAppBar(
     playlists: List<PlaylistEntity>,
     selection: PlaylistSelection,
+    onPlaylistSelect: (PlaylistSelection) -> Unit,
     onAddPlaylistClick: () -> Unit,
     onSearchClick: () -> Unit,
     onPlaylistSettingsClick: () -> Unit,
 ) {
     val isDark = isDarkTheme()
-    val selectedText = when (selection) {
-        is PlaylistSelection.Selected -> playlists.find { it.id == selection.id }?.name ?: "All Playlists"
-        PlaylistSelection.All -> "All Playlists"
-    }
 
     Row(
         modifier = Modifier
@@ -273,36 +231,14 @@ private fun HomeTopAppBar(
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Styled playlist selector button
-        Row(
-            modifier = Modifier
-                .weight(1f)
-                .clip(RoundedCornerShape(12.dp))
-                .background(CyanGradientStart.copy(alpha = 0.1f))
-                .border(1.dp, CyanGradientStart.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
-                .clickable { onPlaylistSettingsClick() }
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = selectedText,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false),
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = "Select Playlist",
-                tint = CyanGradientStart,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        PlaylistDropdown(
+            playlists = playlists,
+            selection = selection,
+            onPlaylistSelect = onPlaylistSelect,
+            onAddPlaylistClick = onAddPlaylistClick,
+            modifier = Modifier.weight(1f),
+        )
         Spacer(modifier = Modifier.width(8.dp))
-        // Search button
         IconButton(
             onClick = onSearchClick,
             modifier = Modifier
@@ -327,24 +263,42 @@ private fun HomeTopAppBar(
                 modifier = Modifier.size(20.dp),
             )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-        // Add playlist button with cyan gradient
-        IconButton(
-            onClick = onAddPlaylistClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(Brush.horizontalGradient(listOf(CyanGradientStart, CyanGradientEnd))),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add Playlist",
-                tint = Color.White,
-                modifier = Modifier.size(20.dp),
-            )
+        if (selectedPlaylistAvailable(selection)) {
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
+                onClick = onPlaylistSettingsClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .then(
+                        if (isDark) {
+                            Modifier
+                                .background(Color.White.copy(alpha = 0.05f))
+                                .border(
+                                    1.dp,
+                                    Color.White.copy(alpha = 0.1f),
+                                    RoundedCornerShape(12.dp),
+                                )
+                        } else {
+                            Modifier
+                                .background(Color.White)
+                                .border(1.dp, Color(0xFFe5e7eb), RoundedCornerShape(12.dp))
+                        },
+                    ),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Playlist Settings",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
         }
     }
 }
+
+private fun selectedPlaylistAvailable(selection: PlaylistSelection): Boolean =
+    selection is PlaylistSelection.Selected
 
 @Composable
 private fun RenameDialog(
@@ -443,7 +397,7 @@ private fun HomeContent(
             .trackRecomposition("HomeContent")
             .verticalScroll(rememberScrollState()),
     ) {
-        // Continue Watching - full-width stacked cards
+        // Continue Watching - horizontal scroll
         AnimatedVisibility(
             visible = state.continueWatchingItems.isNotEmpty(),
             enter = fadeIn(),
@@ -453,16 +407,17 @@ private fun HomeContent(
                     title = "Continue Watching",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
-                Column(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    state.continueWatchingItems.forEach { item ->
+                    items(state.continueWatchingItems) { item ->
                         ContinueWatchingCard(
                             name = item.channel.name,
                             logoUrl = item.channel.logoUrl,
                             onClick = { onChannelClick(item.channel.id) },
                             progress = item.progress,
+                            modifier = Modifier.width(200.dp),
                         )
                     }
                 }
@@ -517,73 +472,6 @@ private fun HomeContent(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun HomeSearchResults(
-    searchResults: List<ChannelEntity>,
-    searchQuery: String,
-    onChannelClick: (Long) -> Unit,
-) {
-    if (searchResults.isEmpty() && searchQuery.isNotEmpty()) {
-        SearchEmptyState(query = searchQuery)
-    } else {
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            items(searchResults, key = { it.id }) { channel ->
-                SearchResultItem(
-                    channel = channel,
-                    onClick = { onChannelClick(channel.id) },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SearchResultItem(
-    channel: ChannelEntity,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        ),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surface),
-                contentAlignment = Alignment.Center,
-            ) {
-                AsyncImage(
-                    model = channel.logoUrl,
-                    contentDescription = channel.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            }
-            Spacer(modifier = Modifier.width(12.dp))
-            Text(
-                text = channel.name,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
         }
     }
 }

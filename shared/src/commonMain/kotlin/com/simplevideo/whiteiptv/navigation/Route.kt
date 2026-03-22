@@ -59,7 +59,7 @@ sealed class Route {
          * @param groupId Group ID to show, or null for all channels
          */
         @Serializable
-        data class Channels(val groupId: String? = null) : MainTab()
+        data class Channels(val groupId: String? = null, val openSearch: Boolean = false) : MainTab()
 
         /**
          * Settings screen

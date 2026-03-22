@@ -53,11 +53,18 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ChannelsScreen(
     onNavigateToPlayer: (Long) -> Unit,
+    openSearch: Boolean = false,
 ) {
     val viewModel = koinViewModel<ChannelsViewModel>()
     val state by viewModel.viewStates().collectAsState()
     val action by viewModel.viewActions().collectAsState(initial = null)
     val pagedItems = viewModel.pagedChannels.collectAsLazyPagingItems()
+
+    LaunchedEffect(openSearch) {
+        if (openSearch && !state.isSearchActive) {
+            viewModel.obtainEvent(ChannelsEvent.OnToggleSearch)
+        }
+    }
 
     LaunchedEffect(action) {
         when (val currentAction = action) {
