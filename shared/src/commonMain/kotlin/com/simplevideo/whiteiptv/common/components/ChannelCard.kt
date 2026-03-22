@@ -32,12 +32,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.trackRecomposition
-import com.simplevideo.whiteiptv.designsystem.FavoritePink
+import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.designsystem.LiveCyan
 import com.simplevideo.whiteiptv.designsystem.PlaceholderColors
 import kotlin.math.abs
@@ -73,12 +75,10 @@ fun ChannelCardSquare(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    if (isDark) {
-                        Modifier.border(1.dp, Color.White.copy(alpha = 0.1f), CardShape)
-                    } else {
-                        Modifier
-                    },
+                .border(
+                    1.dp,
+                    if (isDark) Color.White.copy(alpha = 0.1f) else Color(0xFFE5E7EB),
+                    CardShape,
                 ),
         ) {
             Box(
@@ -121,7 +121,9 @@ fun ChannelCardSquare(
                             Icon(
                                 imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                                 contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                                tint = if (isFavorite) FavoritePink else Color.White.copy(alpha = 0.7f),
+                                tint = if (isFavorite) MaterialTheme.colorScheme.primary else Color.White.copy(
+                                    alpha = 0.7f
+                                ),
                                 modifier = Modifier.size(20.dp),
                             )
                         }
@@ -181,28 +183,27 @@ fun ChannelCardList(
         modifier = modifier
             .fillMaxWidth()
             .trackRecomposition("ChannelCardList")
-            .then(
-                if (isDark) {
-                    Modifier.border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-                } else {
-                    Modifier
-                },
+            .border(
+                1.dp,
+                if (isDark) Color.White.copy(alpha = 0.1f) else Color(0xFFE5E7EB),
+                CardShape,
             ),
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceContainer,
-        tonalElevation = 1.dp,
+        shape = CardShape,
+        color = if (isDark) Color.White.copy(alpha = 0.05f) else Color.White,
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                    .background(
+                        if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFF3F4F6),
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 if (logoUrl.isNullOrBlank()) {
@@ -227,16 +228,18 @@ fun ChannelCardList(
             ) {
                 Text(
                     text = name,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
+                    color = if (isDark) Color.White else Color(0xFF101828),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 if (subtitle != null) {
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        color = if (isDark) Color.White.copy(alpha = 0.5f) else Color(0xFF6A7282),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -248,7 +251,11 @@ fun ChannelCardList(
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = if (isFavorite) "Remove from favorites" else "Add to favorites",
-                        tint = if (isFavorite) FavoritePink else MaterialTheme.colorScheme.onSurfaceVariant,
+                        tint = if (isFavorite) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            if (isDark) Color.White.copy(alpha = 0.3f) else Color(0xFF6A7282)
+                        },
                     )
                 }
             }
@@ -270,6 +277,17 @@ fun LiveBadge(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
         )
     }
+}
+
+/**
+ * Builds a subtitle string from channel metadata (language, country).
+ */
+fun channelSubtitle(channel: ChannelEntity): String? {
+    val parts = listOfNotNull(
+        channel.tvgLanguage,
+        channel.tvgCountry,
+    ).filter { it.isNotBlank() }
+    return parts.joinToString(" · ").ifEmpty { null }
 }
 
 @Composable

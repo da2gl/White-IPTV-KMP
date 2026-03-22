@@ -43,6 +43,7 @@ import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
+import com.simplevideo.whiteiptv.common.components.channelSubtitle
 import com.simplevideo.whiteiptv.designsystem.FavoritePink
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.feature.favorites.mvi.FavoritesAction
@@ -221,6 +222,7 @@ private fun ChannelsList(
                         onClick = { onEvent(FavoritesEvent.OnChannelClick(channel.id)) },
                         onToggleFavorite = { onEvent(FavoritesEvent.OnToggleFavorite(channel.id)) },
                         showFavoriteButton = true,
+                        subtitle = channelSubtitle(channel),
                     )
                 }
             }

@@ -36,6 +36,7 @@ import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.GroupFilterChips
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.StyledSearchBar
+import com.simplevideo.whiteiptv.common.components.channelSubtitle
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
@@ -197,7 +198,7 @@ private fun ChannelsBody(
                                     isFavorite = channel.isFavorite,
                                     onClick = { onChannelClick(channel.id) },
                                     onToggleFavorite = { onToggleFavorite(channel.id) },
-                                    subtitle = channel.tvgLanguage ?: channel.tvgCountry,
+                                    subtitle = channelSubtitle(channel),
                                 )
                             }
                         }
