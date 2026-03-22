@@ -2,6 +2,7 @@ package com.simplevideo.whiteiptv.feature.favorites
 
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
+import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
 import com.simplevideo.whiteiptv.domain.usecase.GetFavoritesUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
@@ -25,6 +26,7 @@ class FavoritesViewModel(
     getFavorites: GetFavoritesUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
+    settingsPreferences: SettingsPreferences,
 ) : BaseViewModel<FavoritesState, FavoritesAction, FavoritesEvent>(
     initialState = FavoritesState(),
 ) {
@@ -32,6 +34,11 @@ class FavoritesViewModel(
     private val searchQuery = MutableStateFlow("")
 
     init {
+        settingsPreferences.channelViewModeFlow
+            .onEach { mode ->
+                viewState = viewState.copy(channelViewMode = mode)
+            }.launchIn(viewModelScope)
+
         @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
         combine(
             currentPlaylistRepository.selection,

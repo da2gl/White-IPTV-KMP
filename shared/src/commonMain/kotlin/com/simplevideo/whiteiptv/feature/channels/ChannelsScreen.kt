@@ -1,6 +1,5 @@
 package com.simplevideo.whiteiptv.feature.channels
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,23 +9,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -35,15 +33,11 @@ import androidx.paging.compose.itemKey
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
-import com.simplevideo.whiteiptv.common.components.GradientBackground
 import com.simplevideo.whiteiptv.common.components.GroupFilterChips
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.StyledSearchBar
-import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
-import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
@@ -70,78 +64,49 @@ fun ChannelsScreen(
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     Scaffold(
-        containerColor = Color.Transparent,
-    ) { paddingValues ->
-        GradientBackground {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-            ) {
-                ChannelsHeader(
-                    searchQuery = state.searchQuery,
-                    onSearchQueryChange = { viewModel.obtainEvent(ChannelsEvent.OnSearchQueryChanged(it)) },
-                    groups = state.groups,
-                    selectedGroup = state.selectedGroup,
-                    onGroupSelect = { viewModel.obtainEvent(ChannelsEvent.OnGroupSelected(it)) },
-                )
-
-                ChannelsBody(
-                    state = state,
-                    pagedItems = pagedItems,
-                    onChannelClick = { channelId ->
-                        viewModel.obtainEvent(ChannelsEvent.OnChannelClick(channelId))
-                    },
-                    onToggleFavorite = { channelId ->
-                        viewModel.obtainEvent(ChannelsEvent.OnToggleFavorite(channelId))
-                    },
-                )
+        topBar = {
+            Column {
+                TopAppBar(title = { Text("Channels") })
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    StyledSearchBar(
+                        query = state.searchQuery,
+                        onQueryChange = {
+                            viewModel.obtainEvent(ChannelsEvent.OnSearchQueryChanged(it))
+                        },
+                        placeholder = "Search channels...",
+                    )
+                    if (state.groups.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        GroupFilterChips(
+                            groups = state.groups,
+                            selectedGroup = state.selectedGroup,
+                            onGroupSelect = {
+                                viewModel.obtainEvent(ChannelsEvent.OnGroupSelected(it))
+                            },
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
-        }
-    }
-}
-
-@Composable
-private fun ChannelsHeader(
-    searchQuery: String,
-    onSearchQueryChange: (String) -> Unit,
-    groups: List<ChannelGroup>,
-    selectedGroup: ChannelGroup?,
-    onGroupSelect: (ChannelGroup?) -> Unit,
-) {
-    val isDark = isDarkTheme()
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                if (isDark) HeaderDarkBg.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
+        },
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+        ) {
+            ChannelsBody(
+                state = state,
+                pagedItems = pagedItems,
+                onChannelClick = { channelId ->
+                    viewModel.obtainEvent(ChannelsEvent.OnChannelClick(channelId))
+                },
+                onToggleFavorite = { channelId ->
+                    viewModel.obtainEvent(ChannelsEvent.OnToggleFavorite(channelId))
+                },
             )
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "All Channels",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        StyledSearchBar(
-            query = searchQuery,
-            onQueryChange = onSearchQueryChange,
-            placeholder = "Search channels...",
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        if (groups.isNotEmpty()) {
-            GroupFilterChips(
-                groups = groups,
-                selectedGroup = selectedGroup,
-                onGroupSelect = onGroupSelect,
-                modifier = Modifier.padding(start = 0.dp),
-            )
-            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
