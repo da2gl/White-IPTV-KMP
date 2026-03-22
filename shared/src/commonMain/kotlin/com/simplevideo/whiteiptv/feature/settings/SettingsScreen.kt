@@ -38,6 +38,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -506,8 +507,10 @@ private fun ConfirmationDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val isDark = com.simplevideo.whiteiptv.common.components.isDarkTheme()
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = if (isDark) Color(0xFF1E2830) else Color.White,
         title = { Text(title) },
         text = { Text(message) },
         confirmButton = {
