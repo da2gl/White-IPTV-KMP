@@ -31,6 +31,10 @@ class StubChannelRepository : ChannelRepository {
     override fun getTopGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> =
         flowOf(emptyList())
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> = emptyList()
+    override suspend fun getRandomChannelsForGroups(
+        groupIds: List<Long>,
+        limitPerGroup: Int
+    ): Map<Long, List<ChannelEntity>> = emptyMap()
     override suspend fun insertGroups(groups: List<ChannelGroupEntity>): List<Long> = emptyList()
     override suspend fun insertChannelGroupCrossRefs(refs: List<ChannelGroupCrossRef>) = Unit
 

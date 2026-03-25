@@ -10,6 +10,7 @@ import androidx.room.Upsert
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
+import com.simplevideo.whiteiptv.data.local.model.ChannelWithGroupId
 import com.simplevideo.whiteiptv.data.local.model.ChannelWithGroups
 import com.simplevideo.whiteiptv.data.local.model.GroupWithChannels
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
@@ -205,6 +206,15 @@ interface PlaylistDao {
         """,
     )
     suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity>
+
+    @Query(
+        """
+        SELECT c.*, cgr.groupId AS crossRefGroupId FROM channels c
+        INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
+        WHERE cgr.groupId IN (:groupIds)
+        """,
+    )
+    suspend fun getChannelsForGroupIds(groupIds: List<Long>): List<ChannelWithGroupId>
 
     @Transaction
     @Query("SELECT * FROM channels WHERE id = :channelId")

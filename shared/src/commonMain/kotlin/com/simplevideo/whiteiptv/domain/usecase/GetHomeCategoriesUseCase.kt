@@ -6,9 +6,6 @@ import com.simplevideo.whiteiptv.data.mapper.ChannelGroupMapper
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -47,17 +44,13 @@ class GetHomeCategoriesUseCase(
 
         val selectedGroups = selectGroups(validGroups, groupLimit)
 
-        val result = coroutineScope {
-            selectedGroups.map { group ->
-                async {
-                    val channelGroup = channelGroupMapper.toDomain(group)
-                    val channels = channelRepository.getRandomChannelsByGroupId(
-                        groupId = group.id,
-                        limit = channelsPerGroup,
-                    )
-                    channelGroup to channels
-                }
-            }.awaitAll()
+        val groupIds = selectedGroups.map { it.id }
+        val channelsByGroup = channelRepository.getRandomChannelsForGroups(groupIds, channelsPerGroup)
+
+        val result = selectedGroups.map { group ->
+            val channelGroup = channelGroupMapper.toDomain(group)
+            val channels = channelsByGroup[group.id].orEmpty()
+            channelGroup to channels
         }
         emit(result)
     }

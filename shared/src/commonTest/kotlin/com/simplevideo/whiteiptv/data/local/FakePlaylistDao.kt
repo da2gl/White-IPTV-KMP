@@ -70,6 +70,9 @@ class FakePlaylistDao : PlaylistDao {
     override fun getTopGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> =
         flowOf(emptyList())
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> = emptyList()
+    override suspend fun getChannelsForGroupIds(
+        groupIds: List<Long>
+    ): List<com.simplevideo.whiteiptv.data.local.model.ChannelWithGroupId> = emptyList()
     override suspend fun getChannelWithGroups(channelId: Long): ChannelWithGroups? = null
     override fun getGroupWithChannels(groupId: Long): Flow<GroupWithChannels?> = flowOf(null)
     override fun getChannelsByGroupId(groupId: Long): Flow<List<ChannelEntity>> = flowOf(emptyList())

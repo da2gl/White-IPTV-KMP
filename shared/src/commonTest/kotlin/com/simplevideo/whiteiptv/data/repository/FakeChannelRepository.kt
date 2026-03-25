@@ -152,6 +152,17 @@ class FakeChannelRepository : ChannelRepository {
         return channels.value.filter { it.id in channelIds }.take(limit)
     }
 
+    override suspend fun getRandomChannelsForGroups(
+        groupIds: List<Long>,
+        limitPerGroup: Int,
+    ): Map<Long, List<ChannelEntity>> {
+        methodCalls.add("getRandomChannelsForGroups")
+        return groupIds.associateWith { groupId ->
+            val channelIds = crossRefs.filter { it.groupId == groupId }.map { it.channelId }.toSet()
+            channels.value.filter { it.id in channelIds }.take(limitPerGroup)
+        }
+    }
+
     override suspend fun insertGroups(groupList: List<ChannelGroupEntity>): List<Long> {
         methodCalls.add("insertGroups")
         groups.value = groups.value + groupList

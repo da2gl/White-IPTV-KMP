@@ -134,6 +134,16 @@ class ChannelRepositoryImpl(
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> =
         playlistDao.getRandomChannelsByGroupId(groupId, limit)
 
+    override suspend fun getRandomChannelsForGroups(
+        groupIds: List<Long>,
+        limitPerGroup: Int,
+    ): Map<Long, List<ChannelEntity>> =
+        playlistDao.getChannelsForGroupIds(groupIds)
+            .groupBy { it.groupId }
+            .mapValues { (_, entries) ->
+                entries.map { it.channel }.shuffled().take(limitPerGroup)
+            }
+
     override suspend fun insertGroups(groups: List<ChannelGroupEntity>): List<Long> =
         playlistDao.upsertGroups(groups)
 
