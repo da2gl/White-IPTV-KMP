@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -166,7 +166,7 @@ private fun FavoritesEmptyState() {
                         .background(FavoritePink.copy(alpha = 0.2f)),
                 )
                 Icon(
-                    Icons.Outlined.StarOutline,
+                    Icons.Outlined.FavoriteBorder,
                     contentDescription = null,
                     modifier = Modifier.size(40.dp),
                     tint = FavoritePink,
