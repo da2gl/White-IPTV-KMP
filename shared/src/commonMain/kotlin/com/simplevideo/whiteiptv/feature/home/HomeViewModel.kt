@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -52,10 +51,10 @@ class HomeViewModel(
         currentPlaylistRepository.selection
             .flatMapLatest { selection ->
                 combine(
-                    getPlaylists().distinctUntilChanged(),
-                    getContinueWatching().distinctUntilChanged(),
-                    getFavorites(selection).distinctUntilChanged(),
-                    getHomeCategories(selection).distinctUntilChanged(),
+                    getPlaylists(),
+                    getContinueWatching(),
+                    getFavorites(selection),
+                    getHomeCategories(selection),
                 ) { playlists, continueWatching, favorites, categories ->
                     viewState.copy(
                         playlists = playlists,

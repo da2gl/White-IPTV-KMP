@@ -170,38 +170,40 @@ fun HomeScreen(
         }
     }
 
-    if (state.showPlaylistSettings && selectedPlaylist != null) {
-        PlaylistSettingsBottomSheet(
-            playlist = selectedPlaylist!!,
-            onDismiss = { viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsDismiss) },
-            onRename = { viewModel.obtainEvent(HomeEvent.OnRenameClick) },
-            onUpdate = { viewModel.obtainEvent(HomeEvent.OnUpdatePlaylistClick) },
-            onDelete = { viewModel.obtainEvent(HomeEvent.OnDeleteClick) },
-            onViewUrl = { viewModel.obtainEvent(HomeEvent.OnViewUrlClick) },
-        )
-    }
+    selectedPlaylist?.let { playlist ->
+        if (state.showPlaylistSettings) {
+            PlaylistSettingsBottomSheet(
+                playlist = playlist,
+                onDismiss = { viewModel.obtainEvent(HomeEvent.OnPlaylistSettingsDismiss) },
+                onRename = { viewModel.obtainEvent(HomeEvent.OnRenameClick) },
+                onUpdate = { viewModel.obtainEvent(HomeEvent.OnUpdatePlaylistClick) },
+                onDelete = { viewModel.obtainEvent(HomeEvent.OnDeleteClick) },
+                onViewUrl = { viewModel.obtainEvent(HomeEvent.OnViewUrlClick) },
+            )
+        }
 
-    if (state.showRenameDialog && selectedPlaylist != null) {
-        RenameDialog(
-            currentName = selectedPlaylist!!.name,
-            onDismiss = { viewModel.obtainEvent(HomeEvent.OnRenameDialogDismiss) },
-            onConfirm = { newName -> viewModel.obtainEvent(HomeEvent.OnRenameConfirm(newName)) },
-        )
-    }
+        if (state.showRenameDialog) {
+            RenameDialog(
+                currentName = playlist.name,
+                onDismiss = { viewModel.obtainEvent(HomeEvent.OnRenameDialogDismiss) },
+                onConfirm = { newName -> viewModel.obtainEvent(HomeEvent.OnRenameConfirm(newName)) },
+            )
+        }
 
-    if (state.showDeleteConfirmation && selectedPlaylist != null) {
-        DeleteConfirmationDialog(
-            playlistName = selectedPlaylist!!.name,
-            onDismiss = { viewModel.obtainEvent(HomeEvent.OnDeleteDialogDismiss) },
-            onConfirm = { viewModel.obtainEvent(HomeEvent.OnDeleteConfirm) },
-        )
-    }
+        if (state.showDeleteConfirmation) {
+            DeleteConfirmationDialog(
+                playlistName = playlist.name,
+                onDismiss = { viewModel.obtainEvent(HomeEvent.OnDeleteDialogDismiss) },
+                onConfirm = { viewModel.obtainEvent(HomeEvent.OnDeleteConfirm) },
+            )
+        }
 
-    if (state.showViewUrlDialog && selectedPlaylist != null) {
-        ViewUrlDialog(
-            url = selectedPlaylist!!.url,
-            onDismiss = { viewModel.obtainEvent(HomeEvent.OnViewUrlDialogDismiss) },
-        )
+        if (state.showViewUrlDialog) {
+            ViewUrlDialog(
+                url = playlist.url,
+                onDismiss = { viewModel.obtainEvent(HomeEvent.OnViewUrlDialogDismiss) },
+            )
+        }
     }
 }
 
@@ -386,18 +388,20 @@ private fun HomeContent(
             }
         }
 
-        categories.forEach { (group, channels) ->
-            if (channels.isNotEmpty()) {
-                item(key = "group_${group.id}", contentType = "category") {
-                    CategorySection(
-                        group = group,
-                        channels = channels,
-                        onViewAllClick = { onGroupViewAllClick(group.id) },
-                        onChannelClick = onChannelClick,
-                        onToggleFavorite = onToggleFavorite,
-                    )
-                }
-            }
+        val nonEmptyCategories = categories.filter { it.second.isNotEmpty() }
+        items(
+            count = nonEmptyCategories.size,
+            key = { index -> "group_${nonEmptyCategories[index].first.id}" },
+            contentType = { "category" },
+        ) { index ->
+            val (group, channels) = nonEmptyCategories[index]
+            CategorySection(
+                group = group,
+                channels = channels,
+                onViewAllClick = { onGroupViewAllClick(group.id) },
+                onChannelClick = onChannelClick,
+                onToggleFavorite = onToggleFavorite,
+            )
         }
     }
 }
@@ -415,7 +419,7 @@ private fun ContinueWatchingSection(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        items(items) { item ->
+        items(items, key = { it.channel.id }) { item ->
             ContinueWatchingCard(
                 name = item.channel.name,
                 logoUrl = item.channel.logoUrl,
