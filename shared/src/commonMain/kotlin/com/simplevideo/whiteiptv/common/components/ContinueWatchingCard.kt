@@ -20,10 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
 import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
 
@@ -59,9 +63,15 @@ fun ContinueWatchingCard(
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f),
         ) {
+            val placeholderColor = Color(0xFF1a2026)
             AsyncImage(
-                model = logoUrl,
+                model = ImageRequest.Builder(LocalPlatformContext.current)
+                    .data(logoUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = name,
+                placeholder = ColorPainter(placeholderColor),
+                error = ColorPainter(placeholderColor),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
             )

@@ -1,0 +1,156 @@
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - heading "Settings" [level=1] [ref=e8]
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]:
+          - img [ref=e13]
+          - heading "Appearance" [level=2] [ref=e19]
+        - generic [ref=e20]:
+          - button "Theme Dark" [ref=e21]:
+            - generic [ref=e22]:
+              - generic [ref=e23]:
+                - img [ref=e24]
+                - generic [ref=e30]: Theme
+              - generic [ref=e31]:
+                - generic [ref=e32]: Dark
+                - img [ref=e33]
+          - button "Accent Color Cyan" [ref=e35]:
+            - generic [ref=e36]:
+              - generic [ref=e37]:
+                - img [ref=e38]
+                - generic [ref=e44]: Accent Color
+              - generic [ref=e45]:
+                - generic [ref=e46]: Cyan
+                - img [ref=e47]
+          - button "Channel View Grid" [ref=e49]:
+            - generic [ref=e50]:
+              - generic [ref=e51]:
+                - img [ref=e52]
+                - generic [ref=e55]: Channel View
+              - generic [ref=e56]:
+                - generic [ref=e57]: Grid
+                - img [ref=e58]
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - img [ref=e63]
+          - heading "Playback" [level=2] [ref=e66]
+        - generic [ref=e67]:
+          - button "Default Player Internal" [ref=e68]:
+            - generic [ref=e69]:
+              - generic [ref=e70]:
+                - img [ref=e71]
+                - generic [ref=e74]: Default Player
+              - generic [ref=e75]:
+                - generic [ref=e76]: Internal
+                - img [ref=e77]
+          - button "Quality Auto" [ref=e79]:
+            - generic [ref=e80]:
+              - generic [ref=e81]:
+                - img [ref=e82]
+                - generic [ref=e84]: Quality
+              - generic [ref=e85]:
+                - generic [ref=e86]: Auto
+                - img [ref=e87]
+      - generic [ref=e89]:
+        - generic [ref=e90]:
+          - img [ref=e92]
+          - heading "App Behavior" [level=2] [ref=e94]
+        - generic [ref=e95]:
+          - button "Default Playlist Main Playlist" [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - img [ref=e99]
+                - generic [ref=e100]: Default Playlist
+              - generic [ref=e101]:
+                - generic [ref=e102]: Main Playlist
+                - img [ref=e103]
+          - button "Language English" [ref=e105]:
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - img [ref=e108]
+                - generic [ref=e112]: Language
+              - generic [ref=e113]:
+                - generic [ref=e114]: English
+                - img [ref=e115]
+      - generic [ref=e117]:
+        - generic [ref=e118]:
+          - img [ref=e120]
+          - heading "Data & Storage" [level=2] [ref=e124]
+        - generic [ref=e125]:
+          - button "Manage Playlists" [ref=e126]:
+            - generic [ref=e127]:
+              - generic [ref=e128]:
+                - img [ref=e129]
+                - generic [ref=e130]: Manage Playlists
+              - img [ref=e131]
+          - button "Clear Favorites" [ref=e133]:
+            - generic [ref=e134]:
+              - generic [ref=e135]:
+                - img [ref=e136]
+                - generic [ref=e138]: Clear Favorites
+              - img [ref=e139]
+          - button "Clear Cache" [ref=e141]:
+            - generic [ref=e142]:
+              - generic [ref=e143]:
+                - img [ref=e144]
+                - generic [ref=e147]: Clear Cache
+              - img [ref=e148]
+      - generic [ref=e150]:
+        - generic [ref=e151]:
+          - img [ref=e153]
+          - heading "Preferences" [level=2] [ref=e156]
+        - generic [ref=e157]:
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - img [ref=e161]
+              - generic [ref=e163]:
+                - paragraph [ref=e164]: Auto Update Playlists
+                - paragraph [ref=e165]: Update on app startup
+            - switch [checked] [ref=e166]
+          - generic [ref=e169]:
+            - generic [ref=e170]:
+              - img [ref=e171]
+              - generic [ref=e174]:
+                - paragraph [ref=e175]: Notifications
+                - paragraph [ref=e176]: Channel updates
+            - switch [ref=e177]
+      - generic [ref=e179]:
+        - generic [ref=e180]:
+          - img [ref=e182]
+          - heading "About" [level=2] [ref=e184]
+        - generic [ref=e185]:
+          - generic [ref=e187]:
+            - generic [ref=e188]: App Version
+            - generic [ref=e189]: 1.4.2
+          - button "Privacy Policy" [ref=e190]:
+            - generic [ref=e191]:
+              - generic [ref=e192]:
+                - img [ref=e193]
+                - generic [ref=e195]: Privacy Policy
+              - img [ref=e196]
+          - button "Terms of Service" [ref=e198]:
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - img [ref=e201]
+                - generic [ref=e204]: Terms of Service
+              - img [ref=e205]
+  - navigation [ref=e207]:
+    - generic [ref=e208]:
+      - link "Home" [ref=e209] [cursor=pointer]:
+        - /url: /
+        - img [ref=e210]
+        - generic [ref=e213]: Home
+      - link "Channels" [ref=e214] [cursor=pointer]:
+        - /url: /channels
+        - img [ref=e215]
+        - generic [ref=e217]: Channels
+      - link "Favorites" [ref=e218] [cursor=pointer]:
+        - /url: /favorites
+        - img [ref=e219]
+        - generic [ref=e221]: Favorites
+      - link "Settings" [ref=e222] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e223]
+        - generic [ref=e226]: Settings
