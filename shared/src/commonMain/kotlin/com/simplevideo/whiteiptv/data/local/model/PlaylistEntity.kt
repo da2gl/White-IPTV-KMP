@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.data.local.model
 
+import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -11,6 +12,7 @@ import kotlin.time.ExperimentalTime
  *
  * Stores playlist information and global settings from M3U header
  */
+@Stable
 @OptIn(ExperimentalTime::class)
 @Entity(
     tableName = "playlists",
