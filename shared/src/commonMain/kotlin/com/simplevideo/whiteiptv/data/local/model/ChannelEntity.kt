@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.data.local.model
 
+import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -10,6 +11,7 @@ import androidx.room.PrimaryKey
  *
  * Stores channel information with top IPTV M3U tags for UI and functionality
  */
+@Stable
 @Entity(
     tableName = "channels",
     foreignKeys = [

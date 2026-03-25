@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.data.local.model
 
+import androidx.compose.runtime.Stable
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -23,6 +24,7 @@ import androidx.room.PrimaryKey
  * Instead of storing groupTitle string in each Channel,
  * store groupId reference to this table
  */
+@Stable
 @Entity(
     tableName = "channel_groups",
     foreignKeys = [
