@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.feature.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,10 +50,8 @@ import com.simplevideo.whiteiptv.common.components.GradientBackground
 import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SectionHeader
 import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
-import com.simplevideo.whiteiptv.common.components.isDarkTheme
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
-import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
@@ -216,14 +213,13 @@ private fun HomeTopAppBar(
     onSearchClick: () -> Unit,
     onPlaylistSettingsClick: () -> Unit,
 ) {
-    val isDark = isDarkTheme()
+    val bgColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)
+    val buttonBg = MaterialTheme.colorScheme.surfaceVariant
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                if (isDark) HeaderDarkBg.copy(alpha = 0.8f) else Color.White.copy(alpha = 0.8f),
-            )
+            .background(bgColor)
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -241,17 +237,7 @@ private fun HomeTopAppBar(
             modifier = Modifier
                 .size(40.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .then(
-                    if (isDark) {
-                        Modifier
-                            .background(Color.White.copy(alpha = 0.05f))
-                            .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-                    } else {
-                        Modifier
-                            .background(Color.White)
-                            .border(1.dp, Color(0xFFe5e7eb), RoundedCornerShape(12.dp))
-                    },
-                ),
+                .background(buttonBg),
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -267,21 +253,7 @@ private fun HomeTopAppBar(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .then(
-                        if (isDark) {
-                            Modifier
-                                .background(Color.White.copy(alpha = 0.05f))
-                                .border(
-                                    1.dp,
-                                    Color.White.copy(alpha = 0.1f),
-                                    RoundedCornerShape(12.dp),
-                                )
-                        } else {
-                            Modifier
-                                .background(Color.White)
-                                .border(1.dp, Color(0xFFe5e7eb), RoundedCornerShape(12.dp))
-                        },
-                    ),
+                    .background(buttonBg),
             ) {
                 Icon(
                     imageVector = Icons.Default.Settings,

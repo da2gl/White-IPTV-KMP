@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.common.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,21 +61,14 @@ private fun FilterPillChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isDark = isDarkTheme()
     Box(
         modifier = modifier
             .clip(ChipShape)
             .then(
                 if (isSelected) {
                     Modifier.background(Brush.horizontalGradient(listOf(CyanGradientStart, CyanGradientEnd)))
-                } else if (isDark) {
-                    Modifier
-                        .background(Color.White.copy(alpha = 0.05f))
-                        .border(1.dp, Color.White.copy(alpha = 0.1f), ChipShape)
                 } else {
-                    Modifier
-                        .background(Color.White)
-                        .border(1.dp, Color(0xFFe5e7eb), ChipShape)
+                    Modifier.background(MaterialTheme.colorScheme.surfaceVariant)
                 },
             )
             .clickable(onClick = onClick)
@@ -87,13 +79,7 @@ private fun FilterPillChip(
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
             ),
-            color = if (isSelected) {
-                Color.White
-            } else if (isDark) {
-                Color.White.copy(alpha = 0.6f)
-            } else {
-                Color(0xFF4b5563)
-            },
+            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

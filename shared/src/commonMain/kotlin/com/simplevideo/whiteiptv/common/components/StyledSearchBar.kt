@@ -1,9 +1,7 @@
 package com.simplevideo.whiteiptv.common.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -29,22 +27,19 @@ fun StyledSearchBar(
     placeholder: String = "Search channels...",
     modifier: Modifier = Modifier,
 ) {
-    val isDark = isDarkTheme()
+    val hintColor = MaterialTheme.colorScheme.onSurfaceVariant
     TextField(
         value = query,
         onValueChange = onQueryChange,
         placeholder = {
-            Text(
-                text = placeholder,
-                color = if (isDark) Color.White.copy(alpha = 0.3f) else Color.Gray,
-            )
+            Text(text = placeholder, color = hintColor)
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = if (isDark) Color.White.copy(alpha = 0.4f) else Color.Gray,
-                modifier = Modifier.size(20.dp),
+                tint = hintColor,
+                modifier = Modifier.fillMaxWidth(0f),
             )
         },
         trailingIcon = {
@@ -53,8 +48,7 @@ fun StyledSearchBar(
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = "Clear search",
-                        tint = if (isDark) Color.White.copy(alpha = 0.4f) else Color.Gray,
-                        modifier = Modifier.size(20.dp),
+                        tint = hintColor,
                     )
                 }
             }
@@ -70,16 +64,6 @@ fun StyledSearchBar(
         modifier = modifier
             .fillMaxWidth()
             .clip(SearchBarShape)
-            .then(
-                if (isDark) {
-                    Modifier
-                        .background(Color.White.copy(alpha = 0.05f))
-                        .border(1.dp, Color.White.copy(alpha = 0.1f), SearchBarShape)
-                } else {
-                    Modifier
-                        .background(Color.White)
-                        .border(1.dp, Color(0xFFe5e7eb), SearchBarShape)
-                },
-            ),
+            .background(MaterialTheme.colorScheme.surfaceVariant),
     )
 }
