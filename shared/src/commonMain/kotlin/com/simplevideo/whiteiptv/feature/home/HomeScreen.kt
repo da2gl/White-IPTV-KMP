@@ -1,9 +1,9 @@
 package com.simplevideo.whiteiptv.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,8 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -415,11 +414,14 @@ private fun ContinueWatchingSection(
         title = "Continue Watching",
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     )
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        items(items, key = { it.channel.id }) { item ->
+        items.forEach { item ->
             ContinueWatchingCard(
                 name = item.channel.name,
                 logoUrl = item.channel.logoUrl,
@@ -443,11 +445,14 @@ private fun FavoritesSection(
         onViewAllClick = onViewAllClick,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     )
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        items(channels, key = { it.id }) { channel ->
+        channels.forEach { channel ->
             ChannelCardSquare(
                 name = channel.name,
                 logoUrl = channel.logoUrl,
@@ -473,11 +478,14 @@ private fun CategorySection(
         onViewAllClick = onViewAllClick,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
     )
-    LazyRow(
-        contentPadding = PaddingValues(horizontal = 16.dp),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        items(channels, key = { it.id }) { channel ->
+        channels.forEach { channel ->
             ChannelCardSquare(
                 name = channel.name,
                 logoUrl = channel.logoUrl,
