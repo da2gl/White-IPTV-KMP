@@ -1,7 +1,6 @@
 package com.simplevideo.whiteiptv.common.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +47,7 @@ import com.simplevideo.whiteiptv.designsystem.PlaceholderColors
 import kotlin.math.abs
 
 private val CardShape = RoundedCornerShape(16.dp)
+private val CardShapeLarge = RoundedCornerShape(20.dp)
 
 /**
  * Square channel card for grid layouts (Home favorites, Favorites, Channels grid).
@@ -68,27 +67,17 @@ fun ChannelCardSquare(
     showLiveBadge: Boolean = false,
     showFavoriteButton: Boolean = true,
 ) {
-    val isDark = isDarkTheme()
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Card(
             onClick = onClick,
-            shape = RoundedCornerShape(20.dp),
+            shape = CardShapeLarge,
             colors = CardDefaults.cardColors(
-                containerColor = if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFF3F4F6),
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
             ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = if (isDark) 0.dp else 1.dp,
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(
-                    1.dp,
-                    if (isDark) Color.White.copy(alpha = 0.1f) else Color(0xFFE5E7EB),
-                    RoundedCornerShape(20.dp),
-                ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -96,7 +85,6 @@ fun ChannelCardSquare(
                     .aspectRatio(1f),
                 contentAlignment = Alignment.Center,
             ) {
-                val placeholderColor = PlaceholderColors[abs(name.hashCode()) % PlaceholderColors.size]
                 if (logoUrl.isNullOrBlank()) {
                     ChannelPlaceholder(
                         name = name,
@@ -105,16 +93,17 @@ fun ChannelCardSquare(
                         showName = true,
                     )
                 } else {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                    val context = LocalPlatformContext.current
+                    val imageRequest = remember(logoUrl) {
+                        ImageRequest.Builder(context)
                             .data(logoUrl)
                             .crossfade(true)
-                            .build(),
+                            .build()
+                    }
+                    AsyncImage(
+                        model = imageRequest,
                         contentDescription = name,
-                        placeholder = ColorPainter(placeholderColor),
-                        error = ColorPainter(placeholderColor),
-                        modifier = Modifier
-                            .size(80.dp),
+                        modifier = Modifier.size(80.dp),
                         contentScale = ContentScale.Fit,
                     )
                 }
@@ -203,18 +192,11 @@ fun ChannelCardList(
     subtitle: String? = null,
     showFavoriteButton: Boolean = true,
 ) {
-    val isDark = isDarkTheme()
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                1.dp,
-                if (isDark) Color.White.copy(alpha = 0.1f) else Color(0xFFE5E7EB),
-                CardShape,
-            ),
+        modifier = modifier.fillMaxWidth(),
         onClick = onClick,
         shape = CardShape,
-        color = if (isDark) Color.White.copy(alpha = 0.05f) else Color.White,
+        color = MaterialTheme.colorScheme.surfaceVariant,
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -225,12 +207,9 @@ fun ChannelCardList(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(
-                        if (isDark) Color.White.copy(alpha = 0.05f) else Color(0xFFEEF0F3),
-                    ),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center,
             ) {
-                val placeholderColor = PlaceholderColors[abs(name.hashCode()) % PlaceholderColors.size]
                 if (logoUrl.isNullOrBlank()) {
                     ChannelPlaceholder(
                         name = name,
@@ -238,14 +217,16 @@ fun ChannelCardList(
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                    val context = LocalPlatformContext.current
+                    val imageRequest = remember(logoUrl) {
+                        ImageRequest.Builder(context)
                             .data(logoUrl)
                             .crossfade(true)
-                            .build(),
+                            .build()
+                    }
+                    AsyncImage(
+                        model = imageRequest,
                         contentDescription = name,
-                        placeholder = ColorPainter(placeholderColor),
-                        error = ColorPainter(placeholderColor),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,
                     )
@@ -259,8 +240,8 @@ fun ChannelCardList(
                 Text(
                     text = name,
                     fontSize = 16.sp,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Medium,
-                    color = if (isDark) Color.White else Color(0xFF101828),
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -269,7 +250,7 @@ fun ChannelCardList(
                     Text(
                         text = subtitle,
                         fontSize = 12.sp,
-                        color = if (isDark) Color.White.copy(alpha = 0.5f) else Color(0xFF6A7282),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -284,7 +265,7 @@ fun ChannelCardList(
                         tint = if (isFavorite) {
                             MaterialTheme.colorScheme.primary
                         } else {
-                            if (isDark) Color.White.copy(alpha = 0.3f) else Color(0xFF6A7282)
+                            MaterialTheme.colorScheme.onSurfaceVariant
                         },
                     )
                 }
