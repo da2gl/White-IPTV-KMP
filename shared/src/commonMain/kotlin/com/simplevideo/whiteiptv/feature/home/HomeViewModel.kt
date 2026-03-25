@@ -16,9 +16,12 @@ import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RenamePlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
+import com.simplevideo.whiteiptv.feature.home.mvi.CategoryItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -57,11 +60,15 @@ class HomeViewModel(
                     getHomeCategories(selection),
                 ) { playlists, continueWatching, favorites, categories ->
                     viewState.copy(
-                        playlists = playlists,
+                        playlists = playlists.toImmutableList(),
                         selection = selection,
-                        continueWatchingItems = continueWatching,
-                        favoriteChannels = favorites,
-                        categories = categories,
+                        continueWatchingItems = continueWatching.toImmutableList(),
+                        favoriteChannels = favorites.toImmutableList(),
+                        categories = categories
+                            .filter { (_, channels) -> channels.isNotEmpty() }
+                            .map { (group, channels) ->
+                                CategoryItem(group, channels.toImmutableList())
+                            }.toImmutableList(),
                         isLoading = false,
                     )
                 }
@@ -88,7 +95,7 @@ class HomeViewModel(
                 getChannels(filter, trimmedQuery)
             }
         }.onEach { results ->
-            viewState = viewState.copy(searchResults = results)
+            viewState = viewState.copy(searchResults = results.toImmutableList())
         }.launchIn(viewModelScope)
     }
 
@@ -163,7 +170,7 @@ class HomeViewModel(
                 viewState = viewState.copy(
                     isSearchActive = newIsActive,
                     searchQuery = if (!newIsActive) "" else viewState.searchQuery,
-                    searchResults = if (!newIsActive) emptyList() else viewState.searchResults,
+                    searchResults = if (!newIsActive) persistentListOf() else viewState.searchResults,
                 )
             }
 

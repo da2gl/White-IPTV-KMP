@@ -1,19 +1,23 @@
 package com.simplevideo.whiteiptv.feature.home.mvi
 
+import androidx.compose.runtime.Immutable
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
 data class HomeState(
-    val playlists: List<PlaylistEntity> = emptyList(),
+    val playlists: ImmutableList<PlaylistEntity> = persistentListOf(),
     val selection: PlaylistSelection = PlaylistSelection.All,
-    val continueWatchingItems: List<ContinueWatchingItem> = emptyList(),
-    val favoriteChannels: List<ChannelEntity> = emptyList(),
-    val categories: List<Pair<ChannelGroup, List<ChannelEntity>>> = emptyList(),
+    val continueWatchingItems: ImmutableList<ContinueWatchingItem> = persistentListOf(),
+    val favoriteChannels: ImmutableList<ChannelEntity> = persistentListOf(),
+    val categories: ImmutableList<CategoryItem> = persistentListOf(),
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
-    val searchResults: List<ChannelEntity> = emptyList(),
+    val searchResults: ImmutableList<ChannelEntity> = persistentListOf(),
     val isLoading: Boolean = false,
     val error: String? = null,
     val showPlaylistSettings: Boolean = false,
@@ -22,6 +26,12 @@ data class HomeState(
     val showViewUrlDialog: Boolean = false,
     val isUpdatingPlaylist: Boolean = false,
     val playlistManagementError: String? = null,
+)
+
+@Immutable
+data class CategoryItem(
+    val group: ChannelGroup,
+    val channels: ImmutableList<ChannelEntity>,
 )
 
 sealed interface HomeEvent {

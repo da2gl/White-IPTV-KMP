@@ -54,9 +54,11 @@ import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
+import com.simplevideo.whiteiptv.feature.home.mvi.CategoryItem
 import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
+import kotlinx.collections.immutable.ImmutableList
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -138,22 +140,37 @@ fun HomeScreen(
                         modifier = Modifier.align(Alignment.Center),
                     )
                 } else {
+                    val onFavoritesClick = remember {
+                        {
+                            viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
+                        }
+                    }
+                    val onGroupClick = remember<(String) -> Unit> {
+                        {
+                                groupId ->
+                            viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
+                        }
+                    }
+                    val onChannelClick = remember<(Long) -> Unit> {
+                        {
+                                channelId ->
+                            viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
+                        }
+                    }
+                    val onToggleFav = remember<(Long) -> Unit> {
+                        {
+                                channelId ->
+                            viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
+                        }
+                    }
                     HomeContent(
                         continueWatchingItems = state.continueWatchingItems,
                         favoriteChannels = state.favoriteChannels,
                         categories = state.categories,
-                        onFavoritesViewAllClick = {
-                            viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
-                        },
-                        onGroupViewAllClick = { groupId ->
-                            viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
-                        },
-                        onChannelClick = { channelId ->
-                            viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
-                        },
-                        onToggleFavorite = { channelId ->
-                            viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
-                        },
+                        onFavoritesViewAllClick = onFavoritesClick,
+                        onGroupViewAllClick = onGroupClick,
+                        onChannelClick = onChannelClick,
+                        onToggleFavorite = onToggleFav,
                     )
                 }
 
@@ -354,9 +371,9 @@ private fun ViewUrlDialog(
 
 @Composable
 private fun HomeContent(
-    continueWatchingItems: List<ContinueWatchingItem>,
-    favoriteChannels: List<ChannelEntity>,
-    categories: List<Pair<ChannelGroup, List<ChannelEntity>>>,
+    continueWatchingItems: ImmutableList<ContinueWatchingItem>,
+    favoriteChannels: ImmutableList<ChannelEntity>,
+    categories: ImmutableList<CategoryItem>,
     onFavoritesViewAllClick: () -> Unit,
     onGroupViewAllClick: (groupId: String) -> Unit,
     onChannelClick: (channelId: Long) -> Unit,
@@ -387,17 +404,16 @@ private fun HomeContent(
             }
         }
 
-        val nonEmptyCategories = categories.filter { it.second.isNotEmpty() }
         items(
-            count = nonEmptyCategories.size,
-            key = { index -> "group_${nonEmptyCategories[index].first.id}" },
+            count = categories.size,
+            key = { index -> "group_${categories[index].group.id}" },
             contentType = { "category" },
         ) { index ->
-            val (group, channels) = nonEmptyCategories[index]
+            val category = categories[index]
             CategorySection(
-                group = group,
-                channels = channels,
-                onViewAllClick = { onGroupViewAllClick(group.id) },
+                group = category.group,
+                channels = category.channels,
+                onViewAllClick = { onGroupViewAllClick(category.group.id) },
                 onChannelClick = onChannelClick,
                 onToggleFavorite = onToggleFavorite,
             )
@@ -407,7 +423,7 @@ private fun HomeContent(
 
 @Composable
 private fun ContinueWatchingSection(
-    items: List<ContinueWatchingItem>,
+    items: ImmutableList<ContinueWatchingItem>,
     onChannelClick: (Long) -> Unit,
 ) {
     SectionHeader(
@@ -435,7 +451,7 @@ private fun ContinueWatchingSection(
 
 @Composable
 private fun FavoritesSection(
-    channels: List<ChannelEntity>,
+    channels: ImmutableList<ChannelEntity>,
     onViewAllClick: () -> Unit,
     onChannelClick: (Long) -> Unit,
     onToggleFavorite: (Long) -> Unit,
@@ -468,7 +484,7 @@ private fun FavoritesSection(
 @Composable
 private fun CategorySection(
     group: ChannelGroup,
-    channels: List<ChannelEntity>,
+    channels: ImmutableList<ChannelEntity>,
     onViewAllClick: () -> Unit,
     onChannelClick: (Long) -> Unit,
     onToggleFavorite: (Long) -> Unit,
