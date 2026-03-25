@@ -58,7 +58,6 @@ import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomS
 import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
-import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -141,7 +140,9 @@ fun HomeScreen(
                     )
                 } else {
                     HomeContent(
-                        state = state,
+                        continueWatchingItems = state.continueWatchingItems,
+                        favoriteChannels = state.favoriteChannels,
+                        categories = state.categories,
                         onFavoritesViewAllClick = {
                             viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
                         },
@@ -352,7 +353,9 @@ private fun ViewUrlDialog(
 
 @Composable
 private fun HomeContent(
-    state: HomeState,
+    continueWatchingItems: List<ContinueWatchingItem>,
+    favoriteChannels: List<ChannelEntity>,
+    categories: List<Pair<ChannelGroup, List<ChannelEntity>>>,
     onFavoritesViewAllClick: () -> Unit,
     onGroupViewAllClick: (groupId: String) -> Unit,
     onChannelClick: (channelId: Long) -> Unit,
@@ -363,19 +366,19 @@ private fun HomeContent(
         modifier = modifier
             .fillMaxSize(),
     ) {
-        if (state.continueWatchingItems.isNotEmpty()) {
-            item(key = "cw") {
+        if (continueWatchingItems.isNotEmpty()) {
+            item(key = "cw", contentType = "continue_watching") {
                 ContinueWatchingSection(
-                    items = state.continueWatchingItems,
+                    items = continueWatchingItems,
                     onChannelClick = onChannelClick,
                 )
             }
         }
 
-        if (state.favoriteChannels.isNotEmpty()) {
-            item(key = "fav") {
+        if (favoriteChannels.isNotEmpty()) {
+            item(key = "fav", contentType = "favorites") {
                 FavoritesSection(
-                    channels = state.favoriteChannels,
+                    channels = favoriteChannels,
                     onViewAllClick = onFavoritesViewAllClick,
                     onChannelClick = onChannelClick,
                     onToggleFavorite = onToggleFavorite,
@@ -383,9 +386,9 @@ private fun HomeContent(
             }
         }
 
-        state.categories.forEach { (group, channels) ->
+        categories.forEach { (group, channels) ->
             if (channels.isNotEmpty()) {
-                item(key = "group_${group.id}") {
+                item(key = "group_${group.id}", contentType = "category") {
                     CategorySection(
                         group = group,
                         channels = channels,

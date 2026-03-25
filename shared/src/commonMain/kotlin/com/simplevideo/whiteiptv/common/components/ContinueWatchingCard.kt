@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -64,11 +65,15 @@ fun ContinueWatchingCard(
                 .aspectRatio(16f / 9f),
         ) {
             val placeholderColor = Color(0xFF1a2026)
-            AsyncImage(
-                model = ImageRequest.Builder(LocalPlatformContext.current)
+            val context = LocalPlatformContext.current
+            val imageRequest = remember(logoUrl) {
+                ImageRequest.Builder(context)
                     .data(logoUrl)
                     .crossfade(true)
-                    .build(),
+                    .build()
+            }
+            AsyncImage(
+                model = imageRequest,
                 contentDescription = name,
                 placeholder = ColorPainter(placeholderColor),
                 error = ColorPainter(placeholderColor),
