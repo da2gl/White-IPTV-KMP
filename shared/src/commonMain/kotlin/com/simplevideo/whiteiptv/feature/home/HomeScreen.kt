@@ -52,10 +52,13 @@ import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SectionHeader
 import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
 import com.simplevideo.whiteiptv.common.components.isDarkTheme
+import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
+import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.feature.home.components.PlaylistSettingsBottomSheet
+import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
@@ -388,88 +391,122 @@ private fun HomeContent(
         modifier = modifier
             .fillMaxSize(),
     ) {
-        // Continue Watching
         if (state.continueWatchingItems.isNotEmpty()) {
-            item(key = "cw_header") {
-                SectionHeader(
-                    title = "Continue Watching",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            item(key = "cw") {
+                ContinueWatchingSection(
+                    items = state.continueWatchingItems,
+                    onChannelClick = onChannelClick,
                 )
-            }
-            item(key = "cw_row") {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(state.continueWatchingItems) { item ->
-                        ContinueWatchingCard(
-                            name = item.channel.name,
-                            logoUrl = item.channel.logoUrl,
-                            onClick = { onChannelClick(item.channel.id) },
-                            progress = item.progress,
-                            modifier = Modifier.width(200.dp),
-                        )
-                    }
-                }
             }
         }
 
-        // Favorites
         if (state.favoriteChannels.isNotEmpty()) {
-            item(key = "fav_header") {
-                SectionHeaderWithViewAll(
-                    title = "Favorites",
+            item(key = "fav") {
+                FavoritesSection(
+                    channels = state.favoriteChannels,
                     onViewAllClick = onFavoritesViewAllClick,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    onChannelClick = onChannelClick,
+                    onToggleFavorite = onToggleFavorite,
                 )
-            }
-            item(key = "fav_row") {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(state.favoriteChannels, key = { it.id }) { channel ->
-                        ChannelCardSquare(
-                            name = channel.name,
-                            logoUrl = channel.logoUrl,
-                            isFavorite = channel.isFavorite,
-                            onClick = { onChannelClick(channel.id) },
-                            onToggleFavorite = { onToggleFavorite(channel.id) },
-                            modifier = Modifier.width(160.dp),
-                        )
-                    }
-                }
             }
         }
 
-        // Dynamic Groups
         state.categories.forEach { (group, channels) ->
             if (channels.isNotEmpty()) {
-                item(key = "group_header_${group.id}") {
-                    SectionHeaderWithViewAll(
-                        title = group.displayName,
+                item(key = "group_${group.id}") {
+                    CategorySection(
+                        group = group,
+                        channels = channels,
                         onViewAllClick = { onGroupViewAllClick(group.id) },
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        onChannelClick = onChannelClick,
+                        onToggleFavorite = onToggleFavorite,
                     )
                 }
-                item(key = "group_row_${group.id}") {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(channels, key = { it.id }) { channel ->
-                            ChannelCardSquare(
-                                name = channel.name,
-                                logoUrl = channel.logoUrl,
-                                isFavorite = channel.isFavorite,
-                                onClick = { onChannelClick(channel.id) },
-                                onToggleFavorite = { onToggleFavorite(channel.id) },
-                                modifier = Modifier.width(160.dp),
-                            )
-                        }
-                    }
-                }
             }
+        }
+    }
+}
+
+@Composable
+private fun ContinueWatchingSection(
+    items: List<ContinueWatchingItem>,
+    onChannelClick: (Long) -> Unit,
+) {
+    SectionHeader(
+        title = "Continue Watching",
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    )
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        items(items) { item ->
+            ContinueWatchingCard(
+                name = item.channel.name,
+                logoUrl = item.channel.logoUrl,
+                onClick = { onChannelClick(item.channel.id) },
+                progress = item.progress,
+                modifier = Modifier.width(200.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun FavoritesSection(
+    channels: List<ChannelEntity>,
+    onViewAllClick: () -> Unit,
+    onChannelClick: (Long) -> Unit,
+    onToggleFavorite: (Long) -> Unit,
+) {
+    SectionHeaderWithViewAll(
+        title = "Favorites",
+        onViewAllClick = onViewAllClick,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    )
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        items(channels, key = { it.id }) { channel ->
+            ChannelCardSquare(
+                name = channel.name,
+                logoUrl = channel.logoUrl,
+                isFavorite = channel.isFavorite,
+                onClick = { onChannelClick(channel.id) },
+                onToggleFavorite = { onToggleFavorite(channel.id) },
+                modifier = Modifier.width(160.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategorySection(
+    group: ChannelGroup,
+    channels: List<ChannelEntity>,
+    onViewAllClick: () -> Unit,
+    onChannelClick: (Long) -> Unit,
+    onToggleFavorite: (Long) -> Unit,
+) {
+    SectionHeaderWithViewAll(
+        title = group.displayName,
+        onViewAllClick = onViewAllClick,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+    )
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        items(channels, key = { it.id }) { channel ->
+            ChannelCardSquare(
+                name = channel.name,
+                logoUrl = channel.logoUrl,
+                isFavorite = channel.isFavorite,
+                onClick = { onChannelClick(channel.id) },
+                onToggleFavorite = { onToggleFavorite(channel.id) },
+                modifier = Modifier.width(160.dp),
+            )
         }
     }
 }
