@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
@@ -94,6 +98,7 @@ fun ChannelCardSquare(
                     .aspectRatio(1f),
                 contentAlignment = Alignment.Center,
             ) {
+                val placeholderColor = PlaceholderColors[abs(name.hashCode()) % PlaceholderColors.size]
                 if (logoUrl.isNullOrBlank()) {
                     ChannelPlaceholder(
                         name = name,
@@ -103,8 +108,13 @@ fun ChannelCardSquare(
                     )
                 } else {
                     AsyncImage(
-                        model = logoUrl,
+                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                            .data(logoUrl)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = name,
+                        placeholder = ColorPainter(placeholderColor),
+                        error = ColorPainter(placeholderColor),
                         modifier = Modifier
                             .size(80.dp),
                         contentScale = ContentScale.Fit,
@@ -224,6 +234,7 @@ fun ChannelCardList(
                     ),
                 contentAlignment = Alignment.Center,
             ) {
+                val placeholderColor = PlaceholderColors[abs(name.hashCode()) % PlaceholderColors.size]
                 if (logoUrl.isNullOrBlank()) {
                     ChannelPlaceholder(
                         name = name,
@@ -232,8 +243,13 @@ fun ChannelCardList(
                     )
                 } else {
                     AsyncImage(
-                        model = logoUrl,
+                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                            .data(logoUrl)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = name,
+                        placeholder = ColorPainter(placeholderColor),
+                        error = ColorPainter(placeholderColor),
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,
                     )
