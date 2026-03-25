@@ -14,7 +14,7 @@ data class HomeState(
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
     val searchResults: List<ChannelEntity> = emptyList(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val error: String? = null,
     val showPlaylistSettings: Boolean = false,
     val showRenameDialog: Boolean = false,

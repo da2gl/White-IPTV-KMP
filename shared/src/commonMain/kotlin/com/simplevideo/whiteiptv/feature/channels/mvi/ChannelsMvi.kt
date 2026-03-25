@@ -12,7 +12,7 @@ data class ChannelsState(
     val selectedGroup: ChannelGroup? = null,
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val error: String? = null,
     val channelViewMode: ChannelViewMode = ChannelViewMode.List,
 )

@@ -37,7 +37,6 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardList
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.GroupFilterChips
@@ -45,7 +44,6 @@ import com.simplevideo.whiteiptv.common.components.PlaylistFilterChips
 import com.simplevideo.whiteiptv.common.components.SearchEmptyState
 import com.simplevideo.whiteiptv.common.components.SearchTopBar
 import com.simplevideo.whiteiptv.common.components.channelSubtitle
-import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelViewMode
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
@@ -168,11 +166,10 @@ private fun ChannelsBody(
     onToggleFavorite: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isInitialLoading = pagedItems.loadState.refresh is LoadState.Loading
+    val isInitialLoading = pagedItems.loadState.refresh is LoadState.Loading && pagedItems.itemCount == 0
     val isEmptyResult = pagedItems.loadState.refresh is LoadState.NotLoading && pagedItems.itemCount == 0
 
-    LogRecomposition("ChannelsContent")
-    Box(modifier = modifier.fillMaxSize().trackRecomposition("ChannelsContent")) {
+    Box(modifier = modifier.fillMaxSize()) {
         if (isInitialLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else if (isEmptyResult) {

@@ -12,7 +12,7 @@ data class FavoritesState(
     val channelViewMode: ChannelViewMode = ChannelViewMode.List,
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val error: String? = null,
 )
 

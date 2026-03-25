@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,8 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.simplevideo.whiteiptv.common.LogRecomposition
-import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.designsystem.LiveCyan
 import com.simplevideo.whiteiptv.designsystem.PlaceholderColors
@@ -65,10 +64,9 @@ fun ChannelCardSquare(
     showLiveBadge: Boolean = false,
     showFavoriteButton: Boolean = true,
 ) {
-    LogRecomposition("ChannelCardSquare")
     val isDark = isDarkTheme()
     Column(
-        modifier = modifier.fillMaxWidth().trackRecomposition("ChannelCardSquare"),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Card(
@@ -195,12 +193,10 @@ fun ChannelCardList(
     subtitle: String? = null,
     showFavoriteButton: Boolean = true,
 ) {
-    LogRecomposition("ChannelCardList")
     val isDark = isDarkTheme()
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .trackRecomposition("ChannelCardList")
             .border(
                 1.dp,
                 if (isDark) Color.White.copy(alpha = 0.1f) else Color(0xFFE5E7EB),
@@ -315,8 +311,10 @@ private fun ChannelPlaceholder(
     modifier: Modifier = Modifier,
     showName: Boolean = false,
 ) {
-    val colorIndex = abs(name.hashCode()) % PlaceholderColors.size
-    val backgroundColor = PlaceholderColors[colorIndex]
+    val backgroundColor = remember(name) {
+        val colorIndex = abs(name.hashCode()) % PlaceholderColors.size
+        PlaceholderColors[colorIndex]
+    }
 
     Box(
         modifier = modifier.background(backgroundColor),

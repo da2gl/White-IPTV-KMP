@@ -70,8 +70,9 @@ class GetHomeCategoriesUseCase(
             validGroups.find { it.name.lowercase().contains(keyword) }
         }
 
+        val priorityGroupSet = priorityGroups.toSet()
         val remainingGroups = validGroups
-            .filter { it !in priorityGroups }
+            .filterNot { it in priorityGroupSet }
             .take(limit - priorityGroups.size)
 
         return (priorityGroups + remainingGroups).take(limit)

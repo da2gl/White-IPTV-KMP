@@ -45,7 +45,7 @@ fun GroupFilterChips(
                 onClick = { onGroupSelect(null) },
             )
         }
-        items(groups) { group ->
+        items(groups, key = { it.id }) { group ->
             FilterPillChip(
                 text = group.displayName,
                 isSelected = group == selectedGroup,

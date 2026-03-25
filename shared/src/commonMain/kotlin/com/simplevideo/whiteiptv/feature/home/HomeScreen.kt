@@ -1,12 +1,9 @@
 package com.simplevideo.whiteiptv.feature.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,12 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -49,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.simplevideo.whiteiptv.common.LogRecomposition
 import com.simplevideo.whiteiptv.common.components.ChannelCardSquare
 import com.simplevideo.whiteiptv.common.components.ContinueWatchingCard
 import com.simplevideo.whiteiptv.common.components.GradientBackground
@@ -57,7 +52,6 @@ import com.simplevideo.whiteiptv.common.components.PlaylistDropdown
 import com.simplevideo.whiteiptv.common.components.SectionHeader
 import com.simplevideo.whiteiptv.common.components.SectionHeaderWithViewAll
 import com.simplevideo.whiteiptv.common.components.isDarkTheme
-import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.designsystem.HeaderDarkBg
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
@@ -390,23 +384,19 @@ private fun HomeContent(
     onToggleFavorite: (channelId: Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LogRecomposition("HomeContent")
-    Column(
+    LazyColumn(
         modifier = modifier
-            .fillMaxSize()
-            .trackRecomposition("HomeContent")
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize(),
     ) {
-        // Continue Watching - horizontal scroll
-        AnimatedVisibility(
-            visible = state.continueWatchingItems.isNotEmpty(),
-            enter = fadeIn(),
-        ) {
-            Column {
+        // Continue Watching
+        if (state.continueWatchingItems.isNotEmpty()) {
+            item(key = "cw_header") {
                 SectionHeader(
                     title = "Continue Watching",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
+            }
+            item(key = "cw_row") {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -426,41 +416,19 @@ private fun HomeContent(
 
         // Favorites
         if (state.favoriteChannels.isNotEmpty()) {
-            SectionHeaderWithViewAll(
-                title = "Favorites",
-                onViewAllClick = onFavoritesViewAllClick,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-            )
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(state.favoriteChannels) { channel ->
-                    ChannelCardSquare(
-                        name = channel.name,
-                        logoUrl = channel.logoUrl,
-                        isFavorite = channel.isFavorite,
-                        onClick = { onChannelClick(channel.id) },
-                        onToggleFavorite = { onToggleFavorite(channel.id) },
-                        modifier = Modifier.width(160.dp),
-                    )
-                }
-            }
-        }
-
-        // Dynamic Groups
-        state.categories.forEach { (group, channels) ->
-            if (channels.isNotEmpty()) {
+            item(key = "fav_header") {
                 SectionHeaderWithViewAll(
-                    title = group.displayName,
-                    onViewAllClick = { onGroupViewAllClick(group.id) },
+                    title = "Favorites",
+                    onViewAllClick = onFavoritesViewAllClick,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
+            }
+            item(key = "fav_row") {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(channels) { channel ->
+                    items(state.favoriteChannels, key = { it.id }) { channel ->
                         ChannelCardSquare(
                             name = channel.name,
                             logoUrl = channel.logoUrl,
@@ -469,6 +437,36 @@ private fun HomeContent(
                             onToggleFavorite = { onToggleFavorite(channel.id) },
                             modifier = Modifier.width(160.dp),
                         )
+                    }
+                }
+            }
+        }
+
+        // Dynamic Groups
+        state.categories.forEach { (group, channels) ->
+            if (channels.isNotEmpty()) {
+                item(key = "group_header_${group.id}") {
+                    SectionHeaderWithViewAll(
+                        title = group.displayName,
+                        onViewAllClick = { onGroupViewAllClick(group.id) },
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    )
+                }
+                item(key = "group_row_${group.id}") {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        items(channels, key = { it.id }) { channel ->
+                            ChannelCardSquare(
+                                name = channel.name,
+                                logoUrl = channel.logoUrl,
+                                isFavorite = channel.isFavorite,
+                                onClick = { onChannelClick(channel.id) },
+                                onToggleFavorite = { onToggleFavorite(channel.id) },
+                                modifier = Modifier.width(160.dp),
+                            )
+                        }
                     }
                 }
             }

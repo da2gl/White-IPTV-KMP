@@ -1,5 +1,7 @@
 package com.simplevideo.whiteiptv.feature.main
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -22,8 +24,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.simplevideo.whiteiptv.common.LogRecomposition
-import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.feature.channels.ChannelsScreen
 import com.simplevideo.whiteiptv.feature.favorites.FavoritesScreen
 import com.simplevideo.whiteiptv.feature.home.HomeScreen
@@ -62,6 +62,10 @@ fun MainScreen(
             navController = navController,
             startDestination = MainTab.Home,
             modifier = Modifier.padding(paddingValues),
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None },
         ) {
             composable<MainTab.Home> {
                 HomeScreen(
@@ -119,8 +123,7 @@ private fun BottomNavigationBar(
     currentDestination: androidx.navigation.NavDestination?,
     onItemClick: (MainTab) -> Unit,
 ) {
-    LogRecomposition("BottomNavigationBar")
-    NavigationBar(modifier = Modifier.trackRecomposition("BottomNavigationBar")) {
+    NavigationBar {
         items.forEach { item ->
             val isSelected = currentDestination?.hierarchy?.any {
                 it.hasRoute(item.route::class)

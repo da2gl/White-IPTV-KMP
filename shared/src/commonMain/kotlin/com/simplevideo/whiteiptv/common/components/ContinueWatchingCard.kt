@@ -24,8 +24,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.simplevideo.whiteiptv.common.LogRecomposition
-import com.simplevideo.whiteiptv.common.trackRecomposition
 import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
 import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
 
@@ -46,11 +44,9 @@ fun ContinueWatchingCard(
     category: String? = null,
     progress: Float = 0f,
 ) {
-    LogRecomposition("ContinueWatchingCard")
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .trackRecomposition("ContinueWatchingCard")
             .border(1.dp, Color.White.copy(alpha = 0.1f), ContinueWatchingCardShape),
         onClick = onClick,
         shape = ContinueWatchingCardShape,

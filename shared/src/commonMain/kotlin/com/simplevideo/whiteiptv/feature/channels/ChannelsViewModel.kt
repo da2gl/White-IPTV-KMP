@@ -23,13 +23,16 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -80,7 +83,7 @@ class ChannelsViewModel(
                     }
                 }
             }
-        }
+        }.shareIn(viewModelScope, SharingStarted.Lazily, replay = 1)
 
     init {
         loadData()
@@ -114,7 +117,7 @@ class ChannelsViewModel(
 
     private fun loadData() {
         combine(
-            getPlaylists(),
+            getPlaylists().distinctUntilChanged(),
             currentPlaylistRepository.selection,
             selectedGroupIdFlow,
             searchQuery.debounce(300),
