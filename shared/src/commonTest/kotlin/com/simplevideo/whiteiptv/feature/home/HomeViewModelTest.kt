@@ -156,7 +156,7 @@ class HomeViewModelTest {
         val playlist = PlaylistEntity(id = 1, name = "Old Name", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
         // Subscribe to playlists flow so stateIn starts collecting
-        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
+        backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -174,7 +174,7 @@ class HomeViewModelTest {
     fun `OnRenameConfirm with blank name shows error`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Old Name", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
-        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
+        backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -229,7 +229,7 @@ class HomeViewModelTest {
     fun `OnDeleteConfirm last playlist emits NavigateToOnboarding`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Only Playlist", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
-        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
+        backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))

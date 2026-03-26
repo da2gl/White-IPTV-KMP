@@ -17,7 +17,7 @@ class BackgroundRefreshCoordinatorTest {
     private val fakeRefreshPlaylist: suspend (PlaylistSource) -> Unit = { source ->
         refreshInvocations.add(source)
         if (source is PlaylistSource.Url && source.url in failForUrls) {
-            throw RuntimeException("Simulated refresh failure for ${source.url}")
+            throw IllegalStateException("Simulated refresh failure for ${source.url}")
         }
     }
 

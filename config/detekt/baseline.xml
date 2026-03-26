@@ -4,23 +4,26 @@
   <CurrentIssues>
     <ID>ComplexCondition:M3uParser.kt$M3uParser$key != null &amp;&amp; value != null &amp;&amp; key.isNotEmpty() &amp;&amp; value.isNotEmpty()</ID>
     <ID>CyclomaticComplexMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, nextChannelName: String?, previousChannelName: String?, modifier: Modifier = Modifier, )</ID>
-    <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
+    <ID>CyclomaticComplexMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, onNavigateToSearch: () -&gt; Unit = {}, )</ID>
     <ID>CyclomaticComplexMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
     <ID>CyclomaticComplexMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>CyclomaticComplexMethod:M3uParser.kt$M3uParser$private fun parseChannel( lines: List&lt;String&gt;, startIndex: Int, pendingVlcOpts: Map&lt;String, String&gt;, pendingKodiProps: Map&lt;String, String&gt;, ): Channel?</ID>
     <ID>CyclomaticComplexMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>CyclomaticComplexMethod:PlayerViewModel.kt$PlayerViewModel$override fun obtainEvent(viewEvent: PlayerEvent)</ID>
+    <ID>CyclomaticComplexMethod:SettingsViewModel.kt$SettingsViewModel$override fun obtainEvent(viewEvent: SettingsEvent)</ID>
     <ID>CyclomaticComplexMethod:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
+    <ID>Filename:FullscreenSheetEffect.android.kt$com.simplevideo.whiteiptv.platform.FullscreenSheetEffect.android.kt</ID>
+    <ID>Filename:FullscreenSheetEffect.ios.kt$com.simplevideo.whiteiptv.platform.FullscreenSheetEffect.ios.kt</ID>
     <ID>FunctionNaming:MainViewController.kt$fun MainViewController()</ID>
     <ID>LongMethod:ChannelCard.kt$@Composable fun ChannelCardList( name: String, logoUrl: String?, isFavorite: Boolean, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, modifier: Modifier = Modifier, subtitle: String? = null, showFavoriteButton: Boolean = true, )</ID>
     <ID>LongMethod:ChannelCard.kt$@Composable fun ChannelCardSquare( name: String, logoUrl: String?, isFavorite: Boolean, onClick: () -&gt; Unit, onToggleFavorite: () -&gt; Unit, modifier: Modifier = Modifier, category: String? = null, showLiveBadge: Boolean = false, showFavoriteButton: Boolean = true, )</ID>
+    <ID>LongMethod:ChannelsScreen.kt$@Composable fun ChannelsScreen( onNavigateToPlayer: (Long) -&gt; Unit, openSearch: Boolean = false, )</ID>
     <ID>LongMethod:ChannelsScreen.kt$@Composable private fun ChannelsBody( state: ChannelsState, pagedItems: LazyPagingItems&lt;ChannelEntity&gt;, onChannelClick: (Long) -&gt; Unit, onToggleFavorite: (Long) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:Color.kt$fun accentColorScheme(accentColor: AccentColor, darkTheme: Boolean): ColorScheme</ID>
     <ID>LongMethod:ContinueWatchingCard.kt$@Composable fun ContinueWatchingCard( name: String, logoUrl: String?, onClick: () -&gt; Unit, modifier: Modifier = Modifier, category: String? = null, progress: Float = 0f, )</ID>
+    <ID>LongMethod:FavoritesScreen.kt$@Composable fun FavoritesScreen( onNavigateToPlayer: (Long) -&gt; Unit, )</ID>
     <ID>LongMethod:GestureOverlay.kt$@Composable fun GestureOverlay( currentVolume: Float, currentBrightness: Float, onBrightnessChange: (Float) -&gt; Unit, onVolumeChange: (Float) -&gt; Unit, onChannelChange: (Int) -&gt; Unit, // -1 for previous, +1 for next onTap: () -&gt; Unit, nextChannelName: String?, previousChannelName: String?, modifier: Modifier = Modifier, )</ID>
-    <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
-    <ID>LongMethod:HomeScreen.kt$@Composable private fun HomeContent( state: HomeState, onFavoritesViewAllClick: () -&gt; Unit, onGroupViewAllClick: (groupId: String) -&gt; Unit, onChannelClick: (channelId: Long) -&gt; Unit, onToggleFavorite: (channelId: Long) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
-    <ID>LongMethod:HomeScreen.kt$@Composable private fun HomeTopAppBar( playlists: List&lt;PlaylistEntity&gt;, selection: PlaylistSelection, onAddPlaylistClick: () -&gt; Unit, onSearchClick: () -&gt; Unit, onPlaylistSettingsClick: () -&gt; Unit, )</ID>
+    <ID>LongMethod:HomeScreen.kt$@Composable fun HomeScreen( onNavigateToFavorites: () -&gt; Unit, onNavigateToChannels: (String?) -&gt; Unit, onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, onNavigateToSearch: () -&gt; Unit = {}, )</ID>
     <ID>LongMethod:HomeViewModel.kt$HomeViewModel$override fun obtainEvent(viewEvent: HomeEvent)</ID>
     <ID>LongMethod:ImportPlaylistUseCase.kt$ImportPlaylistUseCase$suspend operator fun invoke(source: PlaylistSource)</ID>
     <ID>LongMethod:MainScreen.kt$@Composable fun MainScreen( onNavigateToPlayer: (Long) -&gt; Unit, onNavigateToOnboarding: () -&gt; Unit, )</ID>
@@ -29,6 +32,9 @@
     <ID>LongMethod:PlayerControls.kt$@Composable private fun PlayerTopBar( channelName: String, currentProgram: EpgProgram?, nextProgram: EpgProgram?, liveOffsetMs: Long, onBackClick: () -&gt; Unit, )</ID>
     <ID>LongMethod:PlayerScreen.kt$@Composable private fun PlayerScreenContent( state: PlayerState, onEvent: (PlayerEvent) -&gt; Unit, modifier: Modifier = Modifier, )</ID>
     <ID>LongMethod:PlaylistDropdown.kt$@Composable fun PlaylistDropdown( playlists: List&lt;PlaylistEntity&gt;, selection: PlaylistSelection, onPlaylistSelect: (PlaylistSelection) -&gt; Unit, onAddPlaylistClick: (() -&gt; Unit)? = null, modifier: Modifier = Modifier, )</ID>
+    <ID>LongMethod:SettingsComponents.kt$@Composable fun &lt;T&gt; SettingsDropdownRow( icon: ImageVector, title: String, subtitle: String, options: List&lt;T&gt;, selectedOption: T, onOptionSelected: (T) -&gt; Unit, optionLabel: (T) -&gt; String, modifier: Modifier = Modifier, sheetSubtitle: String = "Choose your ${title.lowercase()}", optionDescription: ((T) -&gt; String)? = null, optionIcon: (@Composable (T) -&gt; Unit)? = null, )</ID>
+    <ID>LongMethod:SettingsComponents.kt$@Composable private fun SettingsOptionCard( label: String, description: String?, isSelected: Boolean, isDark: Boolean, onClick: () -&gt; Unit, icon: (@Composable () -&gt; Unit)? = null, )</ID>
+    <ID>LongMethod:SettingsComponents.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable private fun &lt;T&gt; SettingsSelectionBottomSheet( title: String, subtitle: String, options: List&lt;T&gt;, selectedOption: T, onOptionSelected: (T) -&gt; Unit, onDismiss: () -&gt; Unit, optionLabel: (T) -&gt; String, optionDescription: ((T) -&gt; String)? = null, optionIcon: (@Composable (T) -&gt; Unit)? = null, )</ID>
     <ID>LongMethod:SettingsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SettingsScreen()</ID>
     <ID>LongMethod:SettingsViewModel.kt$SettingsViewModel$override fun obtainEvent(viewEvent: SettingsEvent)</ID>
     <ID>LongMethod:SleepTimerSheet.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun SleepTimerSheet( activeTimerRemainingMs: Long?, onDismiss: () -&gt; Unit, onSetTimer: (durationMs: Long) -&gt; Unit, onCancelTimer: () -&gt; Unit, )</ID>
@@ -38,6 +44,11 @@
     <ID>LongParameterList:HomeViewModel.kt$HomeViewModel$( getPlaylists: GetPlaylistsUseCase, getContinueWatching: GetContinueWatchingUseCase, getFavorites: GetFavoritesUseCase, getHomeCategories: GetHomeCategoriesUseCase, private val getChannels: GetChannelsUseCase, private val currentPlaylistRepository: CurrentPlaylistRepository, private val renamePlaylistUseCase: RenamePlaylistUseCase, private val deletePlaylistUseCase: DeletePlaylistUseCase, private val importPlaylistUseCase: ImportPlaylistUseCase, private val toggleFavorite: ToggleFavoriteUseCase, )</ID>
     <ID>LongParameterList:PlayerViewModel.kt$PlayerViewModel$( savedStateHandle: SavedStateHandle, private val getChannelById: GetChannelByIdUseCase, private val getAdjacentChannel: GetAdjacentChannelUseCase, private val recordWatchEvent: RecordWatchEventUseCase, private val loadEpg: LoadEpgUseCase, private val getCurrentProgram: GetCurrentProgramUseCase, private val castManager: CastManager, )</ID>
     <ID>LoopWithTooManyJumpStatements:M3uParser.kt$M3uParser$for</ID>
+    <ID>MatchingDeclarationName:FullscreenSheetEffect.android.kt$AndroidFullscreenSheetController : FullscreenSheetController</ID>
+    <ID>MatchingDeclarationName:FullscreenSheetEffect.ios.kt$IOSFullscreenSheetController : FullscreenSheetController</ID>
+    <ID>MatchingDeclarationName:FullscreenSheetEffect.kt$FullscreenSheetController</ID>
+    <ID>MatchingDeclarationName:KeepScreenOn.kt$KeepScreenOnController</ID>
+    <ID>MatchingDeclarationName:StreamingButton.kt$StreamingButtonFactory</ID>
     <ID>NestedBlockDepth:TracksInfoMapper.kt$TracksInfoMapper$fun map(tracks: Tracks): TracksInfo</ID>
     <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun getCurrentLiveOffset(): Long</ID>
     <ID>ReturnCount:AVPlayerWrapper.kt$AVPlayerWrapper$override fun selectAudioTrack(trackId: String)</ID>
@@ -60,8 +71,10 @@
     <ID>TooManyFunctions:ExoVideoPlayer.kt$ExoVideoPlayer : VideoPlayer</ID>
     <ID>TooManyFunctions:PlayerControls.kt$com.simplevideo.whiteiptv.feature.player.components.PlayerControls.kt</ID>
     <ID>TooManyFunctions:PlaylistDao.kt$PlaylistDao</ID>
+    <ID>TooManyFunctions:SettingsScreen.kt$com.simplevideo.whiteiptv.feature.settings.SettingsScreen.kt</ID>
     <ID>TooManyFunctions:VideoPlayerFactory.kt$VideoPlayer</ID>
     <ID>TopLevelPropertyNaming:ChannelCard.kt$private val CardShape = RoundedCornerShape(16.dp)</ID>
+    <ID>TopLevelPropertyNaming:ChannelCard.kt$private val CardShapeLarge = RoundedCornerShape(20.dp)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnPrimary = Color(0xFF003062)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnPrimaryContainer = Color(0xFFd3e3fd)</ID>
     <ID>TopLevelPropertyNaming:Color.kt$private val BlueDarkOnSecondary = Color(0xFF263141)</ID>
@@ -203,7 +216,11 @@
     <ID>TopLevelPropertyNaming:PlaylistFilterChips.kt$private val ChipShape = RoundedCornerShape(12.dp)</ID>
     <ID>TopLevelPropertyNaming:PlaylistFilterChips.kt$private val PinkGradient = listOf(FavoritePink, Color(0xFFd41359))</ID>
     <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val ItemCardShape = RoundedCornerShape(16.dp)</ID>
-    <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val SectionBadgeShape = RoundedCornerShape(8.dp)</ID>
+    <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val LightCardBorder = Color(0xFFE5E7EB)</ID>
+    <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val LightSectionLabel = Color(0xFF6A7282)</ID>
+    <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val LightSubtitleText = Color(0xFF6A7282)</ID>
+    <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val LightTitleText = Color(0xFF101828)</ID>
+    <ID>TopLevelPropertyNaming:SettingsComponents.kt$private val SectionBadgeShape = RoundedCornerShape(10.dp)</ID>
     <ID>TopLevelPropertyNaming:StyledSearchBar.kt$private val SearchBarShape = RoundedCornerShape(16.dp)</ID>
     <ID>TopLevelPropertyNaming:Typography.kt$/** * Fallback typography using system default font. * * Used by screens that reference typography outside a theme context. */ val AppTypography = buildTypography(FontFamily.Default)</ID>
     <ID>UnusedParameter:PlayerControls.kt$onShowAudioTracks: () -&gt; Unit</ID>
