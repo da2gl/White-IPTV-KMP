@@ -48,7 +48,7 @@ fun PlaylistDropdown(
     ) {
         Text(
             text = selectedText,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
