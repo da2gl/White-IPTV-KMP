@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.flow
  * Fetches top groups with random channels for home screen display
  *
  * Priority order:
- * 1. Filter out invalid groups (undefined, unknown, blank)
+ * 1. SQL filters out invalid groups (undefined, unknown, blank, other)
  * 2. Select priority groups (news, sport, music, general) if available
  * 3. Fill remaining slots with top groups by channel count
  */
@@ -22,7 +22,6 @@ class GetHomeCategoriesUseCase(
     private val channelRepository: ChannelRepository,
     private val channelGroupMapper: ChannelGroupMapper,
 ) {
-    private val invalidNames = setOf("undefined", "unknown", "other", "")
     private val priorityKeywords = listOf("news", "sport", "music", "general")
 
     operator fun invoke(
@@ -30,16 +29,12 @@ class GetHomeCategoriesUseCase(
         groupLimit: Int = 5,
         channelsPerGroup: Int = 10,
     ): Flow<List<Pair<ChannelGroup, List<ChannelEntity>>>> = flow {
-        val allGroups = when (selection) {
+        val validGroups = when (selection) {
             is PlaylistSelection.Selected ->
-                channelRepository.getTopGroupsByPlaylist(selection.id, limit = 20).first()
+                channelRepository.getTopValidGroupsByPlaylist(selection.id, limit = 20).first()
 
             PlaylistSelection.All ->
-                channelRepository.getTopGroups(limit = 20).first()
-        }
-
-        val validGroups = allGroups.filter { group ->
-            group.name.isNotBlank() && group.name.lowercase() !in invalidNames
+                channelRepository.getTopValidGroups(limit = 20).first()
         }
 
         val selectedGroups = selectGroups(validGroups, groupLimit)

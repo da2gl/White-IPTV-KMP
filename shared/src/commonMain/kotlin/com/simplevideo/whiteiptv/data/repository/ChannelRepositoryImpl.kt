@@ -131,6 +131,12 @@ class ChannelRepositoryImpl(
     override fun getTopGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> =
         playlistDao.getTopGroupsByPlaylist(playlistId, limit)
 
+    override fun getTopValidGroups(limit: Int): Flow<List<ChannelGroupEntity>> =
+        playlistDao.getTopValidGroups(limit)
+
+    override fun getTopValidGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> =
+        playlistDao.getTopValidGroupsByPlaylist(playlistId, limit)
+
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> =
         playlistDao.getRandomChannelsByGroupId(groupId, limit)
 
@@ -138,11 +144,9 @@ class ChannelRepositoryImpl(
         groupIds: List<Long>,
         limitPerGroup: Int,
     ): Map<Long, List<ChannelEntity>> =
-        playlistDao.getChannelsForGroupIds(groupIds)
-            .groupBy { it.groupId }
-            .mapValues { (_, entries) ->
-                entries.map { it.channel }.shuffled().take(limitPerGroup)
-            }
+        groupIds.associateWith { groupId ->
+            playlistDao.getRandomChannelsByGroupId(groupId, limitPerGroup)
+        }
 
     override suspend fun insertGroups(groups: List<ChannelGroupEntity>): List<Long> =
         playlistDao.upsertGroups(groups)

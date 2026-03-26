@@ -69,6 +69,9 @@ class FakePlaylistDao : PlaylistDao {
     override fun getTopGroups(limit: Int): Flow<List<ChannelGroupEntity>> = flowOf(emptyList())
     override fun getTopGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> =
         flowOf(emptyList())
+    override fun getTopValidGroups(limit: Int): Flow<List<ChannelGroupEntity>> = flowOf(emptyList())
+    override fun getTopValidGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> =
+        flowOf(emptyList())
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> = emptyList()
     override suspend fun getChannelsForGroupIds(
         groupIds: List<Long>

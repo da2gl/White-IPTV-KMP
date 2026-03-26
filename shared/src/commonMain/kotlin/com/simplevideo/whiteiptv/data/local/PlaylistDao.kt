@@ -198,6 +198,26 @@ interface PlaylistDao {
 
     @Query(
         """
+        SELECT * FROM channel_groups
+        WHERE name != '' AND LOWER(name) NOT IN ('undefined', 'unknown', 'other')
+        ORDER BY channelCount DESC
+        LIMIT :limit
+        """,
+    )
+    fun getTopValidGroups(limit: Int): Flow<List<ChannelGroupEntity>>
+
+    @Query(
+        """
+        SELECT * FROM channel_groups
+        WHERE playlistId = :playlistId AND name != '' AND LOWER(name) NOT IN ('undefined', 'unknown', 'other')
+        ORDER BY channelCount DESC
+        LIMIT :limit
+        """,
+    )
+    fun getTopValidGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>>
+
+    @Query(
+        """
         SELECT c.* FROM channels c
         INNER JOIN channel_group_cross_ref cgr ON c.id = cgr.channelId
         WHERE cgr.groupId = :groupId

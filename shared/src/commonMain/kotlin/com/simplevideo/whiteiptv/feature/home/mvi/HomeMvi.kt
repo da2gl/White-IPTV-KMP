@@ -2,7 +2,6 @@ package com.simplevideo.whiteiptv.feature.home.mvi
 
 import androidx.compose.runtime.Immutable
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import kotlinx.collections.immutable.ImmutableList
@@ -10,11 +9,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 data class HomeState(
-    val playlists: ImmutableList<PlaylistEntity> = persistentListOf(),
     val selection: PlaylistSelection = PlaylistSelection.All,
-    val continueWatchingItems: ImmutableList<ContinueWatchingItem> = persistentListOf(),
-    val favoriteChannels: ImmutableList<ChannelEntity> = persistentListOf(),
-    val categories: ImmutableList<CategoryItem> = persistentListOf(),
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
     val searchResults: ImmutableList<ChannelEntity> = persistentListOf(),

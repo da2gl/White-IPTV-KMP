@@ -30,6 +30,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -154,6 +155,8 @@ class HomeViewModelTest {
     fun `OnRenameConfirm with valid name closes dialog and renames`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Old Name", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
+        // Subscribe to playlists flow so stateIn starts collecting
+        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -171,6 +174,7 @@ class HomeViewModelTest {
     fun `OnRenameConfirm with blank name shows error`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Old Name", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
+        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -225,6 +229,7 @@ class HomeViewModelTest {
     fun `OnDeleteConfirm last playlist emits NavigateToOnboarding`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Only Playlist", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
+        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -243,6 +248,7 @@ class HomeViewModelTest {
         val playlist1 = PlaylistEntity(id = 1, name = "Playlist 1", url = "https://example.com/p1.m3u")
         val playlist2 = PlaylistEntity(id = 2, name = "Playlist 2", url = "https://example.com/p2.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist1, playlist2))
+        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -298,6 +304,7 @@ class HomeViewModelTest {
     fun `OnPlaylistManagementErrorDismiss clears error`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Old", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
+        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
         currentPlaylistRepository.select(PlaylistSelection.Selected(1))
@@ -316,15 +323,16 @@ class HomeViewModelTest {
     // --- Init: playlists loaded ---
 
     @Test
-    fun `init loads playlists into state`() = runTest {
+    fun `init loads playlists into separate flow`() = runTest {
         val playlist = PlaylistEntity(id = 1, name = "Test", url = "https://example.com/p.m3u")
         val viewModel = createViewModel(playlists = listOf(playlist))
+        val collectJob = backgroundScope.launch { viewModel.playlists.collect {} }
         advanceUntilIdle()
 
-        val state = viewModel.viewStates().value
-        assertEquals(1, state.playlists.size)
-        assertEquals("Test", state.playlists[0].name)
-        assertFalse(state.isLoading)
+        val playlists = viewModel.playlists.value
+        assertEquals(1, playlists.size)
+        assertEquals("Test", playlists[0].name)
+        assertFalse(viewModel.viewStates().value.isLoading)
     }
 
     // --- Add Playlist ---

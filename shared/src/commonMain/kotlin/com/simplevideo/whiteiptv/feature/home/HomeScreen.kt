@@ -71,6 +71,10 @@ fun HomeScreen(
 ) {
     val viewModel = koinViewModel<HomeViewModel>()
     val state by viewModel.viewStates().collectAsState()
+    val playlists by viewModel.playlists.collectAsState()
+    val continueWatching by viewModel.continueWatchingItems.collectAsState()
+    val favorites by viewModel.favoriteChannels.collectAsState()
+    val categories by viewModel.categories.collectAsState()
     val action by viewModel.viewActions().collectAsState(initial = null)
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -107,16 +111,16 @@ fun HomeScreen(
         }
     }
 
-    val selectedPlaylist = remember(state.selection, state.playlists) {
+    val selectedPlaylist = remember(state.selection, playlists) {
         (state.selection as? PlaylistSelection.Selected)?.let { sel ->
-            state.playlists.find { it.id == sel.id }
+            playlists.find { it.id == sel.id }
         }
     }
 
     Scaffold(
         topBar = {
             HomeTopAppBar(
-                playlists = state.playlists,
+                playlists = playlists,
                 selection = state.selection,
                 onPlaylistSelect = { viewModel.obtainEvent(HomeEvent.OnPlaylistSelected(it)) },
                 onAddPlaylistClick = { viewModel.obtainEvent(HomeEvent.OnAddPlaylistClick) },
@@ -164,9 +168,9 @@ fun HomeScreen(
                         }
                     }
                     HomeContent(
-                        continueWatchingItems = state.continueWatchingItems,
-                        favoriteChannels = state.favoriteChannels,
-                        categories = state.categories,
+                        continueWatchingItems = continueWatching,
+                        favoriteChannels = favorites,
+                        categories = categories,
                         onFavoritesViewAllClick = onFavoritesClick,
                         onGroupViewAllClick = onGroupClick,
                         onChannelClick = onChannelClick,
@@ -225,7 +229,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeTopAppBar(
-    playlists: List<PlaylistEntity>,
+    playlists: ImmutableList<PlaylistEntity>,
     selection: PlaylistSelection,
     onPlaylistSelect: (PlaylistSelection) -> Unit,
     onAddPlaylistClick: () -> Unit,

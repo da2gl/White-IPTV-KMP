@@ -146,6 +146,26 @@ class FakeChannelRepository : ChannelRepository {
         }
     }
 
+    override fun getTopValidGroups(limit: Int): Flow<List<ChannelGroupEntity>> {
+        val invalidNames = setOf("undefined", "unknown", "other", "")
+        methodCalls.add("getTopValidGroups($limit)")
+        return groups.map { list ->
+            list.filter { it.name.isNotBlank() && it.name.lowercase() !in invalidNames }
+                .sortedByDescending { it.channelCount }
+                .take(limit)
+        }
+    }
+
+    override fun getTopValidGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>> {
+        val invalidNames = setOf("undefined", "unknown", "other", "")
+        methodCalls.add("getTopValidGroupsByPlaylist($playlistId, $limit)")
+        return groups.map { list ->
+            list.filter { it.playlistId == playlistId && it.name.isNotBlank() && it.name.lowercase() !in invalidNames }
+                .sortedByDescending { it.channelCount }
+                .take(limit)
+        }
+    }
+
     override suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity> {
         methodCalls.add("getRandomChannelsByGroupId($groupId, $limit)")
         val channelIds = crossRefs.filter { it.groupId == groupId }.map { it.channelId }.toSet()

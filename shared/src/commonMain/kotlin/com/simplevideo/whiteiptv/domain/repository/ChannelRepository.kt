@@ -54,6 +54,8 @@ interface ChannelRepository {
     fun getAllGroups(): Flow<List<ChannelGroupEntity>>
     fun getTopGroups(limit: Int): Flow<List<ChannelGroupEntity>>
     fun getTopGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>>
+    fun getTopValidGroups(limit: Int): Flow<List<ChannelGroupEntity>>
+    fun getTopValidGroupsByPlaylist(playlistId: Long, limit: Int): Flow<List<ChannelGroupEntity>>
     suspend fun getRandomChannelsByGroupId(groupId: Long, limit: Int): List<ChannelEntity>
     suspend fun getRandomChannelsForGroups(groupIds: List<Long>, limitPerGroup: Int): Map<Long, List<ChannelEntity>>
     suspend fun insertGroups(groups: List<ChannelGroupEntity>): List<Long>

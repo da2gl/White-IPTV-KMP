@@ -2,6 +2,7 @@ package com.simplevideo.whiteiptv.feature.home
 
 import androidx.lifecycle.viewModelScope
 import com.simplevideo.whiteiptv.common.BaseViewModel
+import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.PlaylistEntity
 import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
@@ -17,21 +18,27 @@ import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RenamePlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.home.mvi.CategoryItem
+import com.simplevideo.whiteiptv.feature.home.mvi.ContinueWatchingItem
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeAction
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeEvent
 import com.simplevideo.whiteiptv.feature.home.mvi.HomeState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -50,33 +57,43 @@ class HomeViewModel(
 
     private val searchQuery = MutableStateFlow("")
 
+    val playlists: StateFlow<ImmutableList<PlaylistEntity>> =
+        getPlaylists()
+            .map { it.toImmutableList() }
+            .catch { emit(persistentListOf()) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), persistentListOf())
+
+    val continueWatchingItems: StateFlow<ImmutableList<ContinueWatchingItem>> =
+        getContinueWatching()
+            .map { it.toImmutableList() }
+            .catch { emit(persistentListOf()) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), persistentListOf())
+
+    val favoriteChannels: StateFlow<ImmutableList<ChannelEntity>> =
+        currentPlaylistRepository.selection
+            .flatMapLatest { selection -> getFavorites(selection) }
+            .map { it.toImmutableList() }
+            .catch { emit(persistentListOf()) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), persistentListOf())
+
+    val categories: StateFlow<ImmutableList<CategoryItem>> =
+        currentPlaylistRepository.selection
+            .flatMapLatest { selection -> getHomeCategories(selection) }
+            .map { pairs ->
+                pairs
+                    .filter { (_, channels) -> channels.isNotEmpty() }
+                    .map { (group, channels) -> CategoryItem(group, channels.toImmutableList()) }
+                    .toImmutableList()
+            }
+            .catch { emit(persistentListOf()) }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), persistentListOf())
+
     init {
         currentPlaylistRepository.selection
-            .flatMapLatest { selection ->
-                combine(
-                    getPlaylists(),
-                    getContinueWatching(),
-                    getFavorites(selection),
-                    getHomeCategories(selection),
-                ) { playlists, continueWatching, favorites, categories ->
-                    viewState.copy(
-                        playlists = playlists.toImmutableList(),
-                        selection = selection,
-                        continueWatchingItems = continueWatching.toImmutableList(),
-                        favoriteChannels = favorites.toImmutableList(),
-                        categories = categories
-                            .filter { (_, channels) -> channels.isNotEmpty() }
-                            .map { (group, channels) ->
-                                CategoryItem(group, channels.toImmutableList())
-                            }.toImmutableList(),
-                        isLoading = false,
-                    )
-                }
-            }.catch { e ->
-                emit(viewState.copy(error = e.message, isLoading = false))
-            }.onEach { state ->
-                viewState = state
-            }.launchIn(viewModelScope)
+            .onEach { selection ->
+                viewState = viewState.copy(selection = selection, isLoading = false)
+            }
+            .launchIn(viewModelScope)
 
         combine(
             searchQuery.debounce(300),
@@ -244,6 +261,6 @@ class HomeViewModel(
     private fun getSelectedPlaylist(): PlaylistEntity? {
         val selection = viewState.selection
         if (selection !is PlaylistSelection.Selected) return null
-        return viewState.playlists.find { it.id == selection.id }
+        return playlists.value.find { it.id == selection.id }
     }
 }
