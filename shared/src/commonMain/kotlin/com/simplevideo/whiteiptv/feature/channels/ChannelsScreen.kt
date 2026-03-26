@@ -27,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,13 +60,9 @@ fun ChannelsScreen(
     val action by viewModel.viewActions().collectAsState(initial = null)
     val pagedItems = viewModel.pagedChannels.collectAsLazyPagingItems()
 
-    var searchConsumed by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(openSearch, searchConsumed) {
-        if (openSearch && !searchConsumed) {
-            searchConsumed = true
-            if (!state.isSearchActive) {
-                viewModel.obtainEvent(ChannelsEvent.OnToggleSearch)
-            }
+    LaunchedEffect(Unit) {
+        if (openSearch && !state.isSearchActive) {
+            viewModel.obtainEvent(ChannelsEvent.OnToggleSearch)
         }
     }
 
