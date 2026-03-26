@@ -153,6 +153,7 @@ fun ChannelsScreen(
                 onToggleFavorite = { channelId ->
                     viewModel.obtainEvent(ChannelsEvent.OnToggleFavorite(channelId))
                 },
+                modifier = Modifier.padding(vertical = 8.dp),
             )
         }
     }

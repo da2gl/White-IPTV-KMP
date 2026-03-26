@@ -174,6 +174,7 @@ fun HomeScreen(
                         onGroupViewAllClick = onGroupClick,
                         onChannelClick = onChannelClick,
                         onToggleFavorite = onToggleFav,
+                        modifier = Modifier.padding(vertical = 8.dp),
                     )
                 }
 
