@@ -27,19 +27,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
-import coil3.request.crossfade
+import coil3.size.Size
 import com.simplevideo.whiteiptv.designsystem.CyanGradientEnd
 import com.simplevideo.whiteiptv.designsystem.CyanGradientStart
 
 private val ContinueWatchingCardShape = RoundedCornerShape(16.dp)
+private val CwPlaceholderPainter = ColorPainter(Color(0xFF1a2026))
 
-/**
- * Card for continue watching section on the Home screen.
- *
- * Full-width card with 16:9 aspect ratio, background image, LIVE badge,
- * channel name overlay, and a cyan gradient progress bar at the bottom.
- */
 @Composable
 fun ContinueWatchingCard(
     name: String,
@@ -64,19 +60,22 @@ fun ContinueWatchingCard(
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f),
         ) {
-            val placeholderColor = Color(0xFF1a2026)
             val context = LocalPlatformContext.current
             val imageRequest = remember(logoUrl) {
                 ImageRequest.Builder(context)
                     .data(logoUrl)
-                    .crossfade(true)
+                    .size(Size(400, 225))
+                    .memoryCachePolicy(CachePolicy.ENABLED)
+                    .diskCachePolicy(CachePolicy.ENABLED)
+                    .memoryCacheKey(logoUrl ?: "")
+                    .diskCacheKey(logoUrl ?: "")
                     .build()
             }
             AsyncImage(
                 model = imageRequest,
                 contentDescription = name,
-                placeholder = ColorPainter(placeholderColor),
-                error = ColorPainter(placeholderColor),
+                placeholder = CwPlaceholderPainter,
+                error = CwPlaceholderPainter,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
             )

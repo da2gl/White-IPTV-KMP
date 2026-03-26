@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,8 +40,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
 import coil3.request.ImageRequest
-import coil3.request.crossfade
+import coil3.size.Size
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.designsystem.LiveCyan
 import com.simplevideo.whiteiptv.designsystem.PlaceholderColors
@@ -48,6 +50,7 @@ import kotlin.math.abs
 
 private val CardShape = RoundedCornerShape(16.dp)
 private val CardShapeLarge = RoundedCornerShape(20.dp)
+private val PlaceholderPainter = ColorPainter(Color(0xFF2a2a2a))
 
 /**
  * Square channel card for grid layouts (Home favorites, Favorites, Channels grid).
@@ -93,18 +96,11 @@ fun ChannelCardSquare(
                         showName = true,
                     )
                 } else {
-                    val context = LocalPlatformContext.current
-                    val imageRequest = remember(logoUrl) {
-                        ImageRequest.Builder(context)
-                            .data(logoUrl)
-                            .crossfade(true)
-                            .build()
-                    }
-                    AsyncImage(
-                        model = imageRequest,
-                        contentDescription = name,
+                    ChannelLogo(
+                        logoUrl = logoUrl,
+                        name = name,
                         modifier = Modifier.size(80.dp),
-                        contentScale = ContentScale.Fit,
+                        size = Size(160, 160),
                     )
                 }
 
@@ -217,18 +213,11 @@ fun ChannelCardList(
                         modifier = Modifier.fillMaxSize(),
                     )
                 } else {
-                    val context = LocalPlatformContext.current
-                    val imageRequest = remember(logoUrl) {
-                        ImageRequest.Builder(context)
-                            .data(logoUrl)
-                            .crossfade(true)
-                            .build()
-                    }
-                    AsyncImage(
-                        model = imageRequest,
-                        contentDescription = name,
+                    ChannelLogo(
+                        logoUrl = logoUrl,
+                        name = name,
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit,
+                        size = Size(96, 96),
                     )
                 }
             }
@@ -272,6 +261,41 @@ fun ChannelCardList(
             }
         }
     }
+}
+
+/**
+ * Optimized channel logo loader.
+ * - Decodes to exact pixel size (no full-size decode)
+ * - Memory cache enabled, disk cache enabled
+ * - No crossfade animation (reduces composition during scroll)
+ * - Stable placeholder to avoid layout shifts
+ */
+@Composable
+private fun ChannelLogo(
+    logoUrl: String,
+    name: String,
+    modifier: Modifier = Modifier,
+    size: Size = Size.ORIGINAL,
+) {
+    val context = LocalPlatformContext.current
+    val imageRequest = remember(logoUrl) {
+        ImageRequest.Builder(context)
+            .data(logoUrl)
+            .size(size)
+            .memoryCachePolicy(CachePolicy.ENABLED)
+            .diskCachePolicy(CachePolicy.ENABLED)
+            .memoryCacheKey(logoUrl)
+            .diskCacheKey(logoUrl)
+            .build()
+    }
+    AsyncImage(
+        model = imageRequest,
+        contentDescription = name,
+        modifier = modifier,
+        contentScale = ContentScale.Fit,
+        placeholder = PlaceholderPainter,
+        error = PlaceholderPainter,
+    )
 }
 
 @Composable
