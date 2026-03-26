@@ -252,20 +252,8 @@ private fun HomeTopAppBar(
             onAddPlaylistClick = onAddPlaylistClick,
             modifier = Modifier.weight(1f),
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        IconButton(
-            onClick = onSearchClick,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(buttonBg),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(20.dp),
-            )
+        IconButton(onClick = onSearchClick) {
+            Icon(Icons.Default.Search, contentDescription = "Search")
         }
         if (selectedPlaylistAvailable(selection)) {
             Spacer(modifier = Modifier.width(8.dp))
