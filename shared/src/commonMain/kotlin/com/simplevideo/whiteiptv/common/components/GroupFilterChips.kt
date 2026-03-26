@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,7 +34,21 @@ fun GroupFilterChips(
     onGroupSelect: (ChannelGroup?) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(selectedGroup, groups) {
+        if (selectedGroup != null) {
+            val index = groups.indexOf(selectedGroup)
+            if (index >= 0) {
+                listState.animateScrollToItem(index + 1) // +1 for "All" chip
+            }
+        } else {
+            listState.animateScrollToItem(0)
+        }
+    }
+
     LazyRow(
+        state = listState,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
