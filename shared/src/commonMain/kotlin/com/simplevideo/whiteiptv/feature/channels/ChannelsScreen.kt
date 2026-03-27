@@ -46,6 +46,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -480,7 +482,9 @@ private fun RenameChannelDialog(
     onConfirm: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var name by remember { mutableStateOf(currentName) }
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(currentName, selection = TextRange(currentName.length)))
+    }
     val renameFocusRequester = remember { FocusRequester() }
     val isDark = com.simplevideo.whiteiptv.common.components.isDarkTheme()
 
@@ -494,8 +498,8 @@ private fun RenameChannelDialog(
         title = { Text("Rename channel") },
         text = {
             OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
+                value = textFieldValue,
+                onValueChange = { textFieldValue = it },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -504,8 +508,8 @@ private fun RenameChannelDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = { onConfirm(name.trim()) },
-                enabled = name.isNotBlank() && name.trim() != currentName,
+                onClick = { onConfirm(textFieldValue.text.trim()) },
+                enabled = textFieldValue.text.isNotBlank() && textFieldValue.text.trim() != currentName,
             ) {
                 Text("Rename")
             }
