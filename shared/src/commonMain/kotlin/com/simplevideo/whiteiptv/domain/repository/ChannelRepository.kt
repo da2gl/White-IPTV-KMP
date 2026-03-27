@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.domain.repository
 
+import androidx.paging.PagingSource
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupEntity
@@ -33,24 +34,13 @@ interface ChannelRepository {
     fun searchFavoriteChannels(query: String): Flow<List<ChannelEntity>>
     fun searchFavoriteChannelsByPlaylist(query: String, playlistId: Long): Flow<List<ChannelEntity>>
 
-    // Paged channels
-    suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity>
-    suspend fun getChannelsCount(): Int
-    suspend fun getChannelsByPlaylistIdPaged(playlistId: Long, limit: Int, offset: Int): List<ChannelEntity>
-    suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int
-    suspend fun getChannelsByGroupIdPaged(groupId: Long, limit: Int, offset: Int): List<ChannelEntity>
-    suspend fun getChannelsByGroupIdCount(groupId: Long): Int
-    suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity>
-    suspend fun searchChannelsCount(query: String): Int
-    suspend fun searchChannelsByPlaylistIdPaged(
-        query: String,
-        playlistId: Long,
-        limit: Int,
-        offset: Int,
-    ): List<ChannelEntity>
-    suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int
-    suspend fun searchChannelsByGroupIdPaged(query: String, groupId: Long, limit: Int, offset: Int): List<ChannelEntity>
-    suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int
+    // Paged channels (Room PagingSource — auto-invalidates on table changes)
+    fun getChannelsPaged(): PagingSource<Int, ChannelEntity>
+    fun getChannelsByPlaylistIdPaged(playlistId: Long): PagingSource<Int, ChannelEntity>
+    fun getChannelsByGroupIdPaged(groupId: Long): PagingSource<Int, ChannelEntity>
+    fun searchChannelsPaged(query: String): PagingSource<Int, ChannelEntity>
+    fun searchChannelsByPlaylistIdPaged(query: String, playlistId: Long): PagingSource<Int, ChannelEntity>
+    fun searchChannelsByGroupIdPaged(query: String, groupId: Long): PagingSource<Int, ChannelEntity>
 
     // Groups
     fun getAllGroups(): Flow<List<ChannelGroupEntity>>

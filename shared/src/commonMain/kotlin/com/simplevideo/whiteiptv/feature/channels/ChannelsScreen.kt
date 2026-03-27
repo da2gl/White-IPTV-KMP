@@ -434,7 +434,7 @@ private fun SwipeableChannelItem(
         state = dismissState,
         backgroundContent = {
             val direction = dismissState.dismissDirection
-            val isSettled = dismissState.targetValue == SwipeToDismissBoxValue.Settled
+            val isSettled = direction == SwipeToDismissBoxValue.Settled
 
             val color = when {
                 isSettled -> Color.Transparent

@@ -99,6 +99,7 @@ kotlin {
             implementation(libs.ktor.client.encoding)
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.paging)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.collections.immutable)

@@ -3,15 +3,15 @@ package com.simplevideo.whiteiptv.domain.usecase
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.PagingSource
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
-import com.simplevideo.whiteiptv.data.local.paging.ChannelPagingSource
 import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
 import com.simplevideo.whiteiptv.domain.repository.ChannelRepository
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Use case for retrieving paged channels with flexible filtering.
- * Returns Flow<PagingData> for incremental loading in LazyVerticalGrid.
+ * Uses Room PagingSource for automatic invalidation on data changes.
  */
 class GetPagedChannelsUseCase(
     private val channelRepository: ChannelRepository,
@@ -35,44 +35,20 @@ class GetPagedChannelsUseCase(
         ).flow
     }
 
-    private fun createPagingSource(filter: ChannelsFilter, query: String): ChannelPagingSource {
+    private fun createPagingSource(filter: ChannelsFilter, query: String): PagingSource<Int, ChannelEntity> {
         if (query.isEmpty()) {
             return when (filter) {
-                is ChannelsFilter.All -> ChannelPagingSource(
-                    queryExecutor = { limit, offset -> channelRepository.getChannelsPaged(limit, offset) },
-                    countExecutor = { channelRepository.getChannelsCount() },
-                )
-                is ChannelsFilter.ByPlaylist -> ChannelPagingSource(
-                    queryExecutor = { limit, offset ->
-                        channelRepository.getChannelsByPlaylistIdPaged(filter.playlistId, limit, offset)
-                    },
-                    countExecutor = { channelRepository.getChannelsByPlaylistIdCount(filter.playlistId) },
-                )
-                is ChannelsFilter.ByGroup -> ChannelPagingSource(
-                    queryExecutor = { limit, offset ->
-                        channelRepository.getChannelsByGroupIdPaged(filter.groupId, limit, offset)
-                    },
-                    countExecutor = { channelRepository.getChannelsByGroupIdCount(filter.groupId) },
-                )
+                is ChannelsFilter.All -> channelRepository.getChannelsPaged()
+                is ChannelsFilter.ByPlaylist -> channelRepository.getChannelsByPlaylistIdPaged(filter.playlistId)
+                is ChannelsFilter.ByGroup -> channelRepository.getChannelsByGroupIdPaged(filter.groupId)
             }
         }
         return when (filter) {
-            is ChannelsFilter.All -> ChannelPagingSource(
-                queryExecutor = { limit, offset -> channelRepository.searchChannelsPaged(query, limit, offset) },
-                countExecutor = { channelRepository.searchChannelsCount(query) },
-            )
-            is ChannelsFilter.ByPlaylist -> ChannelPagingSource(
-                queryExecutor = { limit, offset ->
-                    channelRepository.searchChannelsByPlaylistIdPaged(query, filter.playlistId, limit, offset)
-                },
-                countExecutor = { channelRepository.searchChannelsByPlaylistIdCount(query, filter.playlistId) },
-            )
-            is ChannelsFilter.ByGroup -> ChannelPagingSource(
-                queryExecutor = { limit, offset ->
-                    channelRepository.searchChannelsByGroupIdPaged(query, filter.groupId, limit, offset)
-                },
-                countExecutor = { channelRepository.searchChannelsByGroupIdCount(query, filter.groupId) },
-            )
+            is ChannelsFilter.All -> channelRepository.searchChannelsPaged(query)
+            is ChannelsFilter.ByPlaylist ->
+                channelRepository.searchChannelsByPlaylistIdPaged(query, filter.playlistId)
+            is ChannelsFilter.ByGroup ->
+                channelRepository.searchChannelsByGroupIdPaged(query, filter.groupId)
         }
     }
 }

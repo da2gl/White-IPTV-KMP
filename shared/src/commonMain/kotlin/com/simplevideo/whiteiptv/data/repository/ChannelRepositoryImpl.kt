@@ -1,5 +1,6 @@
 package com.simplevideo.whiteiptv.data.repository
 
+import androidx.paging.PagingSource
 import com.simplevideo.whiteiptv.data.local.PlaylistDao
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
 import com.simplevideo.whiteiptv.data.local.model.ChannelGroupCrossRef
@@ -82,54 +83,24 @@ class ChannelRepositoryImpl(
         FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchFavoriteChannelsByPlaylist(it, playlistId) }
             ?: flowOf(emptyList())
 
-    // Paged channels
-    override suspend fun getChannelsPaged(limit: Int, offset: Int): List<ChannelEntity> =
-        playlistDao.getChannelsPaged(limit, offset)
+    // Paged channels (Room PagingSource — auto-invalidates on table changes)
+    override fun getChannelsPaged(): PagingSource<Int, ChannelEntity> =
+        playlistDao.getChannelsPaged()
 
-    override suspend fun getChannelsCount(): Int =
-        playlistDao.getChannelsCount()
+    override fun getChannelsByPlaylistIdPaged(playlistId: Long): PagingSource<Int, ChannelEntity> =
+        playlistDao.getChannelsByPlaylistIdPaged(playlistId)
 
-    override suspend fun getChannelsByPlaylistIdPaged(playlistId: Long, limit: Int, offset: Int): List<ChannelEntity> =
-        playlistDao.getChannelsByPlaylistIdPaged(playlistId, limit, offset)
+    override fun getChannelsByGroupIdPaged(groupId: Long): PagingSource<Int, ChannelEntity> =
+        playlistDao.getChannelsByGroupIdPaged(groupId)
 
-    override suspend fun getChannelsByPlaylistIdCount(playlistId: Long): Int =
-        playlistDao.getChannelsByPlaylistIdCount(playlistId)
+    override fun searchChannelsPaged(query: String): PagingSource<Int, ChannelEntity> =
+        playlistDao.searchChannelsPaged(query)
 
-    override suspend fun getChannelsByGroupIdPaged(groupId: Long, limit: Int, offset: Int): List<ChannelEntity> =
-        playlistDao.getChannelsByGroupIdPaged(groupId, limit, offset)
+    override fun searchChannelsByPlaylistIdPaged(query: String, playlistId: Long): PagingSource<Int, ChannelEntity> =
+        playlistDao.searchChannelsByPlaylistIdPaged(query, playlistId)
 
-    override suspend fun getChannelsByGroupIdCount(groupId: Long): Int =
-        playlistDao.getChannelsByGroupIdCount(groupId)
-
-    override suspend fun searchChannelsPaged(query: String, limit: Int, offset: Int): List<ChannelEntity> =
-        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsPaged(it, limit, offset) } ?: emptyList()
-
-    override suspend fun searchChannelsCount(query: String): Int =
-        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsCount(it) } ?: 0
-
-    override suspend fun searchChannelsByPlaylistIdPaged(
-        query: String,
-        playlistId: Long,
-        limit: Int,
-        offset: Int,
-    ): List<ChannelEntity> =
-        FtsQuerySanitizer.sanitize(query)
-            ?.let { playlistDao.searchChannelsByPlaylistIdPaged(it, playlistId, limit, offset) } ?: emptyList()
-
-    override suspend fun searchChannelsByPlaylistIdCount(query: String, playlistId: Long): Int =
-        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsByPlaylistIdCount(it, playlistId) } ?: 0
-
-    override suspend fun searchChannelsByGroupIdPaged(
-        query: String,
-        groupId: Long,
-        limit: Int,
-        offset: Int,
-    ): List<ChannelEntity> =
-        FtsQuerySanitizer.sanitize(query)
-            ?.let { playlistDao.searchChannelsByGroupIdPaged(it, groupId, limit, offset) } ?: emptyList()
-
-    override suspend fun searchChannelsByGroupIdCount(query: String, groupId: Long): Int =
-        FtsQuerySanitizer.sanitize(query)?.let { playlistDao.searchChannelsByGroupIdCount(it, groupId) } ?: 0
+    override fun searchChannelsByGroupIdPaged(query: String, groupId: Long): PagingSource<Int, ChannelEntity> =
+        playlistDao.searchChannelsByGroupIdPaged(query, groupId)
 
     // Groups
     override fun getAllGroups(): Flow<List<ChannelGroupEntity>> =
