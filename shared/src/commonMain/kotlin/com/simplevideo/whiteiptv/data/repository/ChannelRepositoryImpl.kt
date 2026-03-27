@@ -34,6 +34,16 @@ class ChannelRepositoryImpl(
     override suspend fun insertChannels(channels: List<ChannelEntity>): List<Long> =
         playlistDao.insertChannels(channels)
 
+    override suspend fun renameChannel(channelId: Long, newName: String) {
+        playlistDao.renameChannel(channelId, newName)
+        playlistDao.renameChannelFts(channelId, newName)
+    }
+
+    override suspend fun deleteChannel(channelId: Long) {
+        playlistDao.deleteChannelFts(channelId)
+        playlistDao.deleteChannel(channelId)
+    }
+
     override suspend fun deleteChannelsByPlaylistId(playlistId: Long) {
         playlistDao.deleteChannelsByPlaylistId(playlistId)
     }

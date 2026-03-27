@@ -12,9 +12,11 @@ import com.simplevideo.whiteiptv.domain.model.ChannelGroup
 import com.simplevideo.whiteiptv.domain.model.ChannelsFilter
 import com.simplevideo.whiteiptv.domain.model.PlaylistSelection
 import com.simplevideo.whiteiptv.domain.repository.CurrentPlaylistRepository
+import com.simplevideo.whiteiptv.domain.usecase.DeleteChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetGroupsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPagedChannelsUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetPlaylistsUseCase
+import com.simplevideo.whiteiptv.domain.usecase.RenameChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsAction
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
@@ -43,6 +45,8 @@ class ChannelsViewModel(
     private val getGroups: GetGroupsUseCase,
     private val getPagedChannels: GetPagedChannelsUseCase,
     private val toggleFavorite: ToggleFavoriteUseCase,
+    private val deleteChannel: DeleteChannelUseCase,
+    private val renameChannel: RenameChannelUseCase,
     private val currentPlaylistRepository: CurrentPlaylistRepository,
     private val settingsPreferences: SettingsPreferences,
 ) : BaseViewModel<ChannelsState, ChannelsAction, ChannelsEvent>(
@@ -169,6 +173,8 @@ class ChannelsViewModel(
                 searchQuery.value = viewEvent.query
                 viewState = viewState.copy(searchQuery = viewEvent.query)
             }
+            is ChannelsEvent.OnDeleteChannel -> deleteChannelById(viewEvent.channelId)
+            is ChannelsEvent.OnRenameChannel -> renameChannelById(viewEvent.channelId, viewEvent.newName)
             is ChannelsEvent.OnToggleSearch -> {
                 val newIsActive = !viewState.isSearchActive
                 if (!newIsActive) searchQuery.value = ""
@@ -187,6 +193,26 @@ class ChannelsViewModel(
 
     private fun selectGroup(group: ChannelGroup?) {
         updateSelectedGroupId(group?.id)
+    }
+
+    private fun renameChannelById(channelId: Long, newName: String) {
+        viewModelScope.launch {
+            try {
+                renameChannel(channelId, newName)
+            } catch (e: Exception) {
+                viewAction = ChannelsAction.ShowError(e.message ?: "Failed to rename channel")
+            }
+        }
+    }
+
+    private fun deleteChannelById(channelId: Long) {
+        viewModelScope.launch {
+            try {
+                deleteChannel(channelId)
+            } catch (e: Exception) {
+                viewAction = ChannelsAction.ShowError(e.message ?: "Failed to delete channel")
+            }
+        }
     }
 
     private fun toggleFavoriteChannel(channelId: Long) {

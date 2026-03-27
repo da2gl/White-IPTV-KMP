@@ -24,6 +24,8 @@ sealed interface ChannelsEvent {
     data class OnChannelClick(val channelId: Long) : ChannelsEvent
     data class OnSearchQueryChanged(val query: String) : ChannelsEvent
     data object OnToggleSearch : ChannelsEvent
+    data class OnDeleteChannel(val channelId: Long) : ChannelsEvent
+    data class OnRenameChannel(val channelId: Long, val newName: String) : ChannelsEvent
 }
 
 sealed interface ChannelsAction {

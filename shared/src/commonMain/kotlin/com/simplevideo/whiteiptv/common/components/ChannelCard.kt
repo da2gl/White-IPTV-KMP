@@ -1,6 +1,7 @@
 package com.simplevideo.whiteiptv.common.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,6 +67,7 @@ fun ChannelCardSquare(
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
     category: String? = null,
     showLiveBadge: Boolean = false,
     showFavoriteButton: Boolean = true,
@@ -75,7 +77,6 @@ fun ChannelCardSquare(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Card(
-            onClick = onClick,
             shape = CardShapeLarge,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -85,7 +86,11 @@ fun ChannelCardSquare(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f),
+                    .aspectRatio(1f)
+                    .combinedClickable(
+                        onClick = onClick,
+                        onLongClick = onLongClick,
+                    ),
                 contentAlignment = Alignment.Center,
             ) {
                 if (logoUrl.isNullOrBlank()) {
@@ -185,12 +190,17 @@ fun ChannelCardList(
     onClick: () -> Unit,
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
+    onLongClick: (() -> Unit)? = null,
     subtitle: String? = null,
     showFavoriteButton: Boolean = true,
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth(),
-        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+            ),
         shape = CardShape,
         color = MaterialTheme.colorScheme.surfaceVariant,
     ) {

@@ -147,6 +147,18 @@ interface PlaylistDao {
     @Query("UPDATE channels SET isFavorite = 0 WHERE isFavorite = 1")
     suspend fun clearAllFavorites()
 
+    @Query("UPDATE channels SET name = :newName WHERE id = :channelId")
+    suspend fun renameChannel(channelId: Long, newName: String)
+
+    @Query("UPDATE channels_fts SET name = :newName WHERE rowid = :channelId")
+    suspend fun renameChannelFts(channelId: Long, newName: String)
+
+    @Query("DELETE FROM channels WHERE id = :channelId")
+    suspend fun deleteChannel(channelId: Long)
+
+    @Query("DELETE FROM channels_fts WHERE rowid = :channelId")
+    suspend fun deleteChannelFts(channelId: Long)
+
     @Query("DELETE FROM channels WHERE playlistId = :playlistId")
     suspend fun deleteChannelsByPlaylistId(playlistId: Long)
 

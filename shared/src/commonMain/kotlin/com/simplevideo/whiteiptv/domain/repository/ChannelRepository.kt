@@ -16,6 +16,8 @@ interface ChannelRepository {
     fun getChannelsByGroupId(groupId: Long): Flow<List<ChannelEntity>>
     suspend fun getChannelsList(playlistId: Long): List<ChannelEntity>
     suspend fun insertChannels(channels: List<ChannelEntity>): List<Long>
+    suspend fun renameChannel(channelId: Long, newName: String)
+    suspend fun deleteChannel(channelId: Long)
     suspend fun deleteChannelsByPlaylistId(playlistId: Long)
 
     // Favorites

@@ -22,6 +22,7 @@ import com.simplevideo.whiteiptv.domain.repository.PlaylistRepository
 import com.simplevideo.whiteiptv.domain.repository.ThemeRepository
 import com.simplevideo.whiteiptv.domain.repository.WatchHistoryRepository
 import com.simplevideo.whiteiptv.domain.usecase.ClearFavoritesUseCase
+import com.simplevideo.whiteiptv.domain.usecase.DeleteChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.DeletePlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetAdjacentChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.GetChannelByIdUseCase
@@ -37,6 +38,7 @@ import com.simplevideo.whiteiptv.domain.usecase.HasPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ImportPlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.LoadEpgUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RecordWatchEventUseCase
+import com.simplevideo.whiteiptv.domain.usecase.RenameChannelUseCase
 import com.simplevideo.whiteiptv.domain.usecase.RenamePlaylistUseCase
 import com.simplevideo.whiteiptv.domain.usecase.ToggleFavoriteUseCase
 import com.simplevideo.whiteiptv.feature.channels.ChannelsViewModel
@@ -90,6 +92,8 @@ val useCaseModule = module {
     factoryOf(::GetChannelsUseCase)
     factoryOf(::GetPagedChannelsUseCase)
     factoryOf(::ToggleFavoriteUseCase)
+    factoryOf(::DeleteChannelUseCase)
+    factoryOf(::RenameChannelUseCase)
     factoryOf(::GetChannelByIdUseCase)
     factoryOf(::GetAdjacentChannelUseCase)
     factoryOf(::RecordWatchEventUseCase)

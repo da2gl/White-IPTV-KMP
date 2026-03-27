@@ -131,56 +131,56 @@ fun HomeScreen(
         containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                } else {
-                    val onFavoritesClick = remember {
-                        {
-                            viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
-                        }
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            } else {
+                val onFavoritesClick = remember {
+                    {
+                        viewModel.obtainEvent(HomeEvent.OnFavoritesViewAllClick)
                     }
-                    val onGroupClick = remember<(String) -> Unit> {
-                        {
-                                groupId ->
-                            viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
-                        }
-                    }
-                    val onChannelClick = remember<(Long) -> Unit> {
-                        {
-                                channelId ->
-                            viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
-                        }
-                    }
-                    val onToggleFav = remember<(Long) -> Unit> {
-                        {
-                                channelId ->
-                            viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
-                        }
-                    }
-                    HomeContent(
-                        continueWatchingItems = continueWatching,
-                        favoriteChannels = favorites,
-                        categories = categories,
-                        onFavoritesViewAllClick = onFavoritesClick,
-                        onGroupViewAllClick = onGroupClick,
-                        onChannelClick = onChannelClick,
-                        onToggleFavorite = onToggleFav,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                    )
                 }
-
-                if (state.isUpdatingPlaylist) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
+                val onGroupClick = remember<(String) -> Unit> {
+                    {
+                            groupId ->
+                        viewModel.obtainEvent(HomeEvent.OnGroupViewAllClick(groupId))
                     }
+                }
+                val onChannelClick = remember<(Long) -> Unit> {
+                    {
+                            channelId ->
+                        viewModel.obtainEvent(HomeEvent.OnChannelClick(channelId))
+                    }
+                }
+                val onToggleFav = remember<(Long) -> Unit> {
+                    {
+                            channelId ->
+                        viewModel.obtainEvent(HomeEvent.OnToggleFavorite(channelId))
+                    }
+                }
+                HomeContent(
+                    continueWatchingItems = continueWatching,
+                    favoriteChannels = favorites,
+                    categories = categories,
+                    onFavoritesViewAllClick = onFavoritesClick,
+                    onGroupViewAllClick = onGroupClick,
+                    onChannelClick = onChannelClick,
+                    onToggleFavorite = onToggleFav,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                )
+            }
+
+            if (state.isUpdatingPlaylist) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
                 }
             }
         }
+    }
     selectedPlaylist?.let { playlist ->
         if (state.showPlaylistSettings) {
             PlaylistSettingsBottomSheet(
