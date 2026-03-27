@@ -74,9 +74,6 @@ class FavoritesViewModel(
             }
 
             is FavoritesEvent.OnToggleFavorite -> {
-                viewState = viewState.copy(
-                    channels = viewState.channels.filter { it.id != viewEvent.channelId },
-                )
                 viewModelScope.launch {
                     toggleFavorite(viewEvent.channelId)
                 }
