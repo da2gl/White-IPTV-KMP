@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
 import com.simplevideo.whiteiptv.common.BaseViewModel
 import com.simplevideo.whiteiptv.data.local.SettingsPreferences
 import com.simplevideo.whiteiptv.data.local.model.ChannelEntity
@@ -23,7 +22,6 @@ import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsEvent
 import com.simplevideo.whiteiptv.feature.channels.mvi.ChannelsState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -36,7 +34,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
@@ -55,7 +52,6 @@ class ChannelsViewModel(
 ) {
     companion object {
         private const val GROUP_ID_KEY = "groupId"
-        private const val OPTIMISTIC_CLEAR_DELAY_MS = 500L
     }
 
     private val selectedGroupIdFlow: StateFlow<String?> = savedStateHandle.getStateFlow(
@@ -64,9 +60,6 @@ class ChannelsViewModel(
     )
 
     private val searchQuery = MutableStateFlow("")
-
-    private val _toggledFavoriteIds = MutableStateFlow<Set<Long>>(emptySet())
-    private val _renamedChannels = MutableStateFlow<Map<Long, String>>(emptyMap())
 
     val pagedChannels: Flow<PagingData<ChannelEntity>> = combine(
         currentPlaylistRepository.selection,
@@ -78,29 +71,7 @@ class ChannelsViewModel(
         val filter = resolveFilter(selection, selectedGroupId)
         getPagedChannels(filter, query)
     }.cachedIn(viewModelScope)
-        .combine(_toggledFavoriteIds) { pagingData, toggledIds ->
-            if (toggledIds.isEmpty()) {
-                pagingData
-            } else {
-                pagingData.map { channel ->
-                    if (channel.id in toggledIds) {
-                        channel.copy(isFavorite = !channel.isFavorite)
-                    } else {
-                        channel
-                    }
-                }
-            }
-        }
-        .combine(_renamedChannels) { pagingData, renamedMap ->
-            if (renamedMap.isEmpty()) {
-                pagingData
-            } else {
-                pagingData.map { channel ->
-                    val newName = renamedMap[channel.id]
-                    if (newName != null) channel.copy(name = newName) else channel
-                }
-            }
-        }.shareIn(viewModelScope, SharingStarted.Lazily, replay = 1)
+        .shareIn(viewModelScope, SharingStarted.Lazily, replay = 1)
 
     init {
         loadData()
@@ -209,15 +180,10 @@ class ChannelsViewModel(
     }
 
     private fun renameChannelById(channelId: Long, newName: String) {
-        _renamedChannels.update { it + (channelId to newName) }
         viewModelScope.launch {
             try {
                 renameChannel(channelId, newName)
-                // Give Room PagingSource time to invalidate, then clear optimistic state
-                delay(OPTIMISTIC_CLEAR_DELAY_MS)
-                _renamedChannels.update { it - channelId }
             } catch (e: Exception) {
-                _renamedChannels.update { it - channelId }
                 viewAction = ChannelsAction.ShowError(e.message ?: "Failed to rename channel")
             }
         }
@@ -234,16 +200,10 @@ class ChannelsViewModel(
     }
 
     private fun toggleFavoriteChannel(channelId: Long) {
-        _toggledFavoriteIds.update { ids ->
-            if (channelId in ids) ids - channelId else ids + channelId
-        }
         viewModelScope.launch {
             try {
                 toggleFavorite(channelId)
             } catch (e: Exception) {
-                _toggledFavoriteIds.update { ids ->
-                    if (channelId in ids) ids - channelId else ids + channelId
-                }
                 viewAction = ChannelsAction.ShowError(e.message ?: "Unknown error")
             }
         }

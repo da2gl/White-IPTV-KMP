@@ -357,35 +357,17 @@ private fun ChannelListItem(
     onRename: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    Box {
-        SwipeableChannelItem(
-            onSwipeRight = onRename,
-            onSwipeLeft = onDelete,
-        ) {
-            ChannelCardList(
-                name = channel.name,
-                logoUrl = channel.logoUrl,
-                isFavorite = channel.isFavorite,
-                onClick = { onChannelClick(channel.id) },
-                onToggleFavorite = { onToggleFavorite(channel.id) },
-                onLongClick = { showMenu = true },
-                subtitle = channelSubtitle(channel),
-            )
-        }
-
-        ChannelContextMenu(
-            expanded = showMenu,
-            onDismiss = { showMenu = false },
-            onRename = {
-                showMenu = false
-                onRename()
-            },
-            onDelete = {
-                showMenu = false
-                onDelete()
-            },
+    SwipeableChannelItem(
+        onSwipeRight = onRename,
+        onSwipeLeft = onDelete,
+    ) {
+        ChannelCardList(
+            name = channel.name,
+            logoUrl = channel.logoUrl,
+            isFavorite = channel.isFavorite,
+            onClick = { onChannelClick(channel.id) },
+            onToggleFavorite = { onToggleFavorite(channel.id) },
+            subtitle = channelSubtitle(channel),
         )
     }
 }
