@@ -6,10 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
-import com.simplevideo.whiteiptv.platform.PlayerListener
+import com.simplevideo.whiteiptv.platform.PlaybackState
 import com.simplevideo.whiteiptv.platform.TracksInfo
 import com.simplevideo.whiteiptv.platform.VideoPlayer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import platform.AVFoundation.AVLayerVideoGravityResizeAspect
 import platform.AVFoundation.AVMediaCharacteristicAudible
 import platform.AVFoundation.AVMediaCharacteristicLegible
@@ -35,16 +44,16 @@ import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
 import platform.UIKit.UIView
 
+private const val LIVE_OFFSET_POLL_MS = 1000L
+
 /**
  * iOS implementation of VideoPlayer wrapping AVPlayer.
- * Uses periodic time observer for state polling instead of KVO
- * (KVO observeValueForKeyPath is not overridable in Kotlin/Native).
+ * Exposes playback state, tracks, and live offset via StateFlow.
  */
 @OptIn(ExperimentalForeignApi::class)
 class AVPlayerWrapper : VideoPlayer {
 
     internal val avPlayer = AVPlayer()
-    private val listeners = mutableListOf<PlayerListener>()
     private val tracksMapper = AVPlayerTracksMapper()
     private var currentPlayerItem: AVPlayerItem? = null
     private var isPlayerPlaying = false
@@ -54,8 +63,38 @@ class AVPlayerWrapper : VideoPlayer {
     private var tracksNotified = false
     private var previousItemStatus: Long = -1
 
+    private val _playbackState = MutableStateFlow<PlaybackState>(PlaybackState.Idle)
+    override val playbackState: StateFlow<PlaybackState> = _playbackState.asStateFlow()
+
+    private val _tracksInfo = MutableStateFlow(TracksInfo())
+    override val tracksInfo: StateFlow<TracksInfo> = _tracksInfo.asStateFlow()
+
+    private val _liveOffset = MutableStateFlow(0L)
+    override val liveOffset: StateFlow<Long> = _liveOffset.asStateFlow()
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
     init {
         setupPeriodicTimeObserver()
+
+        scope.launch {
+            while (true) {
+                delay(LIVE_OFFSET_POLL_MS)
+                if (isPlayerPlaying) {
+                    _liveOffset.value = computeLiveOffset()
+                }
+            }
+        }
+    }
+
+    private fun computeLiveOffset(): Long {
+        val item = currentPlayerItem ?: return 0L
+        val currentSec = CMTimeGetSeconds(item.currentTime())
+        val durationSec = CMTimeGetSeconds(item.duration())
+        if (currentSec.isNaN() || durationSec.isNaN() || durationSec.isInfinite()) {
+            return 0L
+        }
+        return ((durationSec - currentSec) * 1000).toLong()
     }
 
     override fun play() {
@@ -72,38 +111,17 @@ class AVPlayerWrapper : VideoPlayer {
     }
 
     override fun release() {
+        scope.cancel()
         avPlayer.pause()
         removeNotificationObservers()
         timeObserver?.let { avPlayer.removeTimeObserver(it) }
         timeObserver = null
         avPlayer.replaceCurrentItemWithPlayerItem(null)
         currentPlayerItem = null
-        listeners.clear()
-    }
-
-    override fun isPlaying(): Boolean = isPlayerPlaying
-
-    override fun getCurrentLiveOffset(): Long {
-        val item = currentPlayerItem ?: return 0L
-        val currentSec = CMTimeGetSeconds(item.currentTime())
-        val durationSec = CMTimeGetSeconds(item.duration())
-
-        if (currentSec.isNaN() || durationSec.isNaN() || durationSec.isInfinite()) {
-            return 0L
-        }
-        return ((durationSec - currentSec) * 1000).toLong()
     }
 
     override fun seekToLiveEdge() {
         currentPlayerItem?.seekToDate(NSDate.date())
-    }
-
-    override fun addListener(listener: PlayerListener) {
-        listeners.add(listener)
-    }
-
-    override fun removeListener(listener: PlayerListener) {
-        listeners.remove(listener)
     }
 
     override fun getTracksInfo(): TracksInfo {
@@ -121,7 +139,7 @@ class AVPlayerWrapper : VideoPlayer {
 
         if (index in options.indices) {
             item.selectMediaOption(options[index], inMediaSelectionGroup = group)
-            notifyTracksChanged()
+            _tracksInfo.value = getTracksInfo()
         }
     }
 
@@ -131,7 +149,7 @@ class AVPlayerWrapper : VideoPlayer {
 
         if (trackId == null) {
             item.selectMediaOption(null, inMediaSelectionGroup = group)
-            notifyTracksChanged()
+            _tracksInfo.value = getTracksInfo()
             return
         }
 
@@ -141,7 +159,7 @@ class AVPlayerWrapper : VideoPlayer {
 
         if (index in options.indices) {
             item.selectMediaOption(options[index], inMediaSelectionGroup = group)
-            notifyTracksChanged()
+            _tracksInfo.value = getTracksInfo()
         }
     }
 
@@ -181,6 +199,9 @@ class AVPlayerWrapper : VideoPlayer {
         currentPlayerItem = playerItem
         tracksNotified = false
         previousItemStatus = -1
+
+        _playbackState.value = PlaybackState.Buffering
+        _liveOffset.value = 0L
 
         addNotificationObservers(playerItem)
         avPlayer.replaceCurrentItemWithPlayerItem(playerItem)
@@ -237,7 +258,11 @@ class AVPlayerWrapper : VideoPlayer {
         val isBuffering = avPlayer.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
 
         if (isPlayerPlaying != wasPlaying || isBuffering) {
-            listeners.forEach { it.onPlaybackStateChanged(isPlayerPlaying, isBuffering) }
+            _playbackState.value = if (isBuffering) {
+                PlaybackState.Buffering
+            } else {
+                PlaybackState.Playing(isPlayerPlaying)
+            }
         }
     }
 
@@ -251,14 +276,14 @@ class AVPlayerWrapper : VideoPlayer {
             AVPlayerItemStatusReadyToPlay -> {
                 if (!tracksNotified) {
                     tracksNotified = true
-                    notifyTracksChanged()
+                    _tracksInfo.value = getTracksInfo()
                 }
             }
             AVPlayerItemStatusFailed -> {
                 val error = item.error
                 val errorCode = error?.code?.toInt() ?: -1
                 val errorMessage = error?.localizedDescription ?: "Unknown playback error"
-                listeners.forEach { it.onError(errorCode, errorMessage) }
+                _playbackState.value = PlaybackState.Error(errorCode, errorMessage)
             }
             else -> {}
         }
@@ -273,7 +298,7 @@ class AVPlayerWrapper : VideoPlayer {
             queue = null,
         ) { _: NSNotification? ->
             isPlayerPlaying = false
-            listeners.forEach { it.onPlaybackStateChanged(isPlaying = false, isBuffering = false) }
+            _playbackState.value = PlaybackState.Playing(isPlaying = false)
         }
 
         failedObserver = NSNotificationCenter.defaultCenter.addObserverForName(
@@ -284,7 +309,7 @@ class AVPlayerWrapper : VideoPlayer {
             @Suppress("UNCHECKED_CAST")
             val error = notification?.userInfo?.get("AVPlayerItemFailedToPlayToEndTimeErrorKey")
             val errorMessage = error?.toString() ?: "Failed to play to end"
-            listeners.forEach { it.onError(-1, errorMessage) }
+            _playbackState.value = PlaybackState.Error(-1, errorMessage)
         }
     }
 
@@ -293,10 +318,5 @@ class AVPlayerWrapper : VideoPlayer {
         endTimeObserver = null
         failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
         failedObserver = null
-    }
-
-    private fun notifyTracksChanged() {
-        val tracksInfo = getTracksInfo()
-        listeners.forEach { it.onTracksChanged(tracksInfo) }
     }
 }

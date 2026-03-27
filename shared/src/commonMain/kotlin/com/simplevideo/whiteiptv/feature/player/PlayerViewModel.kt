@@ -14,7 +14,6 @@ import com.simplevideo.whiteiptv.feature.player.mvi.PlayerState
 import com.simplevideo.whiteiptv.platform.CastConnectionState
 import com.simplevideo.whiteiptv.platform.CastManager
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -109,13 +108,10 @@ class PlayerViewModel(
 
     private fun startWatchTimer() {
         watchTimerJob?.cancel()
-        watchTimerJob = viewModelScope.launch {
-            while (true) {
-                delay(WATCH_UPDATE_INTERVAL_MS)
-                val channel = viewState.channel ?: continue
-                val elapsed = System.now().toEpochMilliseconds() - watchStartTime
-                recordWatchEvent(channel.id, channel.playlistId, elapsed)
-            }
+        watchTimerJob = tickerJob(WATCH_UPDATE_INTERVAL_MS) {
+            val channel = viewState.channel ?: return@tickerJob
+            val elapsed = System.now().toEpochMilliseconds() - watchStartTime
+            recordWatchEvent(channel.id, channel.playlistId, elapsed)
         }
     }
 
@@ -148,11 +144,8 @@ class PlayerViewModel(
     private fun startEpgRefreshTimer(tvgId: String?) {
         epgRefreshJob?.cancel()
         if (tvgId.isNullOrBlank()) return
-        epgRefreshJob = viewModelScope.launch {
-            while (true) {
-                delay(EPG_REFRESH_INTERVAL_MS)
-                fetchCurrentProgram(tvgId)
-            }
+        epgRefreshJob = tickerJob(EPG_REFRESH_INTERVAL_MS) {
+            fetchCurrentProgram(tvgId)
         }
     }
 
@@ -165,7 +158,7 @@ class PlayerViewModel(
                 showSleepTimerSheet = false,
             )
             while (remaining > 0) {
-                delay(SLEEP_TIMER_TICK_MS)
+                kotlinx.coroutines.delay(SLEEP_TIMER_TICK_MS)
                 remaining -= SLEEP_TIMER_TICK_MS
                 viewState = viewState.copy(sleepTimerRemainingMs = remaining.coerceAtLeast(0))
             }
@@ -291,6 +284,15 @@ class PlayerViewModel(
             }
         }
     }
+
+    /** Launch a repeating job with the given interval */
+    private fun tickerJob(intervalMs: Long, action: suspend () -> Unit): Job =
+        viewModelScope.launch {
+            while (true) {
+                kotlinx.coroutines.delay(intervalMs)
+                action()
+            }
+        }
 
     override fun onCleared() {
         super.onCleared()

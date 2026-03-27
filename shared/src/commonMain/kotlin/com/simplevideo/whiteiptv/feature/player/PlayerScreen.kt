@@ -19,7 +19,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -27,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.simplevideo.whiteiptv.feature.player.components.GestureOverlay
 import com.simplevideo.whiteiptv.feature.player.components.PlayerControlsOverlay
 import com.simplevideo.whiteiptv.feature.player.components.SleepTimerSheet
@@ -37,9 +38,7 @@ import com.simplevideo.whiteiptv.feature.player.mvi.PlayerState
 import com.simplevideo.whiteiptv.feature.player.mvi.TrackSelectionType
 import com.simplevideo.whiteiptv.platform.CastManager
 import com.simplevideo.whiteiptv.platform.KeepScreenOn
-import com.simplevideo.whiteiptv.platform.PlayerListener
-import com.simplevideo.whiteiptv.platform.TracksInfo
-import com.simplevideo.whiteiptv.platform.VideoPlayer
+import com.simplevideo.whiteiptv.platform.PlaybackState
 import com.simplevideo.whiteiptv.platform.VideoPlayerFactory
 import com.simplevideo.whiteiptv.platform.rememberPipController
 import com.simplevideo.whiteiptv.platform.rememberSystemControls
@@ -48,8 +47,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-
-private const val LIVE_OFFSET_POLL_INTERVAL_MS = 1000L
 
 @Composable
 fun PlayerScreen(
@@ -95,23 +92,43 @@ private fun PlayerScreenContent(
     val scope = rememberCoroutineScope()
     var hideJob: Job? = remember { null }
 
-    // Local state for volume and brightness to ensure proper updates
     var currentVolume by remember { mutableFloatStateOf(systemControls.getVolume()) }
     var currentBrightness by remember { mutableFloatStateOf(systemControls.getBrightness()) }
 
-    // Local state for live offset (polled, not MVI state)
-    var liveOffsetMs by remember { mutableLongStateOf(0L) }
+    // Collect player StateFlows
+    val playerState by player.playbackState.collectAsState()
+    val playerTracksInfo by player.tracksInfo.collectAsState()
+    val liveOffsetMs by player.liveOffset.collectAsState()
+
+    // Forward player state changes to ViewModel
+    LaunchedEffect(playerState) {
+        when (val ps = playerState) {
+            is PlaybackState.Playing -> {
+                onEvent(PlayerEvent.OnPlaybackStateChanged(ps.isPlaying, isBuffering = false))
+            }
+            is PlaybackState.Buffering -> {
+                onEvent(PlayerEvent.OnPlaybackStateChanged(isPlaying = false, isBuffering = true))
+            }
+            is PlaybackState.Error -> {
+                onEvent(PlayerEvent.OnPlayerError(ps.errorCode, ps.message))
+            }
+            is PlaybackState.Idle -> {}
+        }
+    }
+
+    LaunchedEffect(playerTracksInfo) {
+        onEvent(PlayerEvent.OnTracksChanged(playerTracksInfo))
+    }
 
     // Auto-hide controls after 3 seconds
     fun scheduleHideControls() {
         hideJob?.cancel()
         hideJob = scope.launch {
             delay(3000)
-            onEvent(PlayerEvent.OnScreenTap) // Toggle off
+            onEvent(PlayerEvent.OnScreenTap)
         }
     }
 
-    // Show controls and schedule auto-hide
     fun showControlsWithAutoHide() {
         if (!state.controlsVisible) {
             onEvent(PlayerEvent.OnScreenTap)
@@ -121,23 +138,32 @@ private fun PlayerScreenContent(
 
     KeepScreenOn()
 
-    DisposableEffect(player) {
-        val listener = object : PlayerListener {
-            override fun onPlaybackStateChanged(isPlaying: Boolean, isBuffering: Boolean) {
-                onEvent(PlayerEvent.OnPlaybackStateChanged(isPlaying, isBuffering))
-            }
+    // Lifecycle-aware pause: pause when app goes to background unless PiP is active
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(player, lifecycleOwner) {
+        var wasPlayingBeforePause = false
 
-            override fun onError(errorCode: Int, errorMessage: String) {
-                onEvent(PlayerEvent.OnPlayerError(errorCode, errorMessage))
-            }
-
-            override fun onTracksChanged(tracksInfo: TracksInfo) {
-                onEvent(PlayerEvent.OnTracksChanged(tracksInfo))
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> {
+                    if (!state.isInPipMode) {
+                        wasPlayingBeforePause = state.isPlaying
+                        player.pause()
+                    }
+                }
+                Lifecycle.Event.ON_RESUME -> {
+                    if (wasPlayingBeforePause && !state.isCasting) {
+                        player.play()
+                        wasPlayingBeforePause = false
+                    }
+                }
+                else -> {}
             }
         }
-        player.addListener(listener)
+
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            player.removeListener(listener)
+            lifecycleOwner.lifecycle.removeObserver(observer)
             player.release()
             systemControls.restoreBrightness()
         }
@@ -153,11 +179,6 @@ private fun PlayerScreenContent(
             player.play()
             scheduleHideControls()
         }
-    }
-
-    // Poll live offset every second
-    PollLiveOffset(player = player, isPlaying = state.isPlaying) { offset ->
-        liveOffsetMs = offset
     }
 
     // When casting starts, pause local player and send stream to Cast device
@@ -179,14 +200,12 @@ private fun PlayerScreenContent(
             .fillMaxSize()
             .background(Color.Black),
     ) {
-        // Video surface (always present when channel loaded)
         if (state.channel != null) {
             player.PlayerView(
                 modifier = Modifier.fillMaxSize(),
             )
         }
 
-        // Gesture overlay - always available for channel switching
         GestureOverlay(
             currentVolume = currentVolume,
             currentBrightness = currentBrightness,
@@ -209,7 +228,6 @@ private fun PlayerScreenContent(
                 showControlsWithAutoHide()
             },
             onTap = {
-                // Toggle controls visibility
                 val wasVisible = state.controlsVisible
                 onEvent(PlayerEvent.OnScreenTap)
                 if (wasVisible) {
@@ -223,7 +241,6 @@ private fun PlayerScreenContent(
             modifier = Modifier.fillMaxSize(),
         )
 
-        // Loading indicator
         if (state.isLoading) {
             androidx.compose.material3.CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center),
@@ -231,7 +248,6 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Error message
         if (state.error != null) {
             Text(
                 text = state.error,
@@ -241,7 +257,6 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Casting overlay
         if (state.isCasting) {
             CastingOverlay(
                 channelName = state.channel?.name.orEmpty(),
@@ -249,7 +264,6 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Controls overlay
         if (state.channel != null) {
             PlayerControlsOverlay(
                 channelName = state.channel.name,
@@ -277,7 +291,6 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Track selection dialog
         state.showTrackSelectionDialog?.let { type ->
             TrackSelectionDialog(
                 type = type,
@@ -298,7 +311,6 @@ private fun PlayerScreenContent(
             )
         }
 
-        // Sleep timer bottom sheet
         if (state.showSleepTimerSheet) {
             SleepTimerSheet(
                 activeTimerRemainingMs = state.sleepTimerRemainingMs,
@@ -306,22 +318,6 @@ private fun PlayerScreenContent(
                 onSetTimer = { durationMs -> onEvent(PlayerEvent.OnSetSleepTimer(durationMs)) },
                 onCancelTimer = { onEvent(PlayerEvent.OnCancelSleepTimer) },
             )
-        }
-    }
-}
-
-@Composable
-private fun PollLiveOffset(
-    player: VideoPlayer,
-    isPlaying: Boolean,
-    onOffsetChanged: (Long) -> Unit,
-) {
-    LaunchedEffect(isPlaying) {
-        if (!isPlaying) return@LaunchedEffect
-        while (true) {
-            val offset = player.getCurrentLiveOffset()
-            onOffsetChanged(offset)
-            delay(LIVE_OFFSET_POLL_INTERVAL_MS)
         }
     }
 }

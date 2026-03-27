@@ -2,14 +2,16 @@ package com.simplevideo.whiteiptv.platform
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Callback interface for player events
+ * Sealed hierarchy for player playback state
  */
-interface PlayerListener {
-    fun onPlaybackStateChanged(isPlaying: Boolean, isBuffering: Boolean)
-    fun onError(errorCode: Int, errorMessage: String)
-    fun onTracksChanged(tracksInfo: TracksInfo) {}
+sealed interface PlaybackState {
+    data object Idle : PlaybackState
+    data object Buffering : PlaybackState
+    data class Playing(val isPlaying: Boolean) : PlaybackState
+    data class Error(val errorCode: Int, val message: String) : PlaybackState
 }
 
 /**
@@ -27,22 +29,19 @@ interface VideoPlayer {
         referer: String? = null,
     )
 
-    /** Check if player is currently playing */
-    fun isPlaying(): Boolean
+    /** Reactive playback state */
+    val playbackState: StateFlow<PlaybackState>
 
-    /** Get current live offset in milliseconds (distance from live edge) */
-    fun getCurrentLiveOffset(): Long
+    /** Reactive tracks info, updated when media tracks change */
+    val tracksInfo: StateFlow<TracksInfo>
+
+    /** Reactive live offset in milliseconds (distance from live edge), updated every second */
+    val liveOffset: StateFlow<Long>
 
     /** Seek to live edge (default position for live streams) */
     fun seekToLiveEdge()
 
-    /** Add listener for player events */
-    fun addListener(listener: PlayerListener)
-
-    /** Remove listener */
-    fun removeListener(listener: PlayerListener)
-
-    /** Get current available tracks */
+    /** Get current available tracks (snapshot) */
     fun getTracksInfo(): TracksInfo
 
     /** Select audio track by ID */

@@ -7,6 +7,7 @@ import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.datasource.cronet.CronetDataSource
 import androidx.media3.datasource.cronet.CronetUtil
+import co.touchlab.kermit.Logger
 import com.simplevideo.whiteiptv.platform.PlayerConfig
 import java.util.concurrent.Executors
 
@@ -22,17 +23,21 @@ class DataSourceFactoryProvider(
         CronetUtil.buildCronetEngine(context)
     }
 
+    private val executor by lazy { Executors.newCachedThreadPool() }
+
     fun create(config: PlayerConfig): DataSource.Factory {
         if (config.useCronet) {
             val engine = cronetEngine
             if (engine != null) {
-                return CronetDataSource.Factory(engine, Executors.newCachedThreadPool())
+                Logger.d("Player") { "Using Cronet data source" }
+                return CronetDataSource.Factory(engine, executor)
                     .setConnectionTimeoutMs(config.connectTimeoutMs)
                     .setReadTimeoutMs(config.readTimeoutMs)
                     .setResetTimeoutOnRedirects(true)
                     .setHandleSetCookieRequests(true)
                     .setKeepPostFor302Redirects(true)
             }
+            Logger.w("Player") { "Cronet engine unavailable, falling back to DefaultHttpDataSource" }
         }
         return DefaultHttpDataSource.Factory()
             .setConnectTimeoutMs(config.connectTimeoutMs)
